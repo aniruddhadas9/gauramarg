@@ -1,0 +1,11 @@
+<gm-header></gm-header> <!-- *ngIf='userService.isAuthenticated'-->
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+<gm-footer></gm-footer>
+<agm-map [latitude]="coordinates && coordinates.latitude"
+         [zoom]="16"
+         [longitude]="coordinates && coordinates.longitude" (mapReady)="mapReady($event)">
+  <agm-marker [latitude]="coordinates && coordinates.latitude"
+              [longitude]="coordinates && coordinates.longitude"></agm-marker>
+</agm-map>
