@@ -89,7 +89,7 @@ export class MapService {
         window.navigator.geolocation.getCurrentPosition(
           (position: Position) => {
             this.coordinates = position.coords;
-            this.position = Observable.of(position);
+            this.position = Observable.create(position);
             observer.next(position);
             observer.complete();
           },
@@ -123,7 +123,7 @@ export class MapService {
           const newLocation: any = this.processUserLocation(results[0]);
           newLocation.latitude = latLngValue.latitude;
           newLocation.longitude = latLngValue.longitude;
-          this.location = Observable.of(newLocation);
+          this.location = Observable.create(newLocation);
           observer.next(newLocation);
           observer.complete();
         } else {

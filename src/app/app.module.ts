@@ -6,6 +6,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {CoreModule} from './core/core.module';
 import {AgmCoreModule} from '@agm/core';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {GauraModule} from './gaura/gaura.module';
 
 
 @NgModule({
@@ -15,7 +17,8 @@ import {AgmCoreModule} from '@agm/core';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    CoreModule,
+    CoreModule.forRoot(),
+    GauraModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBMIoVYsqVdrlm_IwdKSkLEhpMH7JtEIT8',
       libraries: [
