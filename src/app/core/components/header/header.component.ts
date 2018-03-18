@@ -4,7 +4,7 @@ import {MapService} from '../../services/map.service';
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {AlertService, WarningAlert} from '../../services/alert.service';
 import {UserService} from '../../services/user.service';
-import {Router} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ChangeLocationModelComponent} from '../change-location-model/change-location-model.component';
 import {AppService} from '../../services/app.service';

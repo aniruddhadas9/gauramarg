@@ -11,7 +11,7 @@ export class CorouselComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    for(let i=1; i< 31; i++) {
+    for(let i=1; i< 15; i++) {
       this.images.push({'url': 'assets/gauramarg/'+i+'.JPG'})
     }
   }
