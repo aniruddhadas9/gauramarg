@@ -1,1 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+$a-tags: 'a, a:active, a:hover, a:visited';
+$a-tags-hover: 'a:active, a:hover';
+
+#{$a-tags} {
+  color: #aae0ff;
+  text-decoration: none;
+}
+#{$a-tags-hover} {
+  color: #c4ffc7;
+}

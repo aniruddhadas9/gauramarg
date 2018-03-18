@@ -2,7 +2,7 @@ import {InjectionToken, ModuleWithProviders, NgModule, Optional, SkipSelf} from 
 import {CommonModule} from '@angular/common';
 import {HeaderComponent} from './components/header/header.component';
 import {FooterComponent} from './components/footer/footer.component';
-import {HomeComponent} from '../gaura/home/home.component';
+import {HomeComponent} from '../gaura/components/home/home.component';
 import {AlertService} from './services/alert.service';
 import {AppInitService} from './services/app-init.service';
 import {AuthGuardService} from './services/auth-guard.service';
@@ -20,6 +20,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {AppService} from './services/app.service';
 import {NoAuthGuardService} from './services/no-auth-guard.service';
 import {GoogleAnalyticsService} from './services/google-analytics.service';
+import {RouterModule} from '@angular/router';
 
 
 export const WINDOW = new InjectionToken<any>('A reference to the window');
@@ -31,6 +32,7 @@ export function windowFactory() {
 
 @NgModule({
   imports: [
+    RouterModule,
     CommonModule,
     HttpClientModule,
     NgbModule.forRoot(),

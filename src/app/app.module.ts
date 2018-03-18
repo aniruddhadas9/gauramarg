@@ -16,8 +16,8 @@ import {GauraModule} from './gaura/gaura.module';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     CoreModule.forRoot(),
+    AppRoutingModule,
     GauraModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBMIoVYsqVdrlm_IwdKSkLEhpMH7JtEIT8',
