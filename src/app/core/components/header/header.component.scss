@@ -1,9 +1,13 @@
 .header {
   background-color: #a6bbec;
-  .gauramarg {
+  .gauramarg-left {
     position: absolute;
     top: 0px;
-
+  }
+  .gauramarg-right {
+    position: absolute;
+    top: 0px;
+    right: 0px;
   }
   .container {
     background-color: #a6bbec;
