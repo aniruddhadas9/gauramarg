@@ -1,36 +1,38 @@
-<nav class="navbar navbar-expand-md navbar-fixed-top navbar-dark main-nav">
+<div class="header">
+  <img src="/assets/gaur-nitai.png" class="gauramarg" alt="">
   <gm-alerts></gm-alerts>
   <div class="container">
-    <div class="navbar-collapse collapse nav-content order-2">
-      <a class="navbar-brand" href="#">
-        <img src="/assets/gaur-nitai.png" width="30" height="30" class="d-inline-block align-top" alt="">
-        Gaura Marg
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <a class="navbar-brand" [routerLink]="'/'">
+        <img src="/assets/gaur-nitai.png" width="30" height="30" class="d-inline-block align-top" alt="">Gaura Marg
       </a>
-      <!--<ul class="nav navbar-nav">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Home</a>
-        </li>
-      </ul>-->
-      <button class="navbar-toggler ml-2" type="button" data-toggle="collapse" data-target=".nav-content"
-              aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler btn btn-outline-primary" type="button" data-toggle="collapse"
+              data-target="#gaurammargtoggle" aria-expanded="false" aria-label="Toggle navigation"
+              (click)="isCollapsed = !isCollapsed" [attr.aria-expanded]="!isCollapsed"
+              aria-controls="gaurammargtoggle">
         <span class="navbar-toggler-icon"></span>
       </button>
-    </div>
-    <div class="ml-auto navbar-collapse collapse nav-content order-3 order-md-3">
-      <ul class="ml-auto nav navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/events'" routerLinkActive="active">Events</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/events'" routerLinkActive="active">Bhagavartam</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="'/nhfamily'">NH Family</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">profile</a>
-        </li>
-      </ul>
-    </div>
+
+      <div class="collapse navbar-collapse" id="gaurammargtoggle" [ngbCollapse]="isCollapsed">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        </ul>
+        <div class="form-inline my-2 my-lg-0">
+          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="'/events'" routerLinkActive="active">Events</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="'/events'" routerLinkActive="active">Bhagavartam</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="'/nhfamily'">NH Family</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">profile</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
   </div>
-</nav>
+</div>

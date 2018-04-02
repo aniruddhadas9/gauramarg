@@ -1,7 +1,7 @@
 import { GoogleAnalyticsService } from './google-analytics.service';
 import { TestBed, inject } from '@angular/core/testing';
-import {UserService} from '../core/services/user.service';
-import {ConfigService} from '../core/services/config.service';
+import {UserService} from './user.service';
+import {ConfigService} from './config.service';
 declare var window: any;
 let ga: jasmine.Spy;
 let warn: jasmine.Spy | Function;

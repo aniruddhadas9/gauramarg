@@ -6,9 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {CoreModule} from './core/core.module';
 import {AgmCoreModule} from '@agm/core';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {GauraModule} from './gaura/gaura.module';
-
 
 @NgModule({
   declarations: [

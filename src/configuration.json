@@ -3,6 +3,7 @@
   "restUrl": "http://localhost:8080",
   "latitude":"",
   "longitude":"",
+  "trackAnalytics": true,
   "ga": {
     "key": "tempPwd",
     "iv": "XXXX",

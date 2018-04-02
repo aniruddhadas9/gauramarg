@@ -16,7 +16,7 @@ import {AppService} from '../../services/app.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent implements OnInit {
-
+  public isCollapsed = true;
   public location: any = [];
   public searchForm: FormGroup;
   private term: AbstractControl;
