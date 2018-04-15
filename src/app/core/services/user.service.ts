@@ -4,6 +4,8 @@ import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {Response, URLSearchParams} from '@angular/http';
 import {ConfigService} from './config.service';
 import {EncryptionService} from './encryption.service';
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../../../environments/environment';
 
 
 @Injectable()
@@ -14,7 +16,7 @@ export class UserService {
   }
 
   get isAuthenticated() {
-    return this.userAuthorizations && this.userAuthorizations.userId;
+    return this.userAuthorizations && this.userAuthorizations.email;
   }
 
   // User info returned from Herd
@@ -22,29 +24,25 @@ export class UserService {
   // encrypted user id
   encryptedUserIdentifier: string;
 
-  constructor(// private currentUserApi,
+  constructor(
+    // private currentUserApi,
     private encryptionService: EncryptionService,
     private conf: ConfigService,
-   //  private apiConf
+    private httpClient: HttpClient
+    //  private apiConf
   ) {
   }
 
-  getCurrentUser(username?: string, password?: string): Observable<any> {
-    /*if (this.conf.config.useBasicAuth && username && password) {
-      this.apiConf.username = username;
-      this.apiConf.password = password;
-    }*/
-    // the added timestamp of the query string forces legacy browsers to not cache the http response
-    // for current user.  this fixes current user differentiated tests.
-    const search = new URLSearchParams(`v=${Date.now()}`.toString());
-    /* return this.currentUserApi.currentUserGetCurrentUserWithHttpInfo({search}).map((res) => {
-       this.userAuthorizations = res.json();
-       this._user.next(res.json());
-       this.encryptedUserIdentifier = this.encryptionService.encryptAndGet((res.json()).userId);
-       return res.json();
-     });*/
-
-    return Observable.of({'status': true});
+  getCurrentUser(email?: string, password?: string): Observable<any> {
+    return this.httpClient
+      .post(environment.restUrl + '/user/login', {'email': email, 'password': password})
+      .map((response) => {
+        if (response[0]['email'] != null) {
+          this.userAuthorizations = response[0];
+          this._user.next(response[0]);
+        }
+        return response;
+      });
   }
 
 }

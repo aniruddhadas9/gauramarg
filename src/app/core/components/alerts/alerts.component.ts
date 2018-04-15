@@ -3,6 +3,7 @@ import { take, map } from 'rxjs/operators';
 import { timer } from 'rxjs/observable/timer';
 import {Alert, AlertService} from '../../services/alert.service';
 import {ConfigService} from '../../services/config.service';
+import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: 'gm-alerts',
@@ -18,7 +19,7 @@ export class AlertsComponent implements OnInit {
 
   ngOnInit() {
     this.alerter.alerts.subscribe((a: Alert) => {
-      this.delay = (a.closeDelay || this.app.config.alertDelayInSeconds) * 1000;
+      this.delay = (a.closeDelay || environment.alertDelayInSeconds) * 1000;
       // push it on to show
       this.alerts = this.alerts.concat(a);
 

@@ -4,6 +4,7 @@ import {HomeComponent} from './gaura/components/home/home.component';
 import {LoginComponent} from './core/components/login/login.component';
 import {EventsComponent} from './gaura/components/events/events.component';
 import {NhfamilyComponent} from './gaura/components/nhfamily/nhfamily.component';
+import {HoliComponent} from './gaura/components/holi/holi.component';
 
 const routes: Routes = [
   {
@@ -13,14 +14,6 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
-  },
-  {
-    path: 'nhfamily',
-    component: NhfamilyComponent
-  },
-  {
-    path: 'events',
-    component: EventsComponent
   }
 ];
 

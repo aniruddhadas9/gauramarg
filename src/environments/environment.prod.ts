@@ -1,6 +1,9 @@
 export const environment = {
   production: true,
+  restUrl: '',
   trackAnalytics: true,
+  useBasicAuth: false,
+  alertDelayInSeconds: 7,
   'ga': {
     'key': 'tempPwd',
     'iv': 'XXXX',
