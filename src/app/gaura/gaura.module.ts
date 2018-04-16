@@ -6,16 +6,17 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { NhfamilyComponent } from './components/nhfamily/nhfamily.component';
 import { EventsComponent } from './components/events/events.component';
 import { HoliComponent } from './components/holi/holi.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {GauraRoutingModule} from './gaura-routing.module';
 import { CsvUploadComponent } from './components/csv-upload/csv-upload.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   imports: [
     CommonModule,
     NgbModule.forRoot(),
-    ReactiveFormsModule,
+    FormsModule,
     HttpClientModule,
     GauraRoutingModule
   ],
@@ -25,7 +26,8 @@ import { CsvUploadComponent } from './components/csv-upload/csv-upload.component
     NhfamilyComponent,
     EventsComponent,
     HoliComponent,
-    CsvUploadComponent
+    CsvUploadComponent,
+    ProfileComponent
   ],
   exports: [
     HomeComponent,

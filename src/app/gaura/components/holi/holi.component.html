@@ -1,7 +1,106 @@
-<p>
-  holi works!
+<div class="jumbotron">
+  <hr class="my-4">
 
-  upload csv:
+  <div class="card">
+    <div class="card-header">
+      <h5>Filter</h5>
+    </div>
+    <div class="card-block">
 
-  <gm-csv-upload></gm-csv-upload>
-</p>
+      <div class="container">
+        <div class="form-row align-items-center">
+          <div class="col-auto">
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">email</div>
+              </div>
+              <input type="text" [(ngModel)]="email" class="form-control" placeholder="Email">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-2" (click)="emailSearch()">Email</button>
+          </div>
+        </div>
+
+        <div class="form-row align-items-center">
+          <div class="col-auto">
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">Name</div>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="name" placeholder="Name">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-2" (click)="nameSearch()">Name</button>
+          </div>
+        </div>
+
+        <div class="form-row align-items-center">
+          <div class="col-auto">
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">Postcode</div>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="postcode" placeholder="Post/Zip code">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-2" (click)="postcodeSearch()">postcode</button>
+          </div>
+        </div>
+
+        <div class="form-row align-items-center">
+          <div class="col-auto">
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">Doorcode | <span>02-</span></div>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="doorcode" placeholder="Door code">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-2" (click)="doorcodeSearch()">Doorcode</button>
+          </div>
+        </div>
+
+
+        <div class="form-row align-items-center">
+          <div class="col-auto">
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">Mobile</div>
+              </div>
+              <input type="text" class="form-control" [(ngModel)]="mobile" placeholder="Mobile">
+            </div>
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-2" (click)="mobileSearch()">Mobile</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <h4>Results</h4>
+  <hr class="my-4">
+
+  <div *ngFor="let result of results" class="card">
+    <div class="card-header">
+      <h6>{{result.name}}({{result.email}})</h6>
+    </div>
+    <div class="card-block">
+      <div class="container">
+        <div class="row">
+          <div class="col-2">phone: {{result.phone}}</div>
+          <div class="col-2">postcode: {{result.postcode}}</div>
+          <div class="col-2">doorcode: {{result.doorcode}}</div>
+          <div class="col-2">general admission: {{result.generalAdmission}}</div>
+          <div class="col-2">combo: {{result.comboTicket}}</div>
+          <div class="col-2">parking: {{result.premiumParking}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
