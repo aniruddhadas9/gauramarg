@@ -45,7 +45,7 @@ export class HeaderComponent implements OnInit {
         console.log('header|ngInit|location:%o', location);
         this.location = location;
       }, (error) => {
-        this.alertService.alert(new WarningAlert('User address', 'Unable to your current address', error));
+        // this.alertService.alert(new WarningAlert('User address', 'Unable to your current address', error));
       });
     }, (error) => {
       this.alertService.alert(new WarningAlert('Location Needed', 'Unable to get location', error));

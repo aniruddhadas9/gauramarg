@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  restUrl: 'http://gauramarg-rest.appspot.com',
+  restUrl: 'https://gauramarg-rest.appspot.com',
   trackAnalytics: true,
   useBasicAuth: false,
   alertDelayInSeconds: 7,

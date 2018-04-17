@@ -11,7 +11,7 @@ const gouraRoutes: Routes = [
   {
     path: 'holi',
     component: HoliComponent,
-    // canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService]
   },
   {
     path: 'nhfamily',
@@ -20,7 +20,7 @@ const gouraRoutes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
-    // canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService]
   },
   {
     path: 'events',

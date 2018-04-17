@@ -12,6 +12,7 @@ export class HoliComponent implements OnInit {
 
   public loading: boolean;
   results = [];
+  entered: number;
 
   email: string;
   name: string;
@@ -28,14 +29,37 @@ export class HoliComponent implements OnInit {
   ngOnInit() {
   }
 
+  makeEntry(result) {
+    console.log(result);
+    this.httpClient
+      .post(environment.restUrl + '/holi', result, {
+        headers: {
+          'Access-Control-Allow-Origin': 'http://localhost:4200',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+      .subscribe((response: any) => {
+          console.log('entered:%o', response);
+          this.results = response;
+          return response;
+        }, (error) => {
+          console.log(error);
+        }
+      );
+  }
+
   emailSearch() {
     this.httpClient
       .get(environment.restUrl + '/holi/email/' + this.email)
       .subscribe((response: any) => {
-        console.log('doorcode result:%o', response);
-        this.results = response;
-        return response;
-      });
+          console.log('doorcode result:%o', response);
+          this.results = response;
+          return response;
+        }, (error) => {
+          console.log(error);
+        }
+      );
   }
 
   nameSearch() {
