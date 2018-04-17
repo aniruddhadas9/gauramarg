@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {UserService} from './user.service';
-import {ConfigService} from './config.service';
 import {environment} from '../../../environments/environment';
 
 declare let ga: Function;
@@ -12,7 +11,7 @@ export class GoogleAnalyticsService {
    * This is first initialized in the app shell (app component)
    * therefore it is fine to put the ga('create') in its constructor.
    */
-  constructor(private cu: UserService, private conf: ConfigService) {
+  constructor(private cu: UserService) {
     if ( environment.trackAnalytics && environment.ga.trackingId) {
       ga('create', environment.ga.trackingId, 'auto');
     } else {

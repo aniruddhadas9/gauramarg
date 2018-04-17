@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {ConfigService} from './config.service';
 import {google, GoogleMap, MapOptions} from '@agm/core/services/google-maps-types';
 import {Observable} from 'rxjs/Observable';
 import {HttpClient} from '@angular/common/http';
@@ -27,10 +26,9 @@ export class MapService {
   private type = 'restaurant';
   private keyword = 'restaurant';
 
-  constructor(private configService: ConfigService,
-              private httpClient: HttpClient,
-              private googleMapsAPIWrapper: GoogleMapsAPIWrapper,
-              private appService: AppService) {
+  constructor(
+    private httpClient: HttpClient
+  ) {
 
   }
 

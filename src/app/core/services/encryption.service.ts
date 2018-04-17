@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import * as CryptoJS from 'crypto-js';
-import {ConfigService} from './config.service';
+import {environment} from '../../../environments/environment.prod';
 
 @Injectable()
 export class EncryptionService {
 
-  constructor(private configService: ConfigService) {
+  constructor() {
   }
 
 
@@ -25,8 +25,8 @@ export class EncryptionService {
     };
 
     // Get key and IV from configuration
-    const key = CryptoJS.enc.Hex.parse(this.configService.config.ga.key);
-    const iv = CryptoJS.enc.Hex.parse(this.configService.config.ga.iv);
+    const key = CryptoJS.enc.Hex.parse(environment.ga.key);
+    const iv = CryptoJS.enc.Hex.parse(environment.ga.iv);
 
     // Get padded value
     const padMsg = padString(userId);

@@ -2,11 +2,9 @@ import {InjectionToken, ModuleWithProviders, NgModule, Optional, SkipSelf} from 
 import {CommonModule} from '@angular/common';
 import {HeaderComponent} from './components/header/header.component';
 import {FooterComponent} from './components/footer/footer.component';
-import {HomeComponent} from '../gaura/components/home/home.component';
 import {AlertService} from './services/alert.service';
 import {AppInitService} from './services/app-init.service';
 import {AuthGuardService} from './services/auth-guard.service';
-import {ConfigService} from './services/config.service';
 import {UserService} from './services/user.service';
 import {AlertsComponent} from './components/alerts/alerts.component';
 import {LoginComponent} from './components/login/login.component';
@@ -21,6 +19,7 @@ import {AppService} from './services/app.service';
 import {NoAuthGuardService} from './services/no-auth-guard.service';
 import {GoogleAnalyticsService} from './services/google-analytics.service';
 import {RouterModule} from '@angular/router';
+import {CsvFileProcessService} from './services/csv-file-process.service';
 
 
 export const WINDOW = new InjectionToken<any>('A reference to the window');
@@ -63,7 +62,7 @@ export class CoreModule {
         AlertService,
         AppInitService,
         AuthGuardService,
-        ConfigService,
+        CsvFileProcessService,
         MapService,
         GoogleMapsAPIWrapper,
         NoAuthGuardService,

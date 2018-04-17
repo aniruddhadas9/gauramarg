@@ -1,10 +1,9 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {ConfigService} from '../../services/config.service';
 import {MapService} from '../../services/map.service';
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {AlertService, WarningAlert} from '../../services/alert.service';
 import {UserService} from '../../services/user.service';
-import {Router, ActivatedRoute} from '@angular/router';
+import {Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ChangeLocationModelComponent} from '../change-location-model/change-location-model.component';
 import {AppService} from '../../services/app.service';
@@ -26,7 +25,6 @@ export class HeaderComponent implements OnInit {
   constructor(private mapService: MapService,
               private modalService: NgbModal,
               private router: Router,
-              private configService: ConfigService,
               private appService: AppService,
               private userService: UserService,
               private alertService: AlertService) {

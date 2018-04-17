@@ -10,9 +10,6 @@ import {
   NavigationError, ActivatedRoute, ActivatedRouteSnapshot, PRIMARY_OUTLET
 } from '@angular/router';
 import {filter, tap} from 'rxjs/operators';
-import {WINDOW} from './core/services/custom-location.service';
-import {CustomRouteReuseStrategy} from './core/services/custom-route-reuse-strategy.service';
-import {ConfigService} from './core/services/config.service';
 
 
 @Component({
@@ -30,7 +27,6 @@ export class AppComponent implements OnInit {
     private mapService: MapService,
     private alerter: AlertService,
     private router: Router,
-    private configService: ConfigService,
     private ga: GoogleAnalyticsService,
     public cu: UserService,
     private route: ActivatedRoute,

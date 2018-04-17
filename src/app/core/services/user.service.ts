@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Response, URLSearchParams} from '@angular/http';
-import {ConfigService} from './config.service';
 import {EncryptionService} from './encryption.service';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
@@ -27,7 +25,6 @@ export class UserService {
   constructor(
     // private currentUserApi,
     private encryptionService: EncryptionService,
-    private conf: ConfigService,
     private httpClient: HttpClient
     //  private apiConf
   ) {

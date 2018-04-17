@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { take, map } from 'rxjs/operators';
 import { timer } from 'rxjs/observable/timer';
 import {Alert, AlertService} from '../../services/alert.service';
-import {ConfigService} from '../../services/config.service';
 import {environment} from '../../../../environments/environment';
 
 @Component({
@@ -15,7 +14,7 @@ export class AlertsComponent implements OnInit {
   public alerts: Array<Alert> = [];
   public delay: number;
 
-  constructor(private alerter: AlertService, private app: ConfigService) { }
+  constructor(private alerter: AlertService) { }
 
   ngOnInit() {
     this.alerter.alerts.subscribe((a: Alert) => {
