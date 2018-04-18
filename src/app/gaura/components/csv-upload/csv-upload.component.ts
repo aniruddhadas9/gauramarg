@@ -10,14 +10,14 @@ import {CsvFileProcessService} from '../../../core/services/csv-file-process.ser
 })
 export class CsvUploadComponent implements OnInit {
 
-  @ViewChild('fileImportInput') fileImportInput: any;
+  @ViewChild('doorEntry') doorEntry: any;
+  @ViewChild('orderExport') orderExport: any;
 
   csvRecords = [];
-
   validation = {
     tokenDelimeter: ',',
     isHeaderPresentFlag: true,
-    validateHeaderAndRecordLengthFlag: true,
+    validateHeaderAndRecordLengthFlag: false,
     valildateFileExtenstionFlag: true
   };
 
@@ -42,33 +42,10 @@ export class CsvUploadComponent implements OnInit {
     const allTextLines = reader.result.split(/\r|\n|\r/);
   }
 
-  postAllData(holis) {
-    this.httpClient.post(environment.restUrl + '/holi/all', holis).subscribe((result) => {
-      console.log('all holi record processed:%o', result);
-    });
-  }
-
-  getHoli(holis) {
-    const holi = [];
-    for (let i = 1; i < holis.length; i++) {
-      const data = holis[i].split(',');
-      if (data[0] && data[1] && data[2]) {
-        holi.push({
-          'id': data[2],
-          'name': data[0],
-          'postcode': data[1],
-          'doorcode': data[2],
-          'generalAdmission': data[3],
-          'comboTicket': data[4],
-          'premiumParking': data[5],
-        });
-      }
-    }
-    return holi;
-  }
-
-
-  // METHOD CALLED WHEN CSV FILE IS IMPORTED
+  /**
+   * Method called when user select orderexport file in the ui
+   * @param $event
+   */
   fileChangeListener($event): void {
 
     const text = [];
@@ -89,7 +66,7 @@ export class CsvUploadComponent implements OnInit {
     reader.onload = (data) => {
       const csvData = reader.result;
       const csvRecordsArray = csvData.split(/\r\n|\n/);
-
+      console.log('orderExport upload|csvRecordsArray:%O', csvRecordsArray);
       let headerLength = -1;
       if (this.validation.isHeaderPresentFlag) {
         const headersRow = this.csvFileProcessService.getHeaderArray(csvRecordsArray, this.validation.tokenDelimeter);
@@ -99,6 +76,8 @@ export class CsvUploadComponent implements OnInit {
       this.csvRecords = this.csvFileProcessService.getDataRecordsArrayFromCSVFile(csvRecordsArray,
         headerLength, this.validation.validateHeaderAndRecordLengthFlag, this.validation.tokenDelimeter);
 
+      this.postAllData(this.getHoliFull(this.csvRecords));
+      console.log('orderExport upload|holis:%O', this.csvRecords);
       if (this.csvRecords == null) {
         // If control reached here it means csv file contains error, reset file.
         this.fileReset();
@@ -108,11 +87,84 @@ export class CsvUploadComponent implements OnInit {
     reader.onerror = function () {
       alert('Unable to read ' + input.files[0]);
     };
-  };
+  }
 
   fileReset() {
-    this.fileImportInput.nativeElement.value = '';
+    this.doorEntry.nativeElement.value = '';
+    this.orderExport.nativeElement.value = '';
     this.csvRecords = [];
+  }
+
+
+  postAllData(holis) {
+    this.httpClient.post(environment.restUrl + '/holi/allUpdate', holis).subscribe((result) => {
+      console.log('all holi record processed:%o', result);
+    });
+  }
+
+  getHoli(holis) {
+    const holi = [];
+    for (let i = 1; i < holis.length; i++) {
+      const data = holis[i].split(',');
+      if (data[0] && data[1] && data[2]) {
+        holi.push({
+          'id': data[2],
+          'name': data[0],
+          'postCode': data[1],
+          'doorCode': data[2],
+          'generalAdmission': data[3],
+          'comboTicket': data[4],
+          'premiumParking': data[5],
+        });
+      }
+    }
+    return holi;
+  }
+
+  getHoliFull(holis) {
+    const format = {
+      '0': 'Name',
+      '1': 'Email',
+      '2': 'Mobile number',
+      '3': 'Address 1',
+      '4': 'Address 2',
+      '5': 'Address 3',
+      '6': 'Postcode',
+      '7': 'Entry code',
+      '8': 'Barcode',
+      '9': 'Tickets purchased',
+      '10': 'Currency',
+      '11': 'Total paid',
+      '12': 'Order date',
+      '13': 'Payment method',
+      '14': 'Transaction Id',
+      '15': 'Event date',
+      '16': 'Event name',
+      '17': 'Referral Tag',
+    };
+    const holi = [];
+    for (let i = 1; i < holis.length; i++) {
+      const data = holis[i];
+      if (data[0] && data[6] && data[7]) {
+        holi.push({
+          'id': data[7],
+          'name': data[0],
+          'email': data[1],
+          'phone': data[2],
+          'postCode': data[6],
+          'doorCode': data[7],
+          'address': data[3],
+          'city': data[4],
+          'state': data[5],
+          'barCode': data[8],
+          'ticketsPurchased': data[9],
+          'paid': data[11],
+        });
+      }
+    }
+    return holi;
+
+
   }
 
 }

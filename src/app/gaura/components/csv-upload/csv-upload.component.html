@@ -1,9 +1,17 @@
 <div class="card">
-  <div class="card-header">Upload CSV</div>
-  <div class="card-body">
-    <h5 class="card-title">CSV file</h5>
-    <p class="card-text"><input #fileImportInput id="preview" type="file" (change)="previewFile($event)" /></p>
+  <div class="card">
+    <div class="card-header">Imprt CSV files</div>
+    <div class="card-body">
+      <h5 class="card-title">Door lists</h5>
+      <p class="card-text"><input #doorEntry type="file" (change)="previewFile($event)"/></p>
+      <hr>
+      <h5 class="card-title">Exported Orders</h5>
+      <p class="card-text"><input #orderExport type="file" (change)="fileChangeListener($event)"/></p>
+      <hr>
+      <button class="btn btn-outline-info" (click)="fileReset()">reset</button>
+    </div>
   </div>
-</div>
 
+
+</div>
 

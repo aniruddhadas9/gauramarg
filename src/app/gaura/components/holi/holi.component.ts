@@ -84,7 +84,7 @@ export class HoliComponent implements OnInit {
 
   postcodeSearch() {
     this.httpClient
-      .get(environment.restUrl + '/holi/postcode/' + this.postcode)
+      .get(environment.restUrl + '/holi/postCode/' + this.postcode)
       .subscribe((response: any) => {
         console.log('doorcode result:%o', response);
         this.results = response;
@@ -94,7 +94,7 @@ export class HoliComponent implements OnInit {
 
   doorcodeSearch() {
     this.httpClient
-      .get(environment.restUrl + '/holi/doorcode/02-' + this.doorcode)
+      .get(environment.restUrl + '/holi/doorCode/02-' + this.doorcode)
       .subscribe((response: any) => {
         console.log('doorcode result:%o', response);
         this.results = response;

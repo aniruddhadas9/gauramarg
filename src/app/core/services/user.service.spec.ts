@@ -1,32 +1,12 @@
-import {Observable} from 'rxjs/Observable';
 import {TestBed, inject} from '@angular/core/testing';
 
 import {UserService} from './user.service';
-import {CurrentUserService, UserAuthorizations, Configuration} from '@herd/angular-client';
 import {EncryptionService} from './encryption.service';
 
 describe('CurrentUserService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: Configuration,
-          useValue: {} as Configuration,
-          multi: false
-        },
-        {
-          provide: CurrentUserService,
-          useValue: {
-            currentUserGetCurrentUserWithHttpInfo:
-              jasmine.createSpy('currentUserGetCurrentUserWithHttpInfo')
-                .and.returnValue(Observable.of({
-                json: () => {
-                  return {userId: 'userid'};
-                }
-              })),
-            configuration: {}
-          }
-        },
         UserService,
         {
           provide: EncryptionService,
@@ -38,9 +18,8 @@ describe('CurrentUserService', () => {
     });
   });
 
-  it('should populate encrypted user', inject([UserService, CurrentUserService, EncryptionService],
-    (service: UserService, currentUserApi: CurrentUserService, encryptionService: EncryptionService) => {
-      const spyCuApi = (<jasmine.Spy>currentUserApi.currentUserGetCurrentUserWithHttpInfo);
+  it('should populate encrypted user', inject([UserService, EncryptionService],
+    (service: UserService, encryptionService: EncryptionService) => {
       const spyEncrypt = (<jasmine.Spy>encryptionService.encryptAndGet);
       // this proves that we proply set and sent the observable info.
       service.user.subscribe((userInfo) => {
@@ -50,7 +29,6 @@ describe('CurrentUserService', () => {
         expect(data).toEqual({
           userId: 'userid'
         });
-        expect(spyCuApi).toHaveBeenCalledTimes(1);
         expect(spyEncrypt).toHaveBeenCalledWith('userid');
         expect(service.encryptedUserIdentifier).toBe('encryptedUserIdentifier');
         expect(service.userAuthorizations).toEqual({
@@ -58,38 +36,6 @@ describe('CurrentUserService', () => {
         });
       });
     }));
-
-  it('should set username and password if basic auth is used and username and password are passed',
-    inject([UserService, CurrentUserService, EncryptionService, Configuration],
-      (service: UserService,
-       currentUserApi: CurrentUserService,
-       encryptionService: EncryptionService,
-       apiConf: Configuration) => {
-
-        // initial values
-        expect(apiConf.username).not.toBeDefined();
-        expect(apiConf.password).not.toBeDefined();
-
-        service.getCurrentUser();
-        // no useBasicAuth
-        expect(apiConf.username).not.toBeDefined();
-        expect(apiConf.password).not.toBeDefined();
-
-        service.getCurrentUser();
-        // no username or password passed
-        expect(apiConf.username).not.toBeDefined();
-        expect(apiConf.password).not.toBeDefined();
-
-        service.getCurrentUser('tstUser');
-        // no password passed
-        expect(apiConf.username).not.toBeDefined();
-        expect(apiConf.password).not.toBeDefined();
-
-        service.getCurrentUser('tstUser', 'tstPassword');
-        // happy path
-        expect(apiConf.username).toBe('tstUser');
-        expect(apiConf.password).toBe('tstPassword');
-      }));
 
   it('should return truthy isAuthenticated if user information exists', inject([UserService],
     (service: UserService) => {
