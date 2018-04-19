@@ -1,0 +1,20 @@
+<div class="jumbotron">
+  <div *ngFor="let result of results; let i = index" class="card result">
+    <div class="card-block">
+      <div class="container">
+        <div class="row">
+          <div class="col-6">
+            <h6>{{result.name}}{{result.email && '(' + result.email + ')' }}</h6>
+            <i class="fa fa-car" [hidden]="!result.premiumParking"></i>
+            <i class="fa fa-paint-brush" [hidden]="!result.comboTicket"></i>
+            <p>{{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}</p>
+          </div>
+          <div class="col-6">
+            <p>general admission/combo: {{result.generalAdmission}}/{{result.comboTicket}}<br>
+              Doorcode: {{result.doorcode}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -77,7 +77,7 @@ export class CsvUploadComponent implements OnInit {
         headerLength, this.validation.validateHeaderAndRecordLengthFlag, this.validation.tokenDelimeter);
 
       this.postAllData(this.getHoliFull(this.csvRecords));
-      console.log('orderExport upload|holis:%O', this.csvRecords);
+      console.log('orderExport upload|holis:%O', this.getHoliFull(this.csvRecords));
       if (this.csvRecords == null) {
         // If control reached here it means csv file contains error, reset file.
         this.fileReset();

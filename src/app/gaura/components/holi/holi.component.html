@@ -77,35 +77,42 @@
 
   <hr class="my-4">
 
-  <div *ngFor="let result of results" class="card result">
-    <div class="card-header">
+  <div *ngFor="let result of results; let i = index" class="card result">
+    <div class="card-header d-flex justify-content-between">
       <h6>{{result.name}}{{result.email && '(' + result.email + ')' }}</h6>
+      <div>
+        <ul class="list-inline">
+          <li class="list-inline-item"><i class="fa fa-car" [hidden]="!result.premiumParking"></i></li>
+          <li class="list-inline-item"><i class="fa fa-paint-brush" [hidden]="!result.comboTicket"></i></li>
+        </ul>
+      </div>
     </div>
     <div class="card-block">
       <div class="container">
         <div class="row">
           <div class="col-4">
             <ul class="list-group list-group-flush">
-              <li class="list-group-item">phone: {{result.phone}}</li>
-              <li class="list-group-item">postcode: {{result.postcode}}</li>
-              <li class="list-group-item">doorcode: {{result.doorcode}}</li>
+              <li class="list-group-item">Address: {{result.address}} {{result.city}} {{result.state}},
+                {{result.postCode}}
+              </li>
+              <li class="list-group-item">PostCode: {{result.postCode}}</li>
             </ul>
           </div>
           <div class="col-4">
             <ul class="list-group list-group-flush">
               <li class="list-group-item">general admission: {{result.generalAdmission}}</li>
               <li class="list-group-item">combo: {{result.comboTicket}}</li>
-              <li class="list-group-item">doorcode: {{result.doorcode}}</li>
+              <li class="list-group-item">Doorcode: {{result.doorcode}}</li>
             </ul>
           </div>
           <div class="col-4">
             <ul class="list-group list-group-flush">
               <li class="list-group-item">
-                <ngb-rating [(rate)]="result.entered" max="{{result.generalAdmission || 1}}"></ngb-rating>
+                <ngb-rating [(rate)]="result.entered" max="{{result.generalAdmission + result.comboTicket}}"></ngb-rating>
               </li>
               <li class="list-group-item"></li>
               <li class="list-group-item">
-                <button type="button" class="btn btn-success mb-2" (click)="makeEntry(result)">Entry</button>
+                <button type="button" class="btn btn-success mb-2" (click)="makeEntry(result, i)">Check In</button>
               </li>
             </ul>
           </div>

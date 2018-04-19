@@ -12,6 +12,7 @@ import {GauraRoutingModule} from './gaura-routing.module';
 import { CsvUploadComponent } from './components/csv-upload/csv-upload.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { NewUserComponent } from './components/new-user/new-user.component';
+import { HoliEventsListComponent } from './components/holi-events-list/holi-events-list.component';
 
 @NgModule({
   imports: [
@@ -29,7 +30,8 @@ import { NewUserComponent } from './components/new-user/new-user.component';
     HoliComponent,
     CsvUploadComponent,
     ProfileComponent,
-    NewUserComponent
+    NewUserComponent,
+    HoliEventsListComponent
   ],
   exports: [
     HomeComponent,

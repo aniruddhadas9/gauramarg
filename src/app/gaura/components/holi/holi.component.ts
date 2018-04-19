@@ -29,16 +29,10 @@ export class HoliComponent implements OnInit {
   ngOnInit() {
   }
 
-  makeEntry(result) {
+  makeEntry(result, i) {
     console.log(result);
     this.httpClient
-      .post(environment.restUrl + '/holi', result, {
-        headers: {
-          'Access-Control-Allow-Origin': 'http://localhost:4200',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      })
+      .post(environment.restUrl + '/holi/update', result)
       .subscribe((response: any) => {
           console.log('entered:%o', response);
           this.results = response;
