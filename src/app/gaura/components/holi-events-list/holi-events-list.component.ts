@@ -10,6 +10,7 @@ import {environment} from '../../../../environments/environment';
 export class HoliEventsListComponent implements OnInit {
 
   results = [];
+  searchText;
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit() {

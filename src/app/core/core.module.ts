@@ -21,7 +21,6 @@ import {GoogleAnalyticsService} from './services/google-analytics.service';
 import {RouterModule} from '@angular/router';
 import {CsvFileProcessService} from './services/csv-file-process.service';
 
-
 export const WINDOW = new InjectionToken<any>('A reference to the window');
 
 export function windowFactory() {
@@ -72,7 +71,8 @@ export class CoreModule {
         },
         UserService,
         EncryptionService,
-        GoogleAnalyticsService
+        GoogleAnalyticsService,
+
       ]
     };
   }
