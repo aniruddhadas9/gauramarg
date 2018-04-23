@@ -1,7 +1,10 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {CsvFileProcessService} from '../../../core/services/csv-file-process.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FileUploadService} from '../../../services/file-upload.service';
+import {FileUploader} from 'ng2-file-upload';
 
 @Component({
   selector: 'gm-csv-upload',
@@ -10,9 +13,13 @@ import {CsvFileProcessService} from '../../../core/services/csv-file-process.ser
 })
 export class CsvUploadComponent implements OnInit {
 
-  @ViewChild('doorEntry') doorEntry: any;
-  @ViewChild('orderExport') orderExport: any;
+  @ViewChild('doorEntry') doorEntry: ElementRef;
+  @ViewChild('orderExport') orderExport: ElementRef;
+  form: FormGroup;
+  loading: boolean = false;
+  public uploader:FileUploader = new FileUploader({url: environment.restUrl+'/file'});
 
+  @ViewChild('fileInput') fileInput: ElementRef;
   csvRecords = [];
   validation = {
     tokenDelimeter: ',',
@@ -23,8 +30,11 @@ export class CsvUploadComponent implements OnInit {
 
   constructor(
     private httpClient: HttpClient,
-    private csvFileProcessService: CsvFileProcessService
+    private csvFileProcessService: CsvFileProcessService,
+    private fileUploadService: FileUploadService,
+    private formBuilder: FormBuilder
   ) {
+    this.createForm();
   }
 
   ngOnInit() {
@@ -34,9 +44,9 @@ export class CsvUploadComponent implements OnInit {
     const reader = new FileReader();
     reader.onloadend = (e) => {
       // reader.result is a String of the uploaded file
-      const allHolis = this.getHoli(reader.result.split(/\r|\n|\r/));
+      const allHolis = this.fileUploadService.getHoli(reader.result.split(/\r|\n|\r/));
       this.postAllData(allHolis);
-      console.log('onloadend|result:%o', this.getHoli(reader.result.split(/\r|\n|\r/)));
+      console.log('onloadend|result:%o', this.fileUploadService.getHoli(reader.result.split(/\r|\n|\r/)));
     };
     reader.readAsText(event.target.files[0]);
     const allTextLines = reader.result.split(/\r|\n|\r/);
@@ -76,8 +86,8 @@ export class CsvUploadComponent implements OnInit {
       this.csvRecords = this.csvFileProcessService.getDataRecordsArrayFromCSVFile(csvRecordsArray,
         headerLength, this.validation.validateHeaderAndRecordLengthFlag, this.validation.tokenDelimeter);
 
-      this.postAllData(this.getHoliFull(this.csvRecords));
-      console.log('orderExport upload|holis:%O', this.getHoliFull(this.csvRecords));
+      this.postAllData(this.fileUploadService.getHoliFull(this.csvRecords));
+      console.log('orderExport upload|holis:%O', this.fileUploadService.getHoliFull(this.csvRecords));
       if (this.csvRecords == null) {
         // If control reached here it means csv file contains error, reset file.
         this.fileReset();
@@ -102,69 +112,64 @@ export class CsvUploadComponent implements OnInit {
     });
   }
 
-  getHoli(holis) {
-    const holi = [];
-    for (let i = 1; i < holis.length; i++) {
-      const data = holis[i].split(',');
-      if (data[0] && data[1] && data[2]) {
-        holi.push({
-          'id': data[2],
-          'name': data[0],
-          'postCode': data[1],
-          'doorCode': data[2],
-          'generalAdmission': data[3],
-          'comboTicket': data[4],
-          'premiumParking': data[5],
-        });
-      }
-    }
-    return holi;
+
+  createForm() {
+    this.form = this.formBuilder.group({
+      name: [''],
+      avatar: null
+    });
   }
 
-  getHoliFull(holis) {
-    const format = {
-      '0': 'Name',
-      '1': 'Email',
-      '2': 'Mobile number',
-      '3': 'Address 1',
-      '4': 'Address 2',
-      '5': 'Address 3',
-      '6': 'Postcode',
-      '7': 'Entry code',
-      '8': 'Barcode',
-      '9': 'Tickets purchased',
-      '10': 'Currency',
-      '11': 'Total paid',
-      '12': 'Order date',
-      '13': 'Payment method',
-      '14': 'Transaction Id',
-      '15': 'Event date',
-      '16': 'Event name',
-      '17': 'Referral Tag',
-    };
-    const holi = [];
-    for (let i = 1; i < holis.length; i++) {
-      const data = holis[i];
-      if (data[0] && data[6] && data[7]) {
-        holi.push({
-          'id': data[7],
-          'name': data[0],
-          'email': data[1],
-          'phone': data[2],
-          'postCode': data[6],
-          'doorCode': data[7],
-          'address': data[3],
-          'city': data[4],
-          'state': data[5],
-          'barCode': data[8],
-          'ticketsPurchased': data[9],
-          'paid': data[11],
-        });
-      }
+  onFileChange(event) {
+    let reader = new FileReader();
+    if (event.target.files && event.target.files.length > 0) {
+      let file = event.target.files[0];
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+
+        const formData: FormData = new FormData();
+        formData.append('0', file, file.name);
+        this.httpClient
+          .post(environment.restUrl+'/file/upload', formData)
+          .subscribe((response)=>{
+            console.log('file upload success|%o', response);
+            this.loading = false;
+          }, (error) => {
+            console.log('Error in uploading file|%o', error);
+            this.loading = false;
+          });
+
+
+        this.form.get('avatar').setValue({
+          filename: file.name,
+          filetype: file.type,
+          data: reader.result.split(',')[1]
+        })
+      };
     }
-    return holi;
+  }
 
+  onSubmit() {
+    const formModel = this.form.value;
+    this.loading = true;
+    // In a real-world app you'd have a http request / service call here like
+    // this.http.post('apiUrl', formModel)
+    this.httpClient
+      .post(environment.restUrl+'/file', formModel)
+      .subscribe((response)=>{
+      console.log('file upload success|%o', response);
+      this.loading = false;
+      console.log(formModel);
+    }, (error) => {
+      console.log('Error in uploading file|%o', error);
+      this.loading = false;
+      console.log(formModel);
+    });
+  }
 
+  clearFile() {
+    this.form.get('avatar').setValue(null);
+    this.fileInput.nativeElement.value = '';
   }
 
 }

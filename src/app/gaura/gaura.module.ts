@@ -14,12 +14,14 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { NewUserComponent } from './components/new-user/new-user.component';
 import { HoliEventsListComponent } from './components/holi-events-list/holi-events-list.component';
 import {FilterPipe} from '../services/filter-pipe.service';
+import {FileUploadService} from '../services/file-upload.service';
 
 @NgModule({
   imports: [
     CommonModule,
     NgbModule.forRoot(),
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     GauraRoutingModule
   ],
@@ -41,7 +43,7 @@ import {FilterPipe} from '../services/filter-pipe.service';
     NhfamilyComponent
   ],
   providers: [
-
+    FileUploadService
   ]
 })
 export class GauraModule {
