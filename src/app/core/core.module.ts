@@ -20,6 +20,7 @@ import {NoAuthGuardService} from './services/no-auth-guard.service';
 import {GoogleAnalyticsService} from './services/google-analytics.service';
 import {RouterModule} from '@angular/router';
 import {CsvFileProcessService} from './services/csv-file-process.service';
+import { PrivacyComponent } from './components/privacy/privacy.component';
 
 export const WINDOW = new InjectionToken<any>('A reference to the window');
 
@@ -41,7 +42,8 @@ export function windowFactory() {
     FooterComponent,
     AlertsComponent,
     LoginComponent,
-    ChangeLocationModelComponent
+    ChangeLocationModelComponent,
+    PrivacyComponent
   ],
   exports: [
     HeaderComponent,
