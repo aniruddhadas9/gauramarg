@@ -30,13 +30,14 @@ export class HoliComponent implements OnInit {
   }
 
   makeEntry(result, i) {
+    this.loading = true;
     console.log(result);
     this.httpClient
       .post(environment.restUrl + '/holi/update', result)
       .subscribe((response: any) => {
           console.log('entered:%o', response);
-          this.results = response;
-          return response;
+          this.results[i] = response;
+          this.loading = false;
         }, (error) => {
           console.log(error);
         }

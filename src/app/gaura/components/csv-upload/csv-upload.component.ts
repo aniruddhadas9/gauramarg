@@ -15,11 +15,15 @@ export class CsvUploadComponent implements OnInit {
 
   @ViewChild('doorEntry') doorEntry: ElementRef;
   @ViewChild('orderExport') orderExport: ElementRef;
+  @ViewChild('fileInput') fileInput: ElementRef;
+
+  doorEntryLoading: boolean;
+  orderExportLoading: boolean;
+
   form: FormGroup;
   loading: boolean = false;
-  public uploader:FileUploader = new FileUploader({url: environment.restUrl+'/file'});
+  uploader:FileUploader = new FileUploader({url: environment.restUrl+'/file'});
 
-  @ViewChild('fileInput') fileInput: ElementRef;
   csvRecords = [];
   validation = {
     tokenDelimeter: ',',
@@ -41,11 +45,14 @@ export class CsvUploadComponent implements OnInit {
   }
 
   public previewFile(event) {
+    this.doorEntryLoading = true;
     const reader = new FileReader();
     reader.onloadend = (e) => {
       // reader.result is a String of the uploaded file
       const allHolis = this.fileUploadService.getHoli(reader.result.split(/\r|\n|\r/));
-      this.postAllData(allHolis);
+      this.postAllData(allHolis).subscribe((response) => {
+        this.doorEntryLoading = false;
+      });
       console.log('onloadend|result:%o', this.fileUploadService.getHoli(reader.result.split(/\r|\n|\r/)));
     };
     reader.readAsText(event.target.files[0]);
@@ -57,7 +64,7 @@ export class CsvUploadComponent implements OnInit {
    * @param $event
    */
   fileChangeListener($event): void {
-
+    this.orderExportLoading = true;
     const text = [];
     const target = $event.target || $event.srcElement;
     const files = target.files;
@@ -86,7 +93,9 @@ export class CsvUploadComponent implements OnInit {
       this.csvRecords = this.csvFileProcessService.getDataRecordsArrayFromCSVFile(csvRecordsArray,
         headerLength, this.validation.validateHeaderAndRecordLengthFlag, this.validation.tokenDelimeter);
 
-      this.postAllData(this.fileUploadService.getHoliFull(this.csvRecords));
+      this.postAllData(this.fileUploadService.getHoliFull(this.csvRecords)).subscribe((response) =>{
+        this.orderExportLoading = false;
+      });
       console.log('orderExport upload|holis:%O', this.fileUploadService.getHoliFull(this.csvRecords));
       if (this.csvRecords == null) {
         // If control reached here it means csv file contains error, reset file.
@@ -107,7 +116,7 @@ export class CsvUploadComponent implements OnInit {
 
 
   postAllData(holis) {
-    this.httpClient.post(environment.restUrl + '/holi/allUpdate', holis).subscribe((result) => {
+    return this.httpClient.post(environment.restUrl + '/holi/allUpdate', holis).map((result) => {
       console.log('all holi record processed:%o', result);
     });
   }

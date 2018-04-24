@@ -3,10 +3,15 @@
     <div class="card-header">Imprt CSV files</div>
     <div class="card-body">
       <h5 class="card-title">Door lists</h5>
-      <p class="card-text"><input #doorEntry type="file" (change)="previewFile($event)"/></p>
+      <p class="card-text">
+        <input #doorEntry type="file" (change)="previewFile($event)"/>
+        <i class="fa fa-spinner fa-spin fa-fw" *ngIf="doorEntryLoading"></i>
+      </p>
       <hr>
       <h5 class="card-title">Exported Orders</h5>
-      <p class="card-text"><input #orderExport type="file" (change)="fileChangeListener($event)"/></p>
+      <p class="card-text">
+        <input #orderExport type="file" (change)="fileChangeListener($event)"/>
+        <i class="fa fa-spinner fa-spin fa-fw" *ngIf="orderExportLoading"></i></p>
       <hr>
       <button class="btn btn-outline-info" (click)="fileReset()">reset</button>
     </div>

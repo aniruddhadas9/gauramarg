@@ -22,7 +22,8 @@
         <div class="form-inline my-2 my-lg-0">
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item">
-              <a class="nav-link" [hidden]="!userService.isAuthenticated" [routerLink]="'/holi'" routerLinkActive="active">Holi 2018</a>
+              <a class="nav-link" [hidden]="!userService.isAuthenticated" [routerLink]="'/holi'"
+                 routerLinkActive="active">Holi 2018</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" [routerLink]="'/events'" routerLinkActive="active">Events</a>
@@ -35,6 +36,16 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" [hidden]="userService.isAuthenticated" [routerLink]="'/login'">Login</a>
+            </li>
+            <li class="nav-item" [hidden]="!userService.isAuthenticated">
+              <div ngbDropdown class="d-inline-block">
+                <a class="nav-link" id="profile" ngbDropdownToggle>Admin</a>
+                <div ngbDropdownMenu aria-labelledby="profile">
+                  <button class="dropdown-item">Manage user</button>
+                  <button class="dropdown-item">Holi 2018 Guests</button>
+                  <button class="dropdown-item">Upload CSV file</button>
+                </div>
+              </div>
             </li>
           </ul>
         </div>

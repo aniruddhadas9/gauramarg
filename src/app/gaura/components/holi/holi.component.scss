@@ -5,12 +5,32 @@
 .result {
 
 }
+
+ngb-rating {
+  font-size: 30px;
+}
 .fa-car {
-  color: red;
+  color: #acec43;
   font-size: 22px;
 }
 
-.fa-paint-brush {
-  color: red;
-  font-size: 22px;
+.star {
+  font-size: 1.5rem;
+  color: #d1e2ff;
+}
+
+.filled {
+  color: #1e90ff;
+}
+.bad {
+  color: #d8d8d8;
+}
+.filled.bad {
+  color: #ff1e1e;
+}
+
+.ticket {
+  .list-group-item {
+    padding: 2px 2px;
+  }
 }

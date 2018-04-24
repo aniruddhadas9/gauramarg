@@ -26,7 +26,7 @@ export class HeaderComponent implements OnInit {
               private modalService: NgbModal,
               private router: Router,
               private appService: AppService,
-              private userService: UserService,
+              public userService: UserService,
               private alertService: AlertService) {
     this.searchForm = new FormGroup({
       term: new FormControl('', [Validators.required]),
@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.mapService.getLocation({}).subscribe((position: Position) => {
+    /*this.mapService.getLocation({}).subscribe((position: Position) => {
       this.mapService.getUserLocation({
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
@@ -48,7 +48,7 @@ export class HeaderComponent implements OnInit {
     }, (error) => {
       this.alertService.alert(new WarningAlert('Location Needed', 'Unable to get location', error));
       this.open();
-    });
+    });*/
   }
 
   open() {
