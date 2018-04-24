@@ -5,13 +5,16 @@ import {EventsComponent} from './components/events/events.component';
 import {NhfamilyComponent} from './components/nhfamily/nhfamily.component';
 import {AuthGuardService} from '../core/services/auth-guard.service';
 import {ProfileComponent} from './components/profile/profile.component';
+import {UserManageComponent} from './components/user-manage/user-manage.component';
+import {CsvUploadComponent} from './components/csv-upload/csv-upload.component';
+import {Holi2018ManageComponent} from './components/holi-2018-manage/holi-2018-manage.component';
 
 
 const gouraRoutes: Routes = [
   {
     path: 'holi',
     component: HoliComponent,
-    canActivate: [AuthGuardService]
+    // canActivate: [AuthGuardService]
   },
   {
     path: 'nhfamily',
@@ -20,7 +23,22 @@ const gouraRoutes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
-    canActivate: [AuthGuardService]
+    // canActivate: [AuthGuardService]
+  },
+  {
+    path: 'user-manage',
+    component: UserManageComponent,
+    // canActivate: [AuthGuardService]
+  },
+  {
+    path: 'holi-manage',
+    component: Holi2018ManageComponent,
+    // canActivate: [AuthGuardService]
+  },
+  {
+    path: 'csv-upload',
+    component: CsvUploadComponent,
+    // canActivate: [AuthGuardService]
   },
   {
     path: 'events',

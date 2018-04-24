@@ -1,7 +1,7 @@
 <div class="header">
   <div class="side-image">
-    <img src="/assets/gaur-nitai.png" class="gauramarg-left d-none d-xl-block" alt="">
-    <img src="/assets/gaur-nitai.png" class="gauramarg-right d-none d-xl-block" alt="">
+    <!--<img src="/assets/gaur-nitai.png" class="gauramarg-left d-none d-xl-block" alt="">
+    <img src="/assets/gaur-nitai.png" class="gauramarg-right d-none d-xl-block" alt="">-->
   </div>
   <gm-alerts></gm-alerts>
   <div class="container">
@@ -40,13 +40,13 @@
             <li class="nav-item">
               <a class="nav-link" [hidden]="userService.isAuthenticated" [routerLink]="'/login'">Login</a>
             </li>
-            <li class="nav-item" [hidden]="!userService.isAuthenticated">
+            <li class="nav-item">
               <div ngbDropdown class="d-inline-block">
                 <a class="nav-link" id="profile" ngbDropdownToggle>Admin</a>
                 <div ngbDropdownMenu aria-labelledby="profile">
-                  <button class="dropdown-item">Manage user</button>
-                  <button class="dropdown-item">Holi 2018 Guests</button>
-                  <button class="dropdown-item">Upload CSV file</button>
+                  <button class="dropdown-item" [routerLink]="'/user-manage'">Manage user</button>
+                  <button class="dropdown-item" [routerLink]="'/holi-manage'">Holi 2018 Guests</button>
+                  <button class="dropdown-item" [routerLink]="'/csv-upload'">Upload CSV file</button>
                 </div>
               </div>
             </li>

@@ -15,6 +15,9 @@ import { NewUserComponent } from './components/new-user/new-user.component';
 import { HoliEventsListComponent } from './components/holi-events-list/holi-events-list.component';
 import {FilterPipe} from '../services/filter-pipe.service';
 import {FileUploadService} from '../services/file-upload.service';
+import { UserManageComponent } from './components/user-manage/user-manage.component';
+import { Holi2018ManageComponent } from './components/holi-2018-manage/holi-2018-manage.component';
+import { UserListComponent } from './components/user-list/user-list.component';
 
 @NgModule({
   imports: [
@@ -35,7 +38,10 @@ import {FileUploadService} from '../services/file-upload.service';
     ProfileComponent,
     NewUserComponent,
     HoliEventsListComponent,
-    FilterPipe
+    FilterPipe,
+    UserManageComponent,
+    Holi2018ManageComponent,
+    UserListComponent
   ],
   exports: [
     HomeComponent,

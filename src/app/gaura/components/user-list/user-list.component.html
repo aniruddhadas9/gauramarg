@@ -1,0 +1,33 @@
+<div *ngFor="let result of results; let i = index" class="card result">
+  <div class="card-header d-flex justify-content-between">
+    <h6>{{result.firstName}} {{result.lastName}}</h6>
+    <div>
+      <ul class="list-inline">
+        <li class="list-inline-item"><i class="fa fa-user-circle"></i></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card-block">
+    <div class="container">
+      <div class="row">
+        <div class="col-5">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Email: {{result.email}}
+            </li>
+          </ul>
+        </div>
+        <div class="col-5">
+          <ul class="list-group list-group-flush ticket">
+            <li class="list-group-item">Phone: {{result.phone}}</li>
+          </ul>
+        </div>
+        <div class="col-2">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Created: {{result.created || 'N/A'}}</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

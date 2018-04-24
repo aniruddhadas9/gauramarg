@@ -4,7 +4,6 @@ import {environment} from '../../../../environments/environment';
 import {CsvFileProcessService} from '../../../core/services/csv-file-process.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FileUploadService} from '../../../services/file-upload.service';
-import {FileUploader} from 'ng2-file-upload';
 
 @Component({
   selector: 'gm-csv-upload',
@@ -21,8 +20,7 @@ export class CsvUploadComponent implements OnInit {
   orderExportLoading: boolean;
 
   form: FormGroup;
-  loading: boolean = false;
-  uploader:FileUploader = new FileUploader({url: environment.restUrl+'/file'});
+  loading = false;
 
   csvRecords = [];
   validation = {
@@ -93,7 +91,7 @@ export class CsvUploadComponent implements OnInit {
       this.csvRecords = this.csvFileProcessService.getDataRecordsArrayFromCSVFile(csvRecordsArray,
         headerLength, this.validation.validateHeaderAndRecordLengthFlag, this.validation.tokenDelimeter);
 
-      this.postAllData(this.fileUploadService.getHoliFull(this.csvRecords)).subscribe((response) =>{
+      this.postAllData(this.fileUploadService.getHoliFull(this.csvRecords)).subscribe((response) => {
         this.orderExportLoading = false;
       });
       console.log('orderExport upload|holis:%O', this.fileUploadService.getHoliFull(this.csvRecords));
@@ -130,17 +128,17 @@ export class CsvUploadComponent implements OnInit {
   }
 
   onFileChange(event) {
-    let reader = new FileReader();
+    const reader = new FileReader();
     if (event.target.files && event.target.files.length > 0) {
-      let file = event.target.files[0];
+      const file = event.target.files[0];
       reader.readAsDataURL(file);
       reader.onload = () => {
 
         const formData: FormData = new FormData();
         formData.append('0', file, file.name);
         this.httpClient
-          .post(environment.restUrl+'/file/upload', formData)
-          .subscribe((response)=>{
+          .post(environment.restUrl + '/file/upload', formData)
+          .subscribe((response) => {
             console.log('file upload success|%o', response);
             this.loading = false;
           }, (error) => {
@@ -148,12 +146,11 @@ export class CsvUploadComponent implements OnInit {
             this.loading = false;
           });
 
-
         this.form.get('avatar').setValue({
           filename: file.name,
           filetype: file.type,
           data: reader.result.split(',')[1]
-        })
+        });
       };
     }
   }
@@ -164,16 +161,16 @@ export class CsvUploadComponent implements OnInit {
     // In a real-world app you'd have a http request / service call here like
     // this.http.post('apiUrl', formModel)
     this.httpClient
-      .post(environment.restUrl+'/file', formModel)
-      .subscribe((response)=>{
-      console.log('file upload success|%o', response);
-      this.loading = false;
-      console.log(formModel);
-    }, (error) => {
-      console.log('Error in uploading file|%o', error);
-      this.loading = false;
-      console.log(formModel);
-    });
+      .post(environment.restUrl + '/file', formModel)
+      .subscribe((response) => {
+        console.log('file upload success|%o', response);
+        this.loading = false;
+        console.log(formModel);
+      }, (error) => {
+        console.log('Error in uploading file|%o', error);
+        this.loading = false;
+        console.log(formModel);
+      });
   }
 
   clearFile() {
