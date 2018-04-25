@@ -3,7 +3,7 @@
     <h6>{{result.firstName}} {{result.lastName}}</h6>
     <div>
       <ul class="list-inline">
-        <li class="list-inline-item"><i class="fa fa-user-circle"></i></li>
+        <li class="list-inline-item" (click)="deleteUser(result.email, i)"><i class="fa fa-window-close"></i></li>
       </ul>
     </div>
   </div>

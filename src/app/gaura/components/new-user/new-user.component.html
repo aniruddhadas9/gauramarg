@@ -4,30 +4,41 @@
       <div class="form-group row">
         <label for="email" class="col-sm-2 col-form-label">Email*</label>
         <div class="col-sm-10">
-          <input type="email" class="form-control" id="email" placeholder="Email" formControlName="name">
+          <input type="email" class="form-control" id="email" placeholder="Email" formControlName="email">
         </div>
       </div>
       <div class="form-group row">
         <label for="password" class="col-sm-2 col-form-label">Password*</label>
         <div class="col-sm-10">
-          <input type="password" class="form-control" id="password" placeholder="Password" formControlName="name">
+          <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password">
         </div>
       </div>
-     <div class="row">
-        <label for="password" class="col-sm-2 col-form-label">Name</label>
+      <div class="row">
+        <label class="col-sm-2 col-form-label">Name</label>
         <div class="form-group col-sm-5">
           <label for="firstname">First name</label>
-          <input type="password" class="form-control" id="firstname" placeholder="First name" formControlName="name">
+          <input type="text" class="form-control" id="firstname" placeholder="First name" formControlName="firstName">
         </div>
         <div class="form-group col-sm-5">
           <label for="lastName">First name</label>
-          <input type="password" class="form-control" id="lastName" placeholder="Last name" formControlName="name">
+          <input type="text" class="form-control" id="lastName" placeholder="Last name" formControlName="lastName">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="phone" class="col-sm-2 col-form-label">Mobile</label>
+        <div class="col-sm-10">
+          <input type="phone" class="form-control" id="phone" placeholder="Mobile" formControlName="phone">
         </div>
       </div>
       <div class="form-group row">
         <div class="col-sm-2">&nbsp;</div>
         <div class="col-sm-10">
-          <button type="submit" class="btn btn-primary">Sign in <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></button>
+          <button type="submit" class="btn btn-primary">
+            Cureate user <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i>
+          </button>
+          <div class="alert alert-success" role="alert"  *ngIf="saveMessage">
+            {{saveMessage}}
+          </div>
         </div>
       </div>
     </form>

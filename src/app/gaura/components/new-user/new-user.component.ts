@@ -12,8 +12,11 @@ export class NewUserComponent implements OnInit {
 
   loading: boolean;
   newUserForm: FormGroup;
+  saveMessage: string;
+  deleteMessage: string;
 
   constructor(private httpClient: HttpClient, private formBuilder: FormBuilder) {
+    this.createForm();
   }
 
   ngOnInit() {
@@ -30,20 +33,16 @@ export class NewUserComponent implements OnInit {
   }
 
   onSubmit() {
-    const formModel = this.newUserForm.value;
     this.loading = true;
-    // In a real-world app you'd have a http request / service call here like
-    // this.http.post('apiUrl', formModel)
+    this.saveMessage = null;
     this.httpClient
-      .post(environment.restUrl + '/user', formModel)
-      .subscribe((response) => {
-        console.log('new user create success|%o', response);
+      .post(environment.restUrl + '/user/update', this.newUserForm.value)
+      .subscribe((response: any) => {
+        this.saveMessage = response.message;
         this.loading = false;
-        console.log(formModel);
       }, (error) => {
         console.log('Error in new user creation|%o', error);
         this.loading = false;
-        console.log(formModel);
       });
   }
 

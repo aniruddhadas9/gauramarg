@@ -116,7 +116,8 @@
           </div>
           <div class="col-2">
             <ul class="list-group list-group-flush">
-              <li class="list-group-item">
+              <li class="list-group-item"
+                  [hidden]="!(((result.generalAdmission + result.comboTicket) - result.entered) <= 0) && (result.comboTicket > 0  && (result.colorTaken >= (result.comboTicket * 2)))">
                 <button type="button" class="btn btn-success mb-2" (click)="makeEntry(result, i)">
                   Check In<i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i>
                 </button>
