@@ -24,7 +24,6 @@ export class UserListComponent implements OnInit {
     });
   }
 
-
   deleteUser(email, index) {
     this.deleteMessage = null;
     this.httpClient

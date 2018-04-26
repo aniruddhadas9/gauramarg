@@ -14,7 +14,7 @@ const gouraRoutes: Routes = [
   {
     path: 'holi',
     component: HoliComponent,
-    // canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService]
   },
   {
     path: 'nhfamily',
@@ -23,22 +23,22 @@ const gouraRoutes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
-    // canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService]
   },
   {
     path: 'user-manage',
     component: UserManageComponent,
-    // canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService]
   },
   {
     path: 'holi-manage',
     component: Holi2018ManageComponent,
-    // canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService]
   },
   {
     path: 'csv-upload',
     component: CsvUploadComponent,
-    // canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService]
   },
   {
     path: 'events',

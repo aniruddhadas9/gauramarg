@@ -108,8 +108,19 @@ export class HoliComponent implements OnInit {
   }
 
   calcilateCheckIn(ticket): boolean {
-
+    let enableCheckIn: boolean;
     // if there is not color or entry bought. this case is only for parking users
+    if(ticket.generalAdmission < 0 && ticket.comboTicket < 0 ) {
+      return false;
+    } else {
+      if(ticket.generalAdmission > 0) {
+
+      }
+      if(ticket.comboTicket > 0 ) {
+
+      }
+    }
+
     if(ticket.generalAdmission < 0 && ticket.comboTicket < 0 ) return false;
 
     // all entry happen
