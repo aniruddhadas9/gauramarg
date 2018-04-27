@@ -9,16 +9,16 @@ export class FileUploadService {
   getHoli(holis) {
     const holi = [];
     for (let i = 1; i < holis.length; i++) {
-      const data = holis[i].split(',');
-      if (data[0] && data[1] && data[2]) {
+      // const data = holis[i].split(',');
+      if (holis[i][0] && holis[i][1] && holis[i][2]) {
         holi.push({
-          'id': data[2],
-          'name': data[0],
-          'postCode': data[1],
-          'doorCode': data[2],
-          'generalAdmission': data[3],
-          'comboTicket': data[4],
-          'premiumParking': data[5],
+          'id': holis[i][2],
+          'name': holis[i][0],
+          'postCode': holis[i][1],
+          'doorCode': holis[i][2],
+          'generalAdmission': +holis[i][3],
+          'comboTicket': +holis[i][4],
+          'premiumParking': holis[i][5],
         });
       }
     }
@@ -69,5 +69,27 @@ export class FileUploadService {
     return holi;
   }
 
+  /**
+   * This is a 3rd party downloaded from stack overflow and also tested well
+   * You can trust this function
+   * @param text
+   * @returns {string[][]}
+   */
+  csvToArray(text) {
+    let p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
+    for (l in text) {
+      l = text[l];
+      if ('"' === l) {
+        if (s && l === p) row[i] += l;
+        s = !s;
+      } else if (',' === l && s) l = row[++i] = '';
+      else if ('\n' === l && s) {
+        if ('\r' === p) row[i] = row[i].slice(0, -1);
+        row = ret[++r] = [l = '']; i = 0;
+      } else row[i] += l;
+      p = l;
+    }
+    return ret;
+  }
 
 }

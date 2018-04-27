@@ -7,7 +7,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text">email</span>
           </div>
-          <input type="text" [(ngModel)]="email" class="form-control" placeholder="Email">
+          <input type="text" [(ngModel)]="email" (keyup.enter)="emailSearch()" class="form-control" placeholder="Email">
           <div class="input-group-append">
             <button type="button" class="btn btn-outline-primary" (click)="emailSearch()">Email</button>
           </div>
@@ -21,7 +21,7 @@
           <div class="input-group-prepend">
             <div class="input-group-text">Name</div>
           </div>
-          <input type="text" class="form-control" [(ngModel)]="name" placeholder="Name">
+          <input type="text" class="form-control" [(ngModel)]="name" (keyup.enter)="nameSearch()" placeholder="Name">
           <div class="input-group-append">
             <button type="button" class="btn btn-outline-primary" (click)="nameSearch()">Name</button>
           </div>
@@ -35,7 +35,7 @@
           <div class="input-group-prepend">
             <div class="input-group-text">Postcode</div>
           </div>
-          <input type="text" class="form-control" [(ngModel)]="postcode" placeholder="Post/Zip code">
+          <input type="text" class="form-control" [(ngModel)]="postcode" (keyup.enter)="postcodeSearch()" placeholder="Post/Zip code">
           <div class="input-group-append">
             <button type="button" class="btn btn-outline-primary" (click)="postcodeSearch()">postcode</button>
           </div>
@@ -50,7 +50,7 @@
             <span class="input-group-text">Doorcode</span>
             <span class="input-group-text">02-</span>
           </div>
-          <input type="text" class="form-control" [(ngModel)]="doorcode" placeholder="Door code">
+          <input type="text" class="form-control" [(ngModel)]="doorcode" (keyup.enter)="doorcodeSearch()" placeholder="Door code">
           <div class="input-group-append">
             <button type="button" class="btn btn-outline-primary" (click)="doorcodeSearch()">Doorcode</button>
           </div>
@@ -65,7 +65,7 @@
           <div class="input-group-prepend">
             <div class="input-group-text">Mobile</div>
           </div>
-          <input type="text" class="form-control" [(ngModel)]="mobile" placeholder="Mobile">
+          <input type="text" class="form-control" [(ngModel)]="mobile" (keyup.enter)="mobileSearch()" placeholder="Mobile">
           <div class="input-group-append">
             <button type="button" class="btn btn-outline-primary" (click)="mobileSearch()">Mobile</button>
           </div>

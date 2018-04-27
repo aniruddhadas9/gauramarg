@@ -19,7 +19,6 @@ import {AppService} from './services/app.service';
 import {NoAuthGuardService} from './services/no-auth-guard.service';
 import {GoogleAnalyticsService} from './services/google-analytics.service';
 import {RouterModule} from '@angular/router';
-import {CsvFileProcessService} from './services/csv-file-process.service';
 import { PrivacyComponent } from './components/privacy/privacy.component';
 
 export const WINDOW = new InjectionToken<any>('A reference to the window');
@@ -63,7 +62,6 @@ export class CoreModule {
         AlertService,
         AppInitService,
         AuthGuardService,
-        CsvFileProcessService,
         MapService,
         GoogleMapsAPIWrapper,
         NoAuthGuardService,

@@ -4,13 +4,13 @@
     <div class="card-body">
       <h5 class="card-title">Door lists</h5>
       <p class="card-text">
-        <input #doorEntry type="file" (change)="previewFile($event)"/>
+        <input #doorEntry type="file" (change)="uploadDoorListFile($event)"/>
         <i class="fa fa-spinner fa-spin fa-fw" *ngIf="doorEntryLoading"></i>
       </p>
       <hr>
       <h5 class="card-title">Exported Orders</h5>
       <p class="card-text">
-        <input #orderExport type="file" (change)="fileChangeListener($event)"/>
+        <input #orderExport type="file" (change)="uploadOrderExportFile($event)"/>
         <i class="fa fa-spinner fa-spin fa-fw" *ngIf="orderExportLoading"></i></p>
       <hr>
       <button class="btn btn-outline-info" (click)="fileReset()">reset</button>
@@ -18,20 +18,4 @@
   </div>
 </div>
 
-<!--<div class="card">
-  <div class="card-body">
-    <form enctype="multipart/form-data" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="csv">Name</label>
-        <input type="text" class="form-control" id="csv" placeholder="Bob" formControlName="name">
-      </div>
-      <div class="form-group">
-        <label for="avatar">Avatar</label>
-        <input type="file" id="avatar" (change)="onFileChange($event)" #fileInput>
-        <button type="button" class="btn btn-sm btn-default" (click)="clearFile()">clear file</button>
-      </div>
-      <button type="submit" [disabled]="form.invalid || loading" class="btn btn-success">Submit <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></button>
-    </form>
-  </div>
-</div>-->
 
