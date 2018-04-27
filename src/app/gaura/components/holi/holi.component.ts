@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
+import {AlertService} from '../../../core/services/alert.service';
+import {tick} from '@angular/core/testing';
 
 @Component({
   selector: 'gm-holi',
@@ -19,9 +21,11 @@ export class HoliComponent implements OnInit {
   phone: string;
   postcode: string;
   doorcode: string;
+  barcode: string;
   mobile: string;
 
   constructor(
+    private alertService: AlertService,
     private httpClient: HttpClient
   ) {
   }
@@ -30,16 +34,27 @@ export class HoliComponent implements OnInit {
   }
 
   makeEntry(result, i) {
-    this.loading = true;
+    this.results[i].loading = true;
     console.log(result);
     this.httpClient
       .post(environment.restUrl + '/holi/update', result)
       .subscribe((response: any) => {
-          console.log('entered:%o', response);
-          this.results[i] = response;
-          this.loading = false;
+          this.alertService.alert({
+            title: 'Check in success!',
+            subTitle: 'Guest can enter to the event now.',
+            text: response,
+            type: 'success'
+          });
+          this.results[i].message = response.message;
+          this.results[i].loading = false;
         }, (error) => {
-          console.log(error);
+          this.alertService.alert({
+            title: 'Unable to check in!',
+            subTitle: 'Please try again or contact support team.',
+            text: error,
+            type: 'danger'
+          });
+          this.loading = false;
         }
       );
   }
@@ -50,7 +65,8 @@ export class HoliComponent implements OnInit {
       .subscribe((response: any) => {
           console.log('doorcode result:%o', response);
           this.results = response;
-          return response;
+
+          return this.calculateAllCheckIns(response);
         }, (error) => {
           console.log(error);
         }
@@ -63,7 +79,7 @@ export class HoliComponent implements OnInit {
       .subscribe((response: any) => {
         console.log('doorcode result:%o', response);
         this.results = response;
-        return response;
+        return this.calculateAllCheckIns(response);
       });
   }
 
@@ -73,7 +89,7 @@ export class HoliComponent implements OnInit {
       .subscribe((response: any) => {
         console.log('doorcode result:%o', response);
         this.results = response;
-        return response;
+        return this.calculateAllCheckIns(response);
       });
   }
 
@@ -83,7 +99,7 @@ export class HoliComponent implements OnInit {
       .subscribe((response: any) => {
         console.log('doorcode result:%o', response);
         this.results = response;
-        return response;
+        return this.calculateAllCheckIns(response);
       });
   }
 
@@ -93,7 +109,17 @@ export class HoliComponent implements OnInit {
       .subscribe((response: any) => {
         console.log('doorcode result:%o', response);
         this.results = response;
-        return response;
+        return this.calculateAllCheckIns(response);
+      });
+  }
+
+  barcodeSearch() {
+    this.httpClient
+      .get(environment.restUrl + '/holi/barCode/' + this.barcode)
+      .subscribe((response: any) => {
+        console.log('barcode result:%o', response);
+        this.results = response;
+        return this.calculateAllCheckIns(response);
       });
   }
 
@@ -103,30 +129,40 @@ export class HoliComponent implements OnInit {
       .subscribe((response: any) => {
         console.log('doorcode result:%o', response);
         this.results = response;
-        return response;
+        return this.calculateAllCheckIns(response);
       });
   }
 
-  calcilateCheckIn(ticket): boolean {
-    let enableCheckIn: boolean;
+  calculateAllCheckIns(tickets) {
+    return tickets.map((ticket) => {
+      return this.calculateCheckIn(ticket)
+    });
+  }
+
+  /**
+   * old calculation
+   * !((((result.generalAdmission + result.comboTicket) - result.entered) <= 0)
+   * && (result.comboTicket > 0  && (result.colorTaken >= (result.comboTicket * 2))))
+   * @param ticket
+   * @returns {boolean}
+   */
+  calculateCheckIn(ticket): boolean {
+
+    let entryOrColorLeft = 0;
     // if there is not color or entry bought. this case is only for parking users
-    if(ticket.generalAdmission < 0 && ticket.comboTicket < 0 ) {
+    if (ticket.generalAdmission < 0 && ticket.comboTicket < 0) {
       return false;
     } else {
-      if(ticket.generalAdmission > 0) {
-
+      if (ticket.generalAdmission > 0) {
+        entryOrColorLeft += (ticket.generalAdmission - ticket.entered);
       }
-      if(ticket.comboTicket > 0 ) {
-
+      if (ticket.comboTicket > 0) {
+        entryOrColorLeft += ((ticket.comboTicket * 2) - ticket.colorTaken);
       }
     }
+    ticket.entryOrColorLeft = entryOrColorLeft;
 
-    if(ticket.generalAdmission < 0 && ticket.comboTicket < 0 ) return false;
-
-    // all entry happen
-    if( ((ticket.generalAdmission - ticket.entered) <= 0 ) && (ticket.comboTicket - ticket.colorTaken) <= 0 ) return false;
-
-    //
+    return ticket;
   }
 
 }
