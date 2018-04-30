@@ -23,7 +23,7 @@
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item">
               <a class="nav-link" [hidden]="!userService.isAuthenticated" [routerLink]="'/holi'"
-                 routerLinkActive="active">Holi 2018</a>
+                 routerLinkActive="active">Guest entry</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" [hidden]="!userService.isAuthenticated" [routerLink]="'/parking'"
@@ -53,8 +53,8 @@
                    routerLinkActive="active">Admin</a>
                 <div ngbDropdownMenu aria-labelledby="profile">
                   <button class="dropdown-item" [routerLink]="'/user-manage'">Manage user</button>
-                  <button class="dropdown-item" [routerLink]="'/holi-statics'">Holi Admin (statics)</button>
-                  <button class="dropdown-item" [routerLink]="'/holi-manage'">Holi 2018 Guests</button>
+                  <button class="dropdown-item" [routerLink]="'/holi-statics'">Event statics</button>
+                  <button class="dropdown-item" [routerLink]="'/holi-manage'">Name search</button>
                   <button class="dropdown-item" [routerLink]="'/csv-upload'">Upload CSV file</button>
                 </div>
               </div>
