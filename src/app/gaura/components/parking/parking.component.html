@@ -67,56 +67,38 @@
   <hr class="my-4">
 
   <div [hidden]="results.length <= 0" *ngFor="let result of results; let i = index" class="card result">
-    <div class="card-header d-flex justify-content-between">
-      <h6>{{result.name}}{{result.email && '(' + result.email + ')' }}</h6>
-      <div>
-        <ul class="list-inline">
-          <li class="list-inline-item"><i class="fa fa-car" [hidden]="!result.premiumParking"></i></li>
-        </ul>
-      </div>
-    </div>
     <div class="card-block">
       <div class="container">
         <div class="row">
-          <div class="col-5">
+          <div class="col-12">
             <ul class="list-group list-group-flush">
-              <li class="list-group-item">{{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}
+              <li class="list-group-item">
+                <h6>{{result.name}}{{result.email && '(' + result.email + ')' }}</h6>
+              </li>
+              <li class="list-group-item">
+                {{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}
               </li>
               <li class="list-group-item">{{result.barCode}}/{{result.doorCode}}</li>
-            </ul>
-          </div>
-          <div class="col-5">
-            <ul class="list-group list-group-flush ticket">
               <li class="list-group-item">
-                <ngb-rating [(rate)]="result.entered" max="{{result.generalAdmission + result.comboTicket}}">
+                <ngb-rating [(rate)]="result.parked" max="{{result.premiumParking}}">
                   <ng-template let-fill="fill" let-index="index">
-                    <i class="star fa fa-ticket" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
+                    <i class="star fa fa-car" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
                   </ng-template>
                 </ngb-rating>
               </li>
               <li class="list-group-item">
-                <ngb-rating [(rate)]="result.colorTaken" max="{{result.comboTicket * 2 }}">
-                  <ng-template let-fill="fill" let-index="index">
-                    <i class="star fa fa-paint-brush" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
-                  </ng-template>
-                </ngb-rating>
-              </li>
-            </ul>
-          </div>
-          <div class="col-2">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item"
-                  [hidden]="result.entryOrColorLeft <= 0">
-                <button type="button" class="btn btn-success mb-2" (click)="makeEntry(result, i)">
+                <button type="button" class="btn btn-success mb-2"
+                        [disabled]="(result.premiumParking - result.parked) <= 0"
+                        (click)="makeEntry(result, i)">
                   Check In<i class="fa fa-spinner fa-spin fa-fw" *ngIf="result.loading"></i>
                 </button>
-
               </li>
               <li class="list-group-item" [hidden]="!result.message">
                 <i class="fa fa-check-circle" [hidden]="!result.message"></i>
               </li>
             </ul>
           </div>
+
 
         </div>
       </div>

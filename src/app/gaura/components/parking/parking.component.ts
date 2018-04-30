@@ -5,10 +5,10 @@ import {AlertService} from '../../../core/services/alert.service';
 
 @Component({
   selector: 'gm-holi',
-  templateUrl: './holi.component.html',
-  styleUrls: ['./holi.component.scss']
+  templateUrl: './parking.component.html',
+  styleUrls: ['./parking.component.scss']
 })
-export class HoliComponent implements OnInit {
+export class ParkingComponent implements OnInit {
 
   public loading: boolean;
   results = [];
@@ -38,7 +38,7 @@ export class HoliComponent implements OnInit {
       .post(environment.restUrl + '/holi/update', result)
       .subscribe((response: any) => {
           this.alertService.alert({
-            title: 'Check in success!',
+            title: 'Parking in success!',
             subTitle: 'Guest can enter to the event now.',
             text: response,
             type: 'success'
@@ -48,7 +48,7 @@ export class HoliComponent implements OnInit {
           this.results[i].loading = false;
         }, (error) => {
           this.alertService.alert({
-            title: 'Unable to check in!',
+            title: 'Unable to Park!',
             subTitle: 'Please try again or contact support team.',
             text: error,
             type: 'danger'

@@ -24,6 +24,20 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  updateUser(user, index) {
+    this.deleteMessage = null;
+    this.httpClient
+      .post(environment.restUrl + '/user', user)
+      .subscribe((response: any) => {
+        this.results.splice(index, 1);
+        this.deleteMessage = response.message;
+        this.loading = false;
+      }, (error) => {
+        console.log('Error in new user creation|%o', error);
+        this.loading = false;
+      });
+  }
+
   deleteUser(email, index) {
     this.deleteMessage = null;
     this.httpClient

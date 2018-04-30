@@ -4,6 +4,7 @@
     <div>
       <ul class="list-inline">
         <li class="list-inline-item" (click)="deleteUser(result.email, i)"><i class="fa fa-window-close"></i></li>
+        <!--<li class="list-inline-item" (click)="updateUser(result, i)"><i class="fa fa-edit"></i></li>-->
       </ul>
     </div>
   </div>
@@ -23,7 +24,7 @@
         </div>
         <div class="col-2">
           <ul class="list-group list-group-flush">
-            <li class="list-group-item">Created: {{result.created || 'N/A'}}</li>
+            <li class="list-group-item">Type: {{result.type || 'N/A'}}</li>
           </ul>
         </div>
 

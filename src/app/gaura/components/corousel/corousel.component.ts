@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {NgbCarouselConfig} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'gm-corousel',
@@ -8,10 +9,13 @@ import { Component, OnInit } from '@angular/core';
 export class CorouselComponent implements OnInit {
 
   images = [];
-  constructor() { }
+  constructor(ngbCarouselConfig: NgbCarouselConfig) {
+    ngbCarouselConfig.interval = 3000;
+    ngbCarouselConfig.wrap = true;
+  }
 
   ngOnInit() {
-    for(let i=1; i< 15; i++) {
+    for(let i = 1; i <= 4; i++) {
       this.images.push({'url': 'assets/gauramarg/'+i+'.JPG'})
     }
   }

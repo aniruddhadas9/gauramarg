@@ -28,6 +28,7 @@ export class NewUserComponent implements OnInit {
       password: [''],
       firstName: [''],
       lastName: [''],
+      type: [''],
       phone: ['']
     });
   }

@@ -1,0 +1,47 @@
+<div class="card" *ngIf="static">
+  <div class="card-header">
+    <h4>Event Statics</h4>
+  </div>
+  <div class="card-body">
+
+    <ul class="list-inline">
+
+      <li class="list-inline-item">
+        <div class="card text-white bg-success">
+          <div class="card-header">Guest</div>
+          <div class="card-body">
+            <h5 class="card-title">Total: {{static.totalEntry}}</h5>
+            <p class="card-text">Entered: {{static.entered}}</p>
+            <p class="card-text">
+            <p><ngb-progressbar type="warning" [value]="(static.entered/static.totalEntry)*100"></ngb-progressbar></p>
+          </div>
+        </div>
+      </li>
+
+      <li class="list-inline-item">
+        <div class="card text-white bg-warning">
+          <div class="card-header">Color</div>
+          <div class="card-body">
+            <h5 class="card-title">Total: {{static.totalColor}}</h5>
+            <p class="card-text">Taken: {{static.colorTaken}}</p>
+            <p><ngb-progressbar type="info" [value]="(static.colorTaken/static.totalColor)*100"></ngb-progressbar></p>
+          </div>
+        </div>
+      </li>
+
+      <li class="list-inline-item">
+        <div class="card text-white bg-info">
+          <div class="card-header">Parking</div>
+          <div class="card-body">
+            <h5 class="card-title">Total: {{static.totalParking}}</h5>
+            <p class="card-text">Parked: {{static.parked}}</p>
+            <p><ngb-progressbar type="success" [value]="(static.parked/static.totalParking)*100"></ngb-progressbar></p>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+
+
+  </div>
+</div>

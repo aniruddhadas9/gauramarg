@@ -8,6 +8,8 @@ import {ProfileComponent} from './components/profile/profile.component';
 import {UserManageComponent} from './components/user-manage/user-manage.component';
 import {CsvUploadComponent} from './components/csv-upload/csv-upload.component';
 import {Holi2018ManageComponent} from './components/holi-2018-manage/holi-2018-manage.component';
+import {ParkingComponent} from './components/parking/parking.component';
+import {HoliStaticsComponent} from './components/holi-statics/holi-statics.component';
 
 
 const gouraRoutes: Routes = [
@@ -21,6 +23,14 @@ const gouraRoutes: Routes = [
     component: NhfamilyComponent
   },
   {
+    path: 'parking',
+    component: ParkingComponent
+  },
+  {
+    path: 'holi-statics',
+    component: HoliStaticsComponent
+  },
+  {
     path: 'profile',
     component: ProfileComponent,
     canActivate: [AuthGuardService]
@@ -28,7 +38,7 @@ const gouraRoutes: Routes = [
   {
     path: 'user-manage',
     component: UserManageComponent,
-    canActivate: [AuthGuardService]
+    // canActivate: [AuthGuardService]
   },
   {
     path: 'holi-manage',

@@ -1,25 +1,81 @@
-<div class="jumbotron">
-  <div class="card">
-    <div class="card-block">
-      <input [(ngModel)]="searchText" placeholder="search text goes here">
-    </div>
-  </div>
-  <div *ngFor="let result of results | filter: searchText; let i = index" class="card result">
-    <div class="card-block">
-      <div class="container">
-        <div class="row">
-          <div class="col-6">
-            <h6>{{result.name}}{{result.email && '(' + result.email + ')' }}</h6>
-            <i class="fa fa-car" [hidden]="!result.premiumParking"></i>
-            <i class="fa fa-paint-brush" [hidden]="!result.comboTicket"></i>
-            <p>{{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}</p>
-          </div>
-          <div class="col-6">
-            <p>general admission/combo: {{result.generalAdmission}}/{{result.comboTicket}}<br>
-              Doorcode: {{result.doorcode}}</p>
-          </div>
+<div>
+
+  <div class="form-row">
+    <div class="col-12">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <div class="input-group-text">Full name search</div>
+        </div>
+        <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="Name of the guest">
+        <div class="input-group-append">
+          <div class="input-group-text"><i class="fa fa-search"></i></div>
         </div>
       </div>
     </div>
   </div>
+
+
+  <div [hidden]="results.length <= 0" class="card result"
+       *ngFor="let result of results | filter: searchText; let i = index">
+    <div class="card-header d-flex justify-content-between">
+      <h6>{{result.name}}{{result.email && '(' + result.email + ')' }}</h6>
+      <div>
+        <ul class="list-inline">
+          <li class="list-inline-item"><i class="fa fa-car" [hidden]="!result.premiumParking"></i></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card-block">
+      <div class="container">
+        <div class="row">
+          <div class="col-5">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">{{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}
+              </li>
+              <li class="list-group-item">{{result.barCode}}/{{result.doorCode}}</li>
+            </ul>
+          </div>
+          <div class="col-5">
+            <ul class="list-group list-group-flush ticket">
+              <li class="list-group-item">
+                <ngb-rating [(rate)]="result.entered" max="{{result.generalAdmission + result.comboTicket}}">
+                  <ng-template let-fill="fill" let-index="index">
+                    <i class="star fa fa-ticket" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
+                  </ng-template>
+                </ngb-rating>
+              </li>
+              <li class="list-group-item">
+                <ngb-rating [(rate)]="result.colorTaken" max="{{result.comboTicket * 2 }}">
+                  <ng-template let-fill="fill" let-index="index">
+                    <i class="star fa fa-paint-brush" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
+                  </ng-template>
+                </ngb-rating>
+              </li>
+            </ul>
+          </div>
+          <div class="col-2">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"
+                  [hidden]="result.entryOrColorLeft <= 0">
+                <button type="button" class="btn btn-success mb-2" (click)="makeEntry(result, i)">
+                  Check In<i class="fa fa-spinner fa-spin fa-fw" *ngIf="result.loading"></i>
+                </button>
+
+              </li>
+              <li class="list-group-item" [hidden]="!result.message">
+                <i class="fa fa-check-circle" [hidden]="!result.message"></i>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="results.length === 0" class="card result">
+    <div class="card-block">
+      <h5>No record found. please search again</h5>
+    </div>
+  </div>
+
 </div>

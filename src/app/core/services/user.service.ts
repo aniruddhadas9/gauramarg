@@ -14,7 +14,7 @@ export class UserService {
   }
 
   get isAuthenticated() {
-    return this.userAuthorizations && this.userAuthorizations.email;
+    return this.userAuthorizations;
   }
 
   // User info returned from Herd

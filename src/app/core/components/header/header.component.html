@@ -26,25 +26,34 @@
                  routerLinkActive="active">Holi 2018</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" [hidden]="!userService.isAuthenticated" [routerLink]="'/parking'"
+                 routerLinkActive="active">Parking</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" [routerLink]="'/privacy'" routerLinkActive="active">Privacy</a>
             </li>
-            <li class="nav-item">
+            <!--<li class="nav-item">
               <a class="nav-link" [routerLink]="'/events'" routerLinkActive="active">Events</a>
+            </li>-->
+            <li class="nav-item">
+              <a class="nav-link" [routerLink]="'/nhfamily'" routerLinkActive="active">NH Family</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" [routerLink]="'/nhfamily'">NH Family</a>
+              <a class="nav-link" [hidden]="!userService.isAuthenticated" [routerLink]="'/profile'"
+                 routerLinkActive="active">profile</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" [hidden]="!userService.isAuthenticated" [routerLink]="'/profile'">profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" [hidden]="userService.isAuthenticated" [routerLink]="'/login'">Login</a>
+              <a class="nav-link" [hidden]="userService.isAuthenticated" [routerLink]="'/login'"
+                 routerLinkActive="active">Login</a>
             </li>
             <li class="nav-item">
               <div ngbDropdown class="d-inline-block">
-                <a class="nav-link" id="profile" ngbDropdownToggle [hidden]="!userService.isAuthenticated">Admin</a>
+                <a class="nav-link" id="profile" ngbDropdownToggle
+                   [hidden]="!(userService.isAuthenticated && userService.isAuthenticated.type==='admin')"
+                   routerLinkActive="active">Admin</a>
                 <div ngbDropdownMenu aria-labelledby="profile">
                   <button class="dropdown-item" [routerLink]="'/user-manage'">Manage user</button>
+                  <button class="dropdown-item" [routerLink]="'/holi-statics'">Holi Admin (statics)</button>
                   <button class="dropdown-item" [routerLink]="'/holi-manage'">Holi 2018 Guests</button>
                   <button class="dropdown-item" [routerLink]="'/csv-upload'">Upload CSV file</button>
                 </div>

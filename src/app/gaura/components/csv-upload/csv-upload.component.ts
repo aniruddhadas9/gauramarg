@@ -1,7 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
-import {FileUploadService} from '../../../services/file-upload.service';
+import {FileUploadService} from '../../services/file-upload.service';
 
 @Component({
   selector: 'gm-csv-upload',
