@@ -72,33 +72,26 @@ export class HoliService {
       });
   }
 
+
   calculateAllCheckIns(tickets) {
     return tickets.map((ticket) => {
       return this.calculateCheckIn(ticket)
     });
   }
 
-  /**
-   * old calculation
-   * !((((result.generalAdmission + result.comboTicket) - result.entered) <= 0)
-   * && (result.comboTicket > 0  && (result.colorTaken >= (result.comboTicket * 2))))
-   * @param ticket
-   * @returns {boolean}
-   */
-  calculateCheckIn(ticket): boolean {
-
+  calculateCheckIn(ticket) {
     let entryOrColorLeft = 0;
-    // if there is not color or entry bought. this case is only for parking users
-    if (ticket.generalAdmission < 0 && ticket.comboTicket < 0) {
-      return false;
-    } else {
-      if (ticket.generalAdmission > 0) {
-        entryOrColorLeft += (ticket.generalAdmission - ticket.entered);
-      }
-      if (ticket.comboTicket > 0) {
-        entryOrColorLeft += ((ticket.comboTicket * 2) - ticket.colorTaken);
-      }
+    if (ticket.generalAdmission > 0 || ticket.comboTicket > 0) {
+      entryOrColorLeft += ((ticket.generalAdmission + ticket.comboTicket) - ticket.entered);
     }
+    if (ticket.comboTicket > 0) {
+      entryOrColorLeft += ((ticket.comboTicket * 2) - ticket.colorTaken);
+    }
+
+    if (+ticket.premiumParking > 0) {
+      entryOrColorLeft += ((+ticket.premiumParking) - ticket.parked);
+    }
+
     ticket.entryOrColorLeft = entryOrColorLeft;
 
     return ticket;

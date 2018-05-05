@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {UserService} from '../../../core/services/user.service';
 
 @Component({
   selector: 'gm-profile',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfileComponent implements OnInit {
 
-  constructor() { }
+  loading: boolean;
+  constructor(public userService: UserService) { }
 
   ngOnInit() {
   }
 
+  logout() {
+    this.userService.userAuthorizations = null;
+  }
 }

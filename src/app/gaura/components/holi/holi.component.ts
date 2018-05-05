@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {AlertService} from '../../../core/services/alert.service';
+import {HoliService} from '../../services/holi.service';
 
 @Component({
   selector: 'gm-holi',
@@ -23,6 +24,7 @@ export class HoliComponent implements OnInit {
   mobile: string;
 
   constructor(
+    private holiService: HoliService,
     private alertService: AlertService,
     private httpClient: HttpClient
   ) {
@@ -43,7 +45,7 @@ export class HoliComponent implements OnInit {
             text: response,
             type: 'success'
           });
-          this.results[i] = this.calculateCheckIn(this.results[i]);
+          this.results[i] = this.holiService.calculateCheckIn(this.results[i]);
           this.results[i].message = response.message;
           this.results[i].loading = false;
         }, (error) => {
@@ -62,10 +64,7 @@ export class HoliComponent implements OnInit {
     this.httpClient
       .get(environment.restUrl + '/holi/email/' + this.email)
       .subscribe((response: any) => {
-          console.log('doorcode result:%o', response);
-          this.results = response;
-
-          return this.calculateAllCheckIns(response);
+          this.results = this.holiService.calculateAllCheckIns(response);
         }, (error) => {
           console.log(error);
         }
@@ -76,9 +75,7 @@ export class HoliComponent implements OnInit {
     this.httpClient
       .get(environment.restUrl + '/holi/name/' + this.name)
       .subscribe((response: any) => {
-        console.log('doorcode result:%o', response);
-        this.results = response;
-        return this.calculateAllCheckIns(response);
+        this.results = this.holiService.calculateAllCheckIns(response);
       });
   }
 
@@ -86,9 +83,7 @@ export class HoliComponent implements OnInit {
     this.httpClient
       .get(environment.restUrl + '/holi/phone/' + this.phone)
       .subscribe((response: any) => {
-        console.log('doorcode result:%o', response);
-        this.results = response;
-        return this.calculateAllCheckIns(response);
+        this.results = this.holiService.calculateAllCheckIns(response);
       });
   }
 
@@ -96,9 +91,7 @@ export class HoliComponent implements OnInit {
     this.httpClient
       .get(environment.restUrl + '/holi/postCode/' + this.postcode)
       .subscribe((response: any) => {
-        console.log('doorcode result:%o', response);
-        this.results = response;
-        return this.calculateAllCheckIns(response);
+        this.results = this.holiService.calculateAllCheckIns(response);
       });
   }
 
@@ -106,9 +99,7 @@ export class HoliComponent implements OnInit {
     this.httpClient
       .get(environment.restUrl + '/holi/doorCode/02-' + this.doorcode)
       .subscribe((response: any) => {
-        console.log('doorcode result:%o', response);
-        this.results = response;
-        return this.calculateAllCheckIns(response);
+        this.results = this.holiService.calculateAllCheckIns(response);
       });
   }
 
@@ -116,9 +107,7 @@ export class HoliComponent implements OnInit {
     this.httpClient
       .get(environment.restUrl + '/holi/barCode/' + this.barcode)
       .subscribe((response: any) => {
-        console.log('barcode result:%o', response);
-        this.results = response;
-        return this.calculateAllCheckIns(response);
+        this.results = this.holiService.calculateAllCheckIns(response);
       });
   }
 
@@ -126,31 +115,8 @@ export class HoliComponent implements OnInit {
     this.httpClient
       .get(environment.restUrl + '/holi/mobile/' + this.mobile)
       .subscribe((response: any) => {
-        console.log('doorcode result:%o', response);
-        this.results = response;
-        return this.calculateAllCheckIns(response);
+        this.results = this.holiService.calculateAllCheckIns(response);
       });
-  }
-
-  calculateAllCheckIns(tickets) {
-    return tickets.map((ticket) => {
-      return this.calculateCheckIn(ticket)
-    });
-  }
-
-  calculateCheckIn(ticket) {
-
-    let entryOrColorLeft = 0;
-    if (ticket.generalAdmission > 0 || ticket.comboTicket > 0) {
-      entryOrColorLeft += ((ticket.generalAdmission + ticket.comboTicket) - ticket.entered);
-    }
-    if (ticket.comboTicket > 0) {
-      entryOrColorLeft += ((ticket.comboTicket * 2) - ticket.colorTaken);
-    }
-
-    ticket.entryOrColorLeft = entryOrColorLeft;
-
-    return ticket;
   }
 
 }

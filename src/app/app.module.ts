@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 import {CoreModule} from './core/core.module';
 import {AgmCoreModule} from '@agm/core';
 import {GauraModule} from './gaura/gaura.module';
-import {NgxChartsModule} from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
@@ -18,7 +17,6 @@ import {NgxChartsModule} from '@swimlane/ngx-charts';
     CoreModule.forRoot(),
     AppRoutingModule,
     GauraModule,
-    NgxChartsModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBMIoVYsqVdrlm_IwdKSkLEhpMH7JtEIT8',
       libraries: [

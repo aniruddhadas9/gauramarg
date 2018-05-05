@@ -2,6 +2,7 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {FileUploadService} from '../../services/file-upload.service';
+import {AlertService} from '../../../core/services/alert.service';
 
 @Component({
   selector: 'gm-csv-upload',
@@ -22,6 +23,7 @@ export class CsvUploadComponent implements OnInit {
 
   constructor(
     private httpClient: HttpClient,
+    private alertService: AlertService,
     private fileUploadService: FileUploadService,
   ) {
   }
@@ -38,6 +40,12 @@ export class CsvUploadComponent implements OnInit {
       const allHolis = this.fileUploadService.getHoli(arrayOfCSV);
       this.postAllData(allHolis).subscribe((response) => {
         this.doorEntryLoading = false;
+        this.alertService.alert({
+          title: 'Door List upload success',
+          subTitle: 'All the door list uploaded',
+          text: 'Proceed to upload exported order',
+          type: 'success'
+        });
       });
       console.log('onloadend|result:%o', this.fileUploadService.getHoli(reader.result.split(/\r|\n|\r/)));
     };
@@ -63,6 +71,12 @@ export class CsvUploadComponent implements OnInit {
       const csvRecordsArray = this.fileUploadService.csvToArray(reader.result);
       this.postAllData(this.fileUploadService.getHoliFull(csvRecordsArray)).subscribe((response) => {
         this.orderExportLoading = false;
+        this.alertService.alert({
+          title: 'Exported order details upload success',
+          subTitle: 'All the exported order uploaded',
+          text: 'Proceed to start taking guest and check in',
+          type: 'success'
+        });
       });
       console.log('orderExport upload|holis:%O', this.fileUploadService.getHoliFull(csvRecordsArray));
       if (this.csvRecords == null) {
