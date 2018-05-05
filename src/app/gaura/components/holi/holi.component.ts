@@ -42,7 +42,7 @@ export class HoliComponent implements OnInit {
           this.alertService.alert({
             title: 'Check in success!',
             subTitle: 'Guest can enter to the event now.',
-            text: response,
+            text: response.message,
             type: 'success'
           });
           this.results[i] = this.holiService.calculateCheckIn(this.results[i]);
@@ -55,68 +55,63 @@ export class HoliComponent implements OnInit {
             text: error,
             type: 'danger'
           });
-          this.loading = false;
+          this.results[i].loading = false;
         }
       );
   }
 
   emailSearch() {
-    this.httpClient
-      .get(environment.restUrl + '/holi/email/' + this.email)
-      .subscribe((response: any) => {
-          this.results = this.holiService.calculateAllCheckIns(response);
-        }, (error) => {
-          console.log(error);
-        }
-      );
+    this.makeSearch('/holi/email/', this.email);
   }
 
   nameSearch() {
-    this.httpClient
-      .get(environment.restUrl + '/holi/name/' + this.name)
-      .subscribe((response: any) => {
-        this.results = this.holiService.calculateAllCheckIns(response);
-      });
+    this.makeSearch('/holi/name/', this.name);
   }
 
   phoneSearch() {
-    this.httpClient
-      .get(environment.restUrl + '/holi/phone/' + this.phone)
-      .subscribe((response: any) => {
-        this.results = this.holiService.calculateAllCheckIns(response);
-      });
+    this.makeSearch('/holi/phone/', this.phone);
   }
 
   postcodeSearch() {
-    this.httpClient
-      .get(environment.restUrl + '/holi/postCode/' + this.postcode)
-      .subscribe((response: any) => {
-        this.results = this.holiService.calculateAllCheckIns(response);
-      });
+    this.makeSearch('/holi/postCode/', this.postcode);
   }
 
   doorcodeSearch() {
-    this.httpClient
-      .get(environment.restUrl + '/holi/doorCode/02-' + this.doorcode)
-      .subscribe((response: any) => {
-        this.results = this.holiService.calculateAllCheckIns(response);
-      });
+    this.makeSearch('/holi/doorCode/02-', this.doorcode);
   }
 
   barcodeSearch() {
-    this.httpClient
-      .get(environment.restUrl + '/holi/barCode/' + this.barcode)
-      .subscribe((response: any) => {
-        this.results = this.holiService.calculateAllCheckIns(response);
-      });
+    this.makeSearch('/holi/barCode/', this.barcode);
   }
 
   mobileSearch() {
-    this.httpClient
-      .get(environment.restUrl + '/holi/mobile/' + this.mobile)
-      .subscribe((response: any) => {
-        this.results = this.holiService.calculateAllCheckIns(response);
-      });
+    this.makeSearch('/holi/mobile/', this.mobile);
   }
 
+  makeSearch(url: string, value: string) {
+    this.loading = true;
+    this.results = [];
+    return this.httpClient
+      .get(environment.restUrl + url + value)
+      .subscribe(
+        (response: any) => {
+          this.loading = false;
+          if (response.length === 0) this.alertService.alert({
+            title: 'Did not find any event entry!',
+            subTitle: 'Search another entry record.',
+            text: '',
+            type: 'danger'
+          });
+          this.results = this.holiService.calculateAllCheckIns(response);
+        },
+        (error) => {
+          this.loading = false;
+          this.alertService.alert({
+            title: 'Did not find any event entry!',
+            subTitle: 'Please try again or contact support team.',
+            text: error,
+            type: 'danger'
+          });
+        });
+  }
 }
