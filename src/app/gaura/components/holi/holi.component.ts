@@ -61,7 +61,30 @@ export class HoliComponent implements OnInit {
   }
 
   emailSearch() {
-    this.makeSearch('/holi/email/', this.email);
+    this.loading = true;
+    this.results = [];
+    return this.httpClient
+      .post(environment.restUrl + '/holi/email', this.email)
+      .subscribe(
+        (response: any) => {
+          this.loading = false;
+          if (response.length === 0) this.alertService.alert({
+            title: 'Did not find any event entry!',
+            subTitle: 'Search another entry record.',
+            text: '',
+            type: 'danger'
+          });
+          this.results = this.holiService.calculateAllCheckIns(response);
+        },
+        (error) => {
+          this.loading = false;
+          this.alertService.alert({
+            title: 'Did not find any event entry!',
+            subTitle: 'Please try again or contact support team.',
+            text: error,
+            type: 'danger'
+          });
+        });
   }
 
   nameSearch() {
