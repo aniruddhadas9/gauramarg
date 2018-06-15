@@ -15,28 +15,24 @@
   </div>
 
 
-  <div [hidden]="results.length <= 0" class="card result"
-       *ngFor="let result of results | filter: searchText; let i = index">
+  <div [hidden]="results.length <= 0"
+       *ngFor="let result of results | filter: searchText; let i = index"
+       class="card result">
     <div class="card-header d-flex justify-content-between">
       <h6>{{result.name}}{{result.email && '(' + result.email + ')' }}</h6>
-      <div>
+      <div class="d-none d-xl-block">
         <ul class="list-inline">
-          <li class="list-inline-item"><i class="fa fa-car" [hidden]="!result.premiumParking"></i></li>
+          <li class="list-inline-item">{{result.barCode}}/{{result.doorCode}}</li>
         </ul>
       </div>
     </div>
     <div class="card-block">
       <div class="container">
         <div class="row">
-          <div class="col-5">
+          <div class="col-12">
             <ul class="list-group list-group-flush">
               <li class="list-group-item">{{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}
               </li>
-              <li class="list-group-item">{{result.barCode}}/{{result.doorCode}}</li>
-            </ul>
-          </div>
-          <div class="col-5">
-            <ul class="list-group list-group-flush ticket">
               <li class="list-group-item">
                 <ngb-rating [(rate)]="result.entered" max="{{result.generalAdmission + result.comboTicket}}">
                   <ng-template let-fill="fill" let-index="index">
@@ -51,10 +47,13 @@
                   </ng-template>
                 </ngb-rating>
               </li>
-            </ul>
-          </div>
-          <div class="col-2">
-            <ul class="list-group list-group-flush">
+              <li class="list-group-item" [hidden]="!(+result.premiumParking > 0)">
+                <ngb-rating [(rate)]="result.parked" max="{{+result.premiumParking}}">
+                  <ng-template let-fill="fill" let-index="index">
+                    <i class="star fa fa-car" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
+                  </ng-template>
+                </ngb-rating>
+              </li>
               <li class="list-group-item"
                   [hidden]="result.entryOrColorLeft <= 0">
                 <button type="button" class="btn btn-success mb-2" (click)="makeEntry(result, i)">
@@ -72,6 +71,7 @@
       </div>
     </div>
   </div>
+
   <div *ngIf="results.length === 0" class="card result">
     <div class="card-block">
       <h5>No record found. please search again</h5>

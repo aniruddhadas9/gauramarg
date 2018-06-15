@@ -28,7 +28,8 @@ const gouraRoutes: Routes = [
   },
   {
     path: 'holi-statics',
-    component: HoliStaticsComponent
+    component: HoliStaticsComponent,
+    canActivate: [AuthGuardService]
   },
   {
     path: 'profile',
@@ -38,7 +39,7 @@ const gouraRoutes: Routes = [
   {
     path: 'user-manage',
     component: UserManageComponent,
-    // canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService]
   },
   {
     path: 'holi-manage',

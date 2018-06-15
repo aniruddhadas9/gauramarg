@@ -27,8 +27,7 @@ export class HoliEventsListComponent implements OnInit {
     return this.httpClient
       .get(environment.restUrl + '/holi')
       .subscribe((response: any) => {
-        this.results = response;
-        this.static = this.holiService.calculateStatics(response);
+        this.results = this.holiService.calculateAllCheckIns(response);
       });
   }
 

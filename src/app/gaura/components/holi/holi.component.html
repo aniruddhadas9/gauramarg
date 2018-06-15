@@ -6,13 +6,13 @@
       <div class="col-auto">
         <div class="input-group mb-2">
           <div class="input-group-prepend">
-            <span class="input-group-text">Door code</span>
+            <span class="input-group-text d-none d-xl-block">Door code</span>
             <span class="input-group-text">02-</span>
           </div>
           <input type="text" class="form-control" [(ngModel)]="doorcode" (keyup.enter)="doorcodeSearch()"
                  placeholder="Door code">
           <div class="input-group-append">
-            <button type="button" class="btn btn-outline-primary" (click)="doorcodeSearch()">Doorcode</button>
+            <button type="button" class="btn btn-primary" (click)="doorcodeSearch()">Doorcode</button>
           </div>
         </div>
       </div>
@@ -21,13 +21,13 @@
     <div class="form-row align-items-center">
       <div class="col-auto">
         <div class="input-group mb-2">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend d-none d-xl-block">
             <div class="input-group-text">Post code</div>
           </div>
           <input type="text" class="form-control" [(ngModel)]="postcode" (keyup.enter)="postcodeSearch()"
                  placeholder="Post/Zip code">
           <div class="input-group-append">
-            <button type="button" class="btn btn-outline-primary" (click)="postcodeSearch()">postcode</button>
+            <button type="button" class="btn btn-primary" (click)="postcodeSearch()">postcode</button>
           </div>
         </div>
       </div>
@@ -36,13 +36,13 @@
     <div class="form-row align-items-center">
       <div class="col-auto">
         <div class="input-group mb-2">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend d-none d-xl-block">
             <span class="input-group-text">Bar code</span>
           </div>
           <input type="text" class="form-control" [(ngModel)]="barcode" (keyup.enter)="barcodeSearch()"
                  placeholder="Bar code">
           <div class="input-group-append">
-            <button type="button" class="btn btn-outline-primary" (click)="barcodeSearch()">Doorcode</button>
+            <button type="button" class="btn btn-primary" (click)="barcodeSearch()">Doorcode</button>
           </div>
         </div>
       </div>
@@ -51,12 +51,12 @@
     <div class="form-row align-items-center">
       <div class="col-auto">
         <div class="input-group mb-2">
-          <div class="input-group-prepend">
+          <div class="input-group-prepend d-none d-xl-block">
             <span class="input-group-text">email</span>
           </div>
           <input type="text" [(ngModel)]="email" (keyup.enter)="emailSearch()" class="form-control" placeholder="Email">
           <div class="input-group-append">
-            <button type="button" class="btn btn-outline-primary" (click)="emailSearch()">Email</button>
+            <button type="button" class="btn btn-primary" (click)="emailSearch()">Email</button>
           </div>
         </div>
       </div>
@@ -69,24 +69,19 @@
   <div [hidden]="results.length <= 0" *ngFor="let result of results; let i = index" class="card result">
     <div class="card-header d-flex justify-content-between">
       <h6>{{result.name}}{{result.email && '(' + result.email + ')' }}</h6>
-      <div>
+      <div class="d-none d-xl-block">
         <ul class="list-inline">
-          <li class="list-inline-item"><i class="fa fa-car" [hidden]="!result.premiumParking"></i></li>
+          <li class="list-inline-item">{{result.barCode}}/{{result.doorCode}}</li>
         </ul>
       </div>
     </div>
     <div class="card-block">
       <div class="container">
         <div class="row">
-          <div class="col-5">
+          <div class="col-12">
             <ul class="list-group list-group-flush">
               <li class="list-group-item">{{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}
               </li>
-              <li class="list-group-item">{{result.barCode}}/{{result.doorCode}}</li>
-            </ul>
-          </div>
-          <div class="col-5">
-            <ul class="list-group list-group-flush ticket">
               <li class="list-group-item">
                 <ngb-rating [(rate)]="result.entered" max="{{result.generalAdmission + result.comboTicket}}">
                   <ng-template let-fill="fill" let-index="index">
@@ -101,10 +96,13 @@
                   </ng-template>
                 </ngb-rating>
               </li>
-            </ul>
-          </div>
-          <div class="col-2">
-            <ul class="list-group list-group-flush">
+              <li class="list-group-item" [hidden]="!(+result.premiumParking > 0)">
+                <ngb-rating [(rate)]="result.parked" max="{{+result.premiumParking}}">
+                  <ng-template let-fill="fill" let-index="index">
+                    <i class="star fa fa-car" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
+                  </ng-template>
+                </ngb-rating>
+              </li>
               <li class="list-group-item"
                   [hidden]="result.entryOrColorLeft <= 0">
                 <button type="button" class="btn btn-success mb-2" (click)="makeEntry(result, i)">
@@ -122,9 +120,10 @@
       </div>
     </div>
   </div>
-  <div *ngIf="results.length === 0" class="card result">
+  <div class="card result">
     <div class="card-block">
-      <h5>No record found. please search again</h5>
+      <p><ngb-progressbar type="warning" *ngIf="loading" [value]="25" [striped]="true"></ngb-progressbar></p>
+      <h5 *ngIf="results.length === 0 && !loading">No record found. please search again</h5>
     </div>
   </div>
 </div>

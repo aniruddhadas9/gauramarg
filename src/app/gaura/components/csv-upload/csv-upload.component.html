@@ -1,15 +1,15 @@
 <div class="card">
   <div class="card">
-    <div class="card-header">Imprt CSV files</div>
+    <div class="card-header">Import CSV files</div>
     <div class="card-body">
-      <h5 class="card-title">Door lists</h5>
+      <h5 class="card-title">Step 1: Door lists</h5>
       <small class="bg-danger">Door list need to be uploaded first (before exported order upload).</small>
       <p class="card-text">
         <input #doorEntry type="file" (change)="uploadDoorListFile($event)"/>
         <i class="fa fa-spinner fa-spin fa-fw" *ngIf="doorEntryLoading"></i>
       </p>
       <hr>
-      <h5 class="card-title">Exported Orders</h5>
+      <h5 class="card-title">Step 2: Exported Orders</h5>
       <small class="bg-danger">Upload exported order only if door list is uploaded.</small>
       <p class="card-text">
         <input #orderExport type="file" (change)="uploadOrderExportFile($event)"/>

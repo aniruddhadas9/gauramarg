@@ -1,23 +1,9 @@
 <ngb-carousel>
-  <ng-template ngbSlide>
-    <img [src]="'assets/holi/holi-slide.jpg'"  alt="Gaura Marga">
-    <div class="carousel-caption">
-      <h3>Festival of colors</h3>
-      <p>get ticket at <a href="https://www.holidc.com/">Holi of DC</a> </p>
-    </div>
-  </ng-template>
   <ng-template ngbSlide *ngFor="let image of images">
     <img [src]="image.url"  alt="Gaura Marga">
     <div class="carousel-caption">
       <h3>NH Family</h3>
       <p>Divotee association.</p>
-    </div>
-  </ng-template>
-  <ng-template ngbSlide>
-    <img [src]="'assets/holi/holi-slide.jpg'"  alt="Gaura Marga">
-    <div class="carousel-caption">
-      <h3>Festival of colors</h3>
-      <p>get ticket at <a href="https://twitter.com/holidc">more on twitter...</a> </p>
     </div>
   </ng-template>
 </ngb-carousel>
