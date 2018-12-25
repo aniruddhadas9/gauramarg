@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ChangeLocationModelComponent} from '../change-location-model/change-location-model.component';
 import {AppService} from '../../services/app.service';
+import {finalize} from 'rxjs/operators';
 
 @Component({
   selector: 'gm-header',
@@ -65,9 +66,9 @@ export class HeaderComponent implements OnInit {
     if (this.searchForm.valid) {
       this.loading = true;
       this.userService.getCurrentUser(this.searchForm.value.username, this.searchForm.value.password)
-        .finally(() => {
+        .pipe(finalize(() => {
           this.loading = false;
-        }).subscribe((response) => {
+        })).subscribe((response) => {
         // navigate by url is used due to the fact that the returnUrl may have optional params which need to be parsed.
         // same is true for query params
         // this.router.navigateByUrl(this.returnUrl, {replaceUrl: true});

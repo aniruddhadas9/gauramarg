@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {Observable} from 'rxjs';
+import {ReplaySubject} from 'rxjs';
 import {EncryptionService} from './encryption.service';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
+import {map} from 'rxjs/operators';
 
 
 @Injectable()
@@ -33,13 +34,13 @@ export class UserService {
   getCurrentUser(email?: string, password?: string): Observable<any> {
     return this.httpClient
       .post(environment.restUrl + '/user/login', {'email': email, 'password': password})
-      .map((response) => {
+      .pipe(map((response) => {
         if (response[0]['email'] != null) {
           this.userAuthorizations = response[0];
           this._user.next(response[0]);
         }
         return response;
-      });
+      }));
   }
 
 }

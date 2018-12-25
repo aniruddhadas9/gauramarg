@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {AlertService} from '../../core/services/alert.service';
+import {map} from 'rxjs/operators';
 
 @Injectable()
 export class HoliService {
@@ -67,15 +68,15 @@ export class HoliService {
   mobileSearch(mobile) {
     return this.httpClient
       .get(environment.restUrl + '/holi/mobile/' + mobile)
-      .map((response: any) => {
+      .pipe(map((response: any) => {
         return this.calculateAllCheckIns(response);
-      });
+      }));
   }
 
 
   calculateAllCheckIns(tickets) {
     return tickets.map((ticket) => {
-      return this.calculateCheckIn(ticket)
+      return this.calculateCheckIn(ticket);
     });
   }
 

@@ -1,8 +1,24 @@
-<gm-header></gm-header>
+<cfs-header
+  [header]="header"
+  (middleButtonClick)="openLocationChangeModel($event)">
+</cfs-header>
+<cfs-alerts></cfs-alerts>
+
 <div class="container">
   <router-outlet></router-outlet>
 </div>
-<gm-footer></gm-footer>
+
+<cfs-footer
+  [footer]="footer">
+</cfs-footer>
+
+
+
+<!--<gm-header></gm-header>
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+<gm-footer></gm-footer>-->
 <!--
 <agm-map [latitude]="coordinates && coordinates.latitude"
          [zoom]="16"

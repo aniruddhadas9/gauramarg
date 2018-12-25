@@ -1,10 +1,7 @@
 import {Injectable} from '@angular/core';
 import {google, GoogleMap, MapOptions} from '@agm/core/services/google-maps-types';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import 'rxjs/add/operator/mergeMap';
-import {GoogleMapsAPIWrapper} from '@agm/core';
-import {AppService} from './app.service';
 
 const GEOLOCATION_ERRORS = {
   'errors.location.unsupportedBrowser': 'Browser does not support location services',

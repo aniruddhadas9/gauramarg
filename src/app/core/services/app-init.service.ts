@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
+import {Observable} from 'rxjs';
 import {GoogleMapsAPIWrapper} from '@agm/core';
 
 export function appInitFactory(init: AppInitService): () => Promise<any> {

@@ -1,5 +1,4 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Chart} from 'chart.js';
 import {environment} from '../../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {HoliService} from '../../services/holi.service';
@@ -12,8 +11,8 @@ import {HoliService} from '../../services/holi.service';
 export class HoliStaticsComponent implements OnInit {
 
 
-  @Input('static') static: any;
-  @Output('output') output = new EventEmitter<any>();
+  @Input() static: any;
+  @Output() output = new EventEmitter<any>();
 
   constructor(private httpClient: HttpClient, private holiService: HoliService) {
   }

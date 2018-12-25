@@ -1,8 +1,7 @@
-import {NgModule} from '@angular/core';
-import {Routes, RouterModule} from '@angular/router';
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import {LoginComponent, PrivacyComponent} from '@candiman/website';
 import {HomeComponent} from './gaura/components/home/home.component';
-import {LoginComponent} from './core/components/login/login.component';
-import {PrivacyComponent} from './core/components/privacy/privacy.component';
 
 const routes: Routes = [
   {
@@ -20,8 +19,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes/*, { enableTracing: true }*/)],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {
-}
+export class AppRoutingModule { }

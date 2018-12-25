@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Observable } from 'rxjs/Observable';
+import { ReplaySubject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface Alert {
   title: string;

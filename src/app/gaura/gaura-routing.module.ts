@@ -3,7 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {HoliComponent} from './components/holi/holi.component';
 import {EventsComponent} from './components/events/events.component';
 import {NhfamilyComponent} from './components/nhfamily/nhfamily.component';
-import {AuthGuardService} from '../core/services/auth-guard.service';
+import {AuthGuardService} from '@candiman/website';
 import {ProfileComponent} from './components/profile/profile.component';
 import {UserManageComponent} from './components/user-manage/user-manage.component';
 import {CsvUploadComponent} from './components/csv-upload/csv-upload.component';

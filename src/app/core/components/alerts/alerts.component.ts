@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { take, map } from 'rxjs/operators';
-import { timer } from 'rxjs/observable/timer';
 import {Alert, AlertService} from '../../services/alert.service';
 import {environment} from '../../../../environments/environment';
+import {timer} from 'rxjs';
 
 @Component({
   selector: 'gm-alerts',

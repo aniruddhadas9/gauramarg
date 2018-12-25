@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {FileUploadService} from '../../services/file-upload.service';
 import {AlertService} from '../../../core/services/alert.service';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'gm-csv-upload',
@@ -47,15 +48,15 @@ export class CsvUploadComponent implements OnInit {
           type: 'success'
         });
       });
-      console.log('onloadend|result:%o', this.fileUploadService.getHoli(reader.result.split(/\r|\n|\r/)));
+      // console.log('onloadend|result:%o', this.fileUploadService.getHoli(reader.result.split(/\r|\n|\r/)));
     };
     reader.readAsText(event.target.files[0]);
-    const allTextLines = reader.result.split(/\r|\n|\r/);
+    // const allTextLines = reader.result.split(/\r|\n|\r/);
   }
 
   /**
    * Method called when user select orderexport file in the ui
-   * @param $event
+   * @params $event
    */
   uploadOrderExportFile($event): void {
     this.orderExportLoading = true;
@@ -97,9 +98,11 @@ export class CsvUploadComponent implements OnInit {
 
 
   postAllData(holis) {
-    return this.httpClient.post(environment.restUrl + '/holi/allUpdate', holis).map((result) => {
-      console.log('all holi record processed:%o', result);
-    });
+    return this.httpClient.post(environment.restUrl + '/holi/allUpdate', holis).pipe(
+      map((result) => {
+        console.log('all holi record processed:%o', result);
+      })
+    );
   }
 
 }
