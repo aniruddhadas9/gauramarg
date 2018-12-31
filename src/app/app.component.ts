@@ -10,6 +10,8 @@ import {
 import {filter, tap} from 'rxjs/operators';
 import {ChangeLocationModelComponent, Footer, Header, UserService, AlertService} from '@candiman/website';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {GoogleApiService} from './gaura/services/google/google-api.service';
+import {GoogleAuthService} from './gaura/services/google/google-auth.service';
 
 
 @Component({
@@ -36,8 +38,17 @@ export class AppComponent implements OnInit {
     private ga: GoogleAnalyticsService,
     public userService: UserService,
     private activatedRoute: ActivatedRoute,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private googleApiService: GoogleApiService,
+    private googleAuthService: GoogleAuthService
   ) {
+
+    this.googleAuthService.getAuth()
+      .subscribe((auth) => {
+        auth.signIn().then(res => {
+          console.log('google auth done: %o', res);
+        });
+      });
 
     // Subscribe to the login
     this.userService.user.subscribe((user: any) => {
@@ -187,6 +198,11 @@ export class AppComponent implements OnInit {
     ).subscribe(event => {
       this.isLoading = true;
     });
+
+
+    this.googleApiService.onLoad().subscribe((value) => {
+      console.log(value);
+    });
   }
 
   mapReady(map: GoogleMap) {
@@ -209,3 +225,4 @@ export class AppComponent implements OnInit {
     });
   }
 }
+
