@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
-import {AlertService} from '../../../core/services/alert.service';
 import {HoliService} from '../../services/holi.service';
+import {AlertService} from '@candiman/website';
 
 @Component({
   selector: 'gm-holi',

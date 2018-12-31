@@ -3,7 +3,6 @@ import {NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {CoreModule} from './core/core.module';
 import {GauraModule} from './gaura/gaura.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AgmCoreModule} from '@agm/core';
@@ -28,7 +27,6 @@ const gapiClientConfig: NgGapiClientConfig = {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    CoreModule.forRoot(),
     WebsiteModule.forRoot({
       loginUrl: environment.restUrl + '/user/login',
       alertDelayInSeconds: 7

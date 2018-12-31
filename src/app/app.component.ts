@@ -1,14 +1,20 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {MapService} from './core/services/map.service';
 import {GoogleMap} from '@agm/core/services/google-maps-types';
-import {GoogleAnalyticsService} from './core/services/google-analytics.service';
 import {
   Router, NavigationEnd, NavigationStart, NavigationCancel,
   NavigationError, ActivatedRoute
 } from '@angular/router';
 import {filter, tap} from 'rxjs/operators';
-import {ChangeLocationModelComponent, Footer, Header, UserService, AlertService} from '@candiman/website';
+import {
+  ChangeLocationModelComponent,
+  Footer,
+  Header,
+  UserService,
+  AlertService,
+  MapService,
+  GoogleAnalyticsService
+} from '@candiman/website';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {GoogleApiService} from './gaura/services/google/google-api.service';
 import {GoogleAuthService} from './gaura/services/google/google-auth.service';
@@ -207,9 +213,9 @@ export class AppComponent implements OnInit {
 
   mapReady(map: GoogleMap) {
     this.mapService.map = map;
-    this.mapService.getLocation({}).subscribe((position: Position) => {
+    this.mapService.getBrowserCoordinates({}).subscribe((position: Position) => {
       this.coordinates = position && position.coords;
-      this.mapService.getUserLocation({
+      this.mapService.getAddressFromCoordinates({
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       }).subscribe((location) => {

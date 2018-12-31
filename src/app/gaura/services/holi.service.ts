@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {AlertService} from '../../core/services/alert.service';
 import {map} from 'rxjs/operators';
+import {AlertService} from '@candiman/website';
 
 @Injectable()
 export class HoliService {
