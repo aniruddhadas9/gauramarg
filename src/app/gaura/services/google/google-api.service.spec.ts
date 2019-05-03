@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { GoogleApiService } from './google-api.service';
+import {GoogleApiService} from './google-api.service';
 
 describe('GoogleApiService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

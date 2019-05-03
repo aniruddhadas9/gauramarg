@@ -1,6 +1,6 @@
-import { TestBed, inject } from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
-import { FilterPipeService } from './filter-pipe.service';
+import {FilterPipeService} from './filter-pipe.service';
 
 describe('FilterPipeService', () => {
   beforeEach(() => {

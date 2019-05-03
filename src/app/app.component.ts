@@ -1,23 +1,21 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {GoogleMap} from '@agm/core/services/google-maps-types';
-import {
-  Router, NavigationEnd, NavigationStart, NavigationCancel,
-  NavigationError, ActivatedRoute
-} from '@angular/router';
+import {ActivatedRoute, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
 import {filter, tap} from 'rxjs/operators';
 import {
+  AlertService,
   ChangeLocationModelComponent,
   Footer,
+  GoogleAnalyticsService,
   Header,
-  UserService,
-  AlertService,
   MapService,
-  GoogleAnalyticsService
+  UserService
 } from '@candiman/website';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {GoogleApiService} from './gaura/services/google/google-api.service';
-import {GoogleAuthService} from './gaura/services/google/google-auth.service';
+import {takeWhile} from 'rxjs/internal/operators/takeWhile';
+
+// import {NbAuthResult, NbAuthService} from '@nebular/auth';
 
 
 @Component({
@@ -33,6 +31,8 @@ export class AppComponent implements OnInit {
   header: Header;
   footer: Footer;
 
+  alive: any;
+
   modalRef;
 
   constructor(
@@ -45,25 +45,52 @@ export class AppComponent implements OnInit {
     public userService: UserService,
     private activatedRoute: ActivatedRoute,
     private alertService: AlertService,
-    private googleApiService: GoogleApiService,
-    private googleAuthService: GoogleAuthService
+    // private googleApiService: GoogleApiService,
+    // private googleAuthService: GoogleAuthService,
+    // private authService: AuthService,
+    // private nbAuthService: NbAuthService
   ) {
 
-    this.googleAuthService.getAuth()
-      .subscribe((auth) => {
-        auth.signIn().then(res => {
-          console.log('google auth done: %o', res);
-        });
-      });
-
     // Subscribe to the login
-    this.userService.user.subscribe((user: any) => {
-      if (!user.status || user.status === 200) {
-        this.header.links.rightLinks[0].hidden = false;
-        this.header.links.rightLinks[1].hidden = false;
-        this.header.links.rightLinks[3].hidden = false;
-        this.header.links.rightLinks[5].hidden = false;
+    this.userService.user.subscribe((user: any | Array<object>) => {
+      console.log(user);
+      if (user === null) {
+        this.header.links.rightLinks[0].hidden = true;
+        this.header.links.rightLinks[1].hidden = true;
+        this.header.links.rightLinks[2].hidden = true;
+        this.header.links.rightLinks[3].hidden = true;
+        this.header.links.rightLinks[4].hidden = true;
+        this.header.links.rightLinks[5].hidden = true;
         this.header.links.rightLinks[6].hidden = true;
+        this.header.links.rightLinks[7].hidden = false;
+        this.alertService.alert({
+          title: 'Logout success!',
+          subTitle: 'You are successfully loggedout.',
+          text: user,
+          type: 'success',
+          closeDelay: 30
+        });
+      } else if (user.length > 0) {
+        if (user[0].type === 'admin') {
+          this.header.links.rightLinks[0].hidden = false;
+          this.header.links.rightLinks[1].hidden = false;
+          this.header.links.rightLinks[2].hidden = false;
+          this.header.links.rightLinks[3].hidden = false;
+          this.header.links.rightLinks[4].hidden = false;
+          this.header.links.rightLinks[5].hidden = false;
+          this.header.links.rightLinks[6].hidden = false;
+          this.header.links.rightLinks[7].hidden = true;
+        } else if (user[0].type === 'operator') {
+          this.header.links.rightLinks[0].hidden = false;
+          this.header.links.rightLinks[1].hidden = false;
+          this.header.links.rightLinks[2].hidden = true;
+          this.header.links.rightLinks[3].hidden = true;
+          this.header.links.rightLinks[4].hidden = true;
+          this.header.links.rightLinks[5].hidden = true;
+          this.header.links.rightLinks[6].hidden = false;
+          this.header.links.rightLinks[7].hidden = true;
+        }
+
       } else {
         this.alertService.alert({
           title: 'Login failure!',
@@ -95,11 +122,16 @@ export class AppComponent implements OnInit {
         rightLinks: [
           {label: 'Guest entry', url: '/holi', hidden: true},
           {label: 'Parking', url: '/parking', hidden: true},
-          {label: 'Privacy', url: '/privacy', hidden: false},
-          {label: 'Events', url: '/events', hidden: true},
-          {label: 'NH Family', url: '/nhfamily', hidden: false},
+          // {label: 'Privacy', url: '/privacy', hidden: false},
+          {label: 'Upload file', url: '/csv-upload', hidden: true},
+          {label: 'Users', url: '/user-manage', hidden: true},
+          {label: 'Event status', url: '/holi-statics', hidden: true},
+          {label: 'search', url: '/holi-manage', hidden: true},
+          // {label: 'NH Family', url: '/nhfamily', hidden: false},
           {label: 'Profile', url: '/profile', hidden: true},
           {label: 'Login', url: '/login', hidden: false},
+          // {label: 'Auth', url: '/auth', hidden: false},
+          // {label: 'Register', url: '/auth/register', hidden: false},
         ],
         leftLinks: null,
         style: {
@@ -206,9 +238,13 @@ export class AppComponent implements OnInit {
     });
 
 
-    this.googleApiService.onLoad().subscribe((value) => {
+    /*this.googleApiService.onLoad().subscribe((value) => {
       console.log(value);
-    });
+    });*/
+
+    /*this.authService.authState.subscribe((user) => {
+      console.log('angularx-social-login|user:%o|loggedIn:%o', user, user != null);
+    });*/
   }
 
   mapReady(map: GoogleMap) {
@@ -230,5 +266,23 @@ export class AppComponent implements OnInit {
       this.header.middleButton.label = location.formatted_address;
     });
   }
+
+  loginUsingGoogleAuth() {
+    /*this.googleAuthService.getAuth()
+      .subscribe((auth) => {
+        auth.signIn().then(res => {
+          console.log('google auth done: %o', res);
+        });
+      });*/
+  }
+
+  /*nbAuthGoogle() {
+    this.nbAuthService.authenticate('google')
+      .pipe(takeWhile(() => this.alive))
+      .subscribe((authResult: NbAuthResult) => {
+        console.log('authResult:%o', authResult);
+      });
+  }*/
+
 }
 

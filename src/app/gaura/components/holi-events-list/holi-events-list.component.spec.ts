@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { HoliEventsListComponent } from './holi-events-list.component';
+import {HoliEventsListComponent} from './holi-events-list.component';
 
 describe('HoliEventsListComponent', () => {
   let component: HoliEventsListComponent;

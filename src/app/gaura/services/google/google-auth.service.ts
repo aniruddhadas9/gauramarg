@@ -1,20 +1,18 @@
-/// <reference types="gapi" />
-/// <reference types="gapi.auth2" />
 import {Injectable} from '@angular/core';
 import {GoogleApiService} from './google-api.service';
 import {Observable} from 'rxjs/internal/Observable';
 import {mergeMap} from 'rxjs/operators';
 import {of} from 'rxjs/internal/observable/of';
 import {Observer} from 'rxjs/internal/types';
-
 import GoogleAuth = gapi.auth2.GoogleAuth;
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class GoogleAuthService {
 
-  private GoogleAuth: GoogleAuth = undefined;
+  private googleAuth: GoogleAuth = undefined;
 
   constructor(
     private googleApi: GoogleApiService
@@ -25,18 +23,20 @@ export class GoogleAuthService {
   }
 
   public getAuth(newInstance = false): Observable<GoogleAuth> {
-    if (!this.GoogleAuth || newInstance) {
+    if (!this.googleAuth || newInstance) {
       return this.googleApi.onLoad()
-        .pipe(mergeMap(() => this.loadGapiAuth()));
+        .pipe(
+          mergeMap(() => this.loadGapiAuth())
+        );
     }
-    return of(this.GoogleAuth);
+    return of(this.googleAuth);
   }
 
   private loadGapiAuth(): Observable<GoogleAuth> {
     return Observable.create((observer: Observer<GoogleAuth>) => {
-      gapi.load('auth2', () => {
-        gapi.auth2.init(this.googleApi.getConfig().getClientConfig()).then((auth: GoogleAuth) => {
-          this.GoogleAuth = auth;
+      (window as any).gapi.load('auth2', () => {
+        (window as any).gapi.auth2.init(this.googleApi.getConfig().getClientConfig()).then((auth: GoogleAuth) => {
+          this.googleAuth = auth;
           observer.next(auth);
           observer.complete();
         }).catch(err => {

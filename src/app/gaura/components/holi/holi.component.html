@@ -7,7 +7,7 @@
         <div class="input-group mb-2">
           <div class="input-group-prepend">
             <span class="input-group-text d-none d-xl-block">Door code</span>
-            <span class="input-group-text">02-</span>
+            <span class="input-group-text">42-</span>
           </div>
           <input type="text" class="form-control" [(ngModel)]="doorcode" (keyup.enter)="doorcodeSearch()"
                  placeholder="Door code">
@@ -80,38 +80,39 @@
         <div class="row">
           <div class="col-12">
             <ul class="list-group list-group-flush">
-              <li class="list-group-item">{{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}
+              <li class="list-group-item">
+                {{result.address}} {{result.city}} {{result.state}}, {{result.postCode}}
               </li>
               <li class="list-group-item">
                 <ngb-rating [(rate)]="result.entered" max="{{result.generalAdmission + result.comboTicket}}">
                   <ng-template let-fill="fill" let-index="index">
-                    <i class="star fa fa-ticket" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
+                    <fa-icon [icon]="['fas', 'ticket-alt']" [class.filled]="fill === 100" [class.bad]="index < 3"></fa-icon>
                   </ng-template>
                 </ngb-rating>
               </li>
               <li class="list-group-item">
                 <ngb-rating [(rate)]="result.colorTaken" max="{{result.comboTicket * 2 }}">
                   <ng-template let-fill="fill" let-index="index">
-                    <i class="star fa fa-paint-brush" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
+                    <fa-icon [icon]="['fas', 'fill-drip']" [class.filled]="fill === 100" [class.bad]="index < 3"></fa-icon>
                   </ng-template>
                 </ngb-rating>
               </li>
               <li class="list-group-item" [hidden]="!(+result.premiumParking > 0)">
                 <ngb-rating [(rate)]="result.parked" max="{{+result.premiumParking}}">
                   <ng-template let-fill="fill" let-index="index">
-                    <i class="star fa fa-car" [class.filled]="fill === 100" [class.bad]="index < 3"></i>
+                    <fa-icon [icon]="['fas', 'car']" [class.filled]="fill === 100" [class.bad]="index < 3"></fa-icon>
                   </ng-template>
                 </ngb-rating>
               </li>
               <li class="list-group-item"
                   [hidden]="result.entryOrColorLeft <= 0">
                 <button type="button" class="btn btn-success mb-2" (click)="makeEntry(result, i)">
-                  Check In<i class="fa fa-spinner fa-spin fa-fw" *ngIf="result.loading"></i>
+                  Check In<fa-icon [icon]="['fas', 'spinner']" *ngIf="result.loading"></fa-icon>
                 </button>
 
               </li>
               <li class="list-group-item" [hidden]="!result.message">
-                <i class="fa fa-check-circle" [hidden]="!result.message"></i>
+                <fa-icon [icon]="['fas', 'check-circle']" [hidden]="!result.message"></fa-icon>
               </li>
             </ul>
           </div>

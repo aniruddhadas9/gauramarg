@@ -3,6 +3,13 @@ import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {HoliService} from '../../services/holi.service';
 import {AlertService} from '@candiman/website';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {faTicketAlt} from '@fortawesome/free-solid-svg-icons/faTicketAlt';
+import {faPaintBrush} from '@fortawesome/free-solid-svg-icons';
+import {faCar} from '@fortawesome/free-solid-svg-icons/faCar';
+import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner';
+import {faCheckCircle} from '@fortawesome/free-regular-svg-icons/faCheckCircle';
+import {faFillDrip} from '@fortawesome/free-solid-svg-icons/faFillDrip';
 
 @Component({
   selector: 'gm-holi',
@@ -28,6 +35,7 @@ export class HoliComponent implements OnInit {
     private alertService: AlertService,
     private httpClient: HttpClient
   ) {
+    library.add(faTicketAlt, faPaintBrush, faCar, faSpinner, faCheckCircle, faFillDrip);
   }
 
   ngOnInit() {
@@ -100,7 +108,7 @@ export class HoliComponent implements OnInit {
   }
 
   doorcodeSearch() {
-    this.makeSearch('/holi/doorCode/02-', this.doorcode);
+    this.makeSearch('/holi/doorCode/42-', this.doorcode);
   }
 
   barcodeSearch() {
@@ -116,15 +124,17 @@ export class HoliComponent implements OnInit {
     this.results = [];
     return this.httpClient
       .get(environment.restUrl + url + value)
-      .subscribe(
-        (response: any) => {
+      .subscribe((response: any) => {
+        console.log(response);
           this.loading = false;
-          if (response.length === 0) this.alertService.alert({
-            title: 'Did not find any event entry!',
-            subTitle: 'Search another entry record.',
-            text: '',
-            type: 'danger'
-          });
+          if (response.length === 0) {
+            this.alertService.alert({
+              title: 'Did not find any event entry!',
+              subTitle: 'Search another entry record.',
+              text: '',
+              type: 'danger'
+            });
+          }
           this.results = this.holiService.calculateAllCheckIns(response);
         },
         (error) => {

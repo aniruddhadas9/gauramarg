@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { HoliStaticsComponent } from './holi-statics.component';
+import {HoliStaticsComponent} from './holi-statics.component';
 
 describe('HoliStaticsComponent', () => {
   let component: HoliStaticsComponent;

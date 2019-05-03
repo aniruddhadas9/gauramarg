@@ -2,6 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {AlertService} from '@candiman/website';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {faTicketAlt} from '@fortawesome/free-solid-svg-icons/faTicketAlt';
+import {faPaintBrush} from '@fortawesome/free-solid-svg-icons';
+import {faCar} from '@fortawesome/free-solid-svg-icons/faCar';
+import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner';
+import {faCheckCircle} from '@fortawesome/free-regular-svg-icons/faCheckCircle';
 
 @Component({
   selector: 'gm-holi',
@@ -26,6 +32,7 @@ export class ParkingComponent implements OnInit {
     private alertService: AlertService,
     private httpClient: HttpClient
   ) {
+    library.add(faCar);
   }
 
   ngOnInit() {
@@ -104,7 +111,7 @@ export class ParkingComponent implements OnInit {
 
   doorcodeSearch() {
     this.httpClient
-      .get(environment.restUrl + '/holi/doorCode/02-' + this.doorcode)
+      .get(environment.restUrl + '/holi/doorCode/42-' + this.doorcode)
       .subscribe((response: any) => {
         console.log('doorcode result:%o', response);
         this.results = response;
