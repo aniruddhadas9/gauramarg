@@ -6,8 +6,6 @@ import {ForgetPasswordComponent} from './components/forget-password/forget-passw
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
-import {NbAuthModule, NbAuthSocialLink, NbOAuth2AuthStrategy, NbOAuth2ResponseType, NbPasswordAuthStrategy} from '@nebular/auth';
-import {environment} from '../../environments/environment';
 import {NgGapiClientConfig} from '../gaura/services/google/google-api-config.service';
 import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider, LinkedInLoginProvider} from 'angularx-social-login';
 
@@ -142,46 +140,6 @@ export const defaultSettings: any = {
     CommonModule,
     FormsModule,
     RouterModule,
-    NbAuthModule.forRoot({
-      strategies: [
-        NbPasswordAuthStrategy.setup({
-          name: 'email',
-          baseEndpoint: environment.restUrl,
-          login: {
-            endpoint: '/user/login',
-            method: 'post',
-          },
-          register: {
-            endpoint: '/auth/sign-up',
-            method: 'post',
-          },
-          logout: {
-            endpoint: '/auth/sign-out',
-            method: 'post',
-          },
-          requestPass: {
-            endpoint: '/auth/request-pass',
-            method: 'post',
-          },
-          resetPass: {
-            endpoint: '/auth/reset-pass',
-            method: 'post',
-          },
-        }),
-        NbOAuth2AuthStrategy.setup({
-          name: 'google',
-          clientId: '229810777942-v9f8u7mla4k621h9oav2n8hranl5ck7k.apps.googleusercontent.com',
-          clientSecret: '',
-          authorize: {
-            endpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-            responseType: NbOAuth2ResponseType.TOKEN,
-            scope: gapiClientConfig.scope,
-            redirectUri: 'http://localhost:4200/example/oauth2/callback',
-          },
-        }),
-      ],
-      forms: defaultSettings,
-    }),
   ],
   providers: [
     /*{

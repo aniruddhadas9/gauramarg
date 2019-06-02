@@ -12,8 +12,8 @@ import {AlertService} from '@candiman/website';
 })
 export class CsvUploadComponent implements OnInit {
 
-  @ViewChild('doorEntry') doorEntry: ElementRef;
-  @ViewChild('orderExport') orderExport: ElementRef;
+  @ViewChild('doorEntry', {static: true}) doorEntry: ElementRef;
+  @ViewChild('orderExport', {static: true}) orderExport: ElementRef;
 
   doorEntryLoading: boolean;
   orderExportLoading: boolean;

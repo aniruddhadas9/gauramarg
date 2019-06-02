@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {NbAuthResult, NbAuthSocialLink, NbLoginComponent} from '@nebular/auth';
 import {takeWhile} from 'rxjs/operators';
 
 @Component({
@@ -7,10 +6,10 @@ import {takeWhile} from 'rxjs/operators';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent extends NbLoginComponent implements OnInit {
+export class LoginComponent implements OnInit {
   alive = true;
 
-  socialLinks: NbAuthSocialLink[] = [
+  socialLinks: Array<object> = [
     {
       title: 'Google',
       url: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -33,23 +32,6 @@ export class LoginComponent extends NbLoginComponent implements OnInit {
 
 
   ngOnInit() {
-
-    this.service.authenticate('google')
-      .pipe(takeWhile(() => this.alive))
-      .subscribe((authResult: NbAuthResult) => {
-        console.log('Auth|login|authResult:%o', authResult);
-        if (authResult.isSuccess()) {
-          this.router.navigateByUrl('/nhfamily');
-        }
-      });
-
-    this.service.onAuthenticationChange().subscribe((auth) => {
-      console.log('Auth|login|auth:%o', auth);
-    });
-
-    this.service.getToken().subscribe((token) => {
-      console.log('Auth|login|token:%o', token);
-    });
   }
 
 }
