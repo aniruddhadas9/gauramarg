@@ -10,7 +10,7 @@
     "gcloud-deploy-no-promoto": "gcloud app deploy --no-promote",
     "bundle-report": "ng build --prod --stats-json && webpack-bundle-analyzer dist/candifood-ui/stats.json",
     "download-config": "curl https://gauramargrest.appspot.com/api/docs --output src/schema.json",
-    "generate": "swagger-angular-generator -s src/schema.json -d dist/api",
+    "swagger-open-api": "npm run download-config && openapi-generator generate -i src/schema.json -g typescript-angular -o src/app/@restapi --additional-properties=\"ngVersion=8.0.0\"",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -51,6 +51,7 @@
     "@angular/cli": "8.0.1",
     "@angular/compiler-cli": "8.0.0",
     "@angular/language-service": "8.0.0",
+    "@openapitools/openapi-generator-cli": "0.0.11-4.0.0",
     "@types/gapi": "0.0.36",
     "@types/gapi.auth2": "0.0.48",
     "@types/jasmine": "3.3.8",
@@ -65,7 +66,6 @@
     "karma-jasmine": "2.0.1",
     "karma-jasmine-html-reporter": "1.4.0",
     "protractor": "5.4.2",
-    "swagger-angular-generator": "^4.0.0",
     "ts-node": "7.0.1",
     "tslint": "5.12.1",
     "typescript": "3.4.5"

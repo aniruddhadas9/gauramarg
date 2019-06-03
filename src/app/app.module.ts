@@ -10,6 +10,7 @@ import {WebsiteModule} from '@candiman/website';
 import {environment} from '../environments/environment';
 import {HttpClientModule} from '@angular/common/http';
 import {AuthModule} from './auth/auth.module';
+import {ApiModule, Configuration} from './@restapi';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import {AuthModule} from './auth/auth.module';
       loginUrl: environment.restUrl + '/user/login',
       alertDelayInSeconds: 7
     }),
+    ApiModule.forRoot(() => new Configuration({basePath: environment.restUrl})),
     GauraModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBMIoVYsqVdrlm_IwdKSkLEhpMH7JtEIT8',
@@ -35,8 +37,7 @@ import {AuthModule} from './auth/auth.module';
     HttpClientModule,
     // AuthModule
   ],
-  providers: [
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {
