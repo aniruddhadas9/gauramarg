@@ -120,6 +120,7 @@ export class AppComponent implements OnInit {
       },
       links: {
         rightLinks: [
+          {label: 'teachers', url: '/teacher', hidden: false},
           {label: 'Guest entry', url: '/holi', hidden: true},
           {label: 'Parking', url: '/parking', hidden: true},
           // {label: 'Privacy', url: '/privacy', hidden: false},

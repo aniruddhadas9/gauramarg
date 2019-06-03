@@ -20,6 +20,18 @@ const routes: Routes = [
     path: 'auth',
     loadChildren: './auth/auth.module#AuthModule',
   },
+  {
+    path: 'student',
+    loadChildren: () => import('./@students/students.module').then(m => m.StudentsModule),
+  },
+  {
+    path: 'teacher',
+    loadChildren: () => import('./@teachers/teachers.module').then(m => m.TeachersModule),
+  },
+  {
+    path: 'auth',
+    loadChildren: './auth/auth.module#AuthModule',
+  },
   /*{
     path: 'auth',
     component: NbAuthComponent,
