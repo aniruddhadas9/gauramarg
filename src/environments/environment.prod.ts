@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  restUrl: 'https://candliner.appspot.com',
+  restUrl: 'https://gauramargrest.appspot.com',
   trackAnalytics: true,
   useBasicAuth: false,
   alertDelayInSeconds: 7,

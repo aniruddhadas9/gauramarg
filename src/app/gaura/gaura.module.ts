@@ -13,13 +13,13 @@ import {CsvUploadComponent} from './components/csv-upload/csv-upload.component';
 import {ProfileComponent} from './components/profile/profile.component';
 import {NewUserComponent} from './components/new-user/new-user.component';
 import {HoliEventsListComponent} from './components/holi-events-list/holi-events-list.component';
-import {FilterPipe} from './services/filter-pipe.service';
-import {FileUploadService} from './services/file-upload.service';
+import {FilterPipe} from './services/filter-pipe/filter-pipe.service';
+import {FileUploadService} from './services/file-upload/file-upload.service';
 import {UserManageComponent} from './components/user-manage/user-manage.component';
 import {Holi2018ManageComponent} from './components/holi-2018-manage/holi-2018-manage.component';
 import {UserListComponent} from './components/user-list/user-list.component';
 import {ParkingComponent} from './components/parking/parking.component';
-import {HoliService} from './services/holi.service';
+import {HoliService} from './services/holi/holi.service';
 import {HoliStaticsComponent} from './components/holi-statics/holi-statics.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 

@@ -7,7 +7,7 @@
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "st",
+      "prefix": "gm",
       "schematics": {
         "@schematics/angular:component": {
           "styleext": "scss"

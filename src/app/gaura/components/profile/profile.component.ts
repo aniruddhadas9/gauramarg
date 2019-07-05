@@ -15,6 +15,7 @@ export class ProfileComponent implements OnInit {
   }
 
   logout() {
-    this.userService.userAuthorizations = null;
+    this.userService.authorizedUser = null;
+    this.userService.userSubject.next(null);
   }
 }

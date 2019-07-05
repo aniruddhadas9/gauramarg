@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {HoliService} from '../../services/holi.service';
+import {HoliService} from '../../services/holi/holi.service';
 
 @Component({
   selector: 'gm-holi-statics',

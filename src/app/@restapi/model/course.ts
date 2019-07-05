@@ -12,7 +12,7 @@
 import { Timestamp } from './timestamp';
 
 
-export interface Course { 
+export interface Course {
     description?: string;
     endDate?: Timestamp;
     id?: string;

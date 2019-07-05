@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
   ) {
 
     // Subscribe to the login
-    this.userService.user.subscribe((user: any | Array<object>) => {
+    this.userService.userSubject.subscribe((user: any | Array<object>) => {
       console.log(user);
       if (user === null) {
         this.header.links.rightLinks[0].hidden = true;
@@ -120,14 +120,16 @@ export class AppComponent implements OnInit {
       },
       links: {
         rightLinks: [
-          {label: 'teachers', url: '/teacher', hidden: false},
-          {label: 'Guest entry', url: '/holi', hidden: true},
-          {label: 'Parking', url: '/parking', hidden: true},
+          {label: 'teachers', url: '/teacher', hidden: true},
+          {label: 'students', url: '/student', hidden: true},
+          {label: 'admin', url: '/admin', hidden: true},
+          // {label: 'Guest entry', url: '/holi', hidden: true},
+          // {label: 'Parking', url: '/parking', hidden: true},
           // {label: 'Privacy', url: '/privacy', hidden: false},
-          {label: 'Upload file', url: '/csv-upload', hidden: true},
-          {label: 'Users', url: '/user-manage', hidden: true},
-          {label: 'Event status', url: '/holi-statics', hidden: true},
-          {label: 'search', url: '/holi-manage', hidden: true},
+          // {label: 'Upload file', url: '/csv-upload', hidden: true},
+          // {label: 'Users', url: '/user-manage', hidden: true},
+          // {label: 'Event status', url: '/holi-statics', hidden: true},
+          // {label: 'search', url: '/holi-manage', hidden: true},
           // {label: 'NH Family', url: '/nhfamily', hidden: false},
           {label: 'Profile', url: '/profile', hidden: true},
           {label: 'Login', url: '/login', hidden: false},

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
-import {HoliService} from '../../services/holi.service';
+import {HoliService} from '../../services/holi/holi.service';
 import {AlertService} from '@candiman/website';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faTicketAlt} from '@fortawesome/free-solid-svg-icons/faTicketAlt';

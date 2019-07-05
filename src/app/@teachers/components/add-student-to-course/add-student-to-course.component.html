@@ -1,3 +1,14 @@
-<p>
-  add-student-to-course works!
-</p>
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2>Register a cource you are going to offer with price per student</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="submit(model)">
+        <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+
+</div>
