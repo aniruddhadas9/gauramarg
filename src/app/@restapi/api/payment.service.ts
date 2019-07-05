@@ -30,7 +30,7 @@ import { Configuration }                                     from '../configurat
 })
 export class PaymentService {
 
-    protected basePath = 'http://gauramargrest.appspot.com';
+    protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
@@ -67,12 +67,12 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteUsingDELETE3(id: string, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public deleteUsingDELETE3(id: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public deleteUsingDELETE3(id: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public deleteUsingDELETE3(id: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public deleteUsingDELETE4(id: string, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public deleteUsingDELETE4(id: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public deleteUsingDELETE4(id: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public deleteUsingDELETE4(id: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling deleteUsingDELETE3.');
+            throw new Error('Required parameter id was null or undefined when calling deleteUsingDELETE4.');
         }
 
         let headers = this.defaultHeaders;
@@ -263,12 +263,12 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public postUsingPOST3(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public postUsingPOST3(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public postUsingPOST3(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public postUsingPOST3(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public postUsingPOST4(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public postUsingPOST4(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public postUsingPOST4(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public postUsingPOST4(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (payment === null || payment === undefined) {
-            throw new Error('Required parameter payment was null or undefined when calling postUsingPOST3.');
+            throw new Error('Required parameter payment was null or undefined when calling postUsingPOST4.');
         }
 
         let headers = this.defaultHeaders;
@@ -309,12 +309,12 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public putUsingPUT3(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public putUsingPUT3(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public putUsingPUT3(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public putUsingPUT3(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public putUsingPUT4(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public putUsingPUT4(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public putUsingPUT4(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public putUsingPUT4(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (payment === null || payment === undefined) {
-            throw new Error('Required parameter payment was null or undefined when calling putUsingPUT3.');
+            throw new Error('Required parameter payment was null or undefined when calling putUsingPUT4.');
         }
 
         let headers = this.defaultHeaders;
@@ -355,12 +355,12 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateUsingGET2(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public updateUsingGET2(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public updateUsingGET2(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public updateUsingGET2(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public updateUsingGET3(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public updateUsingGET3(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public updateUsingGET3(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public updateUsingGET3(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (payment === null || payment === undefined) {
-            throw new Error('Required parameter payment was null or undefined when calling updateUsingGET2.');
+            throw new Error('Required parameter payment was null or undefined when calling updateUsingGET3.');
         }
 
         let headers = this.defaultHeaders;

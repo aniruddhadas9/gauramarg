@@ -30,7 +30,7 @@ import { Configuration }                                     from '../configurat
 })
 export class CourseService {
 
-    protected basePath = 'http://gauramargrest.appspot.com';
+    protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
@@ -63,7 +63,7 @@ export class CourseService {
     /**
      * coursesByKeys
      *
-     * @param course courses
+     * @param course course
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -72,7 +72,7 @@ export class CourseService {
     public coursesByKeysUsingPOST(course: Array<Course>, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Course>>>;
     public coursesByKeysUsingPOST(course: Array<Course>, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (course === null || course === undefined) {
-            throw new Error('Required parameter courses was null or undefined when calling coursesByKeysUsingPOST.');
+            throw new Error('Required parameter course was null or undefined when calling coursesByKeysUsingPOST.');
         }
 
         let headers = this.defaultHeaders;
@@ -345,7 +345,7 @@ export class CourseService {
     /**
      * post
      *
-     * @param course courses
+     * @param course course
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -354,7 +354,7 @@ export class CourseService {
     public postUsingPOST1(course: Course, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
     public postUsingPOST1(course: Course, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (course === null || course === undefined) {
-            throw new Error('Required parameter courses was null or undefined when calling postUsingPOST1.');
+            throw new Error('Required parameter course was null or undefined when calling postUsingPOST1.');
         }
 
         let headers = this.defaultHeaders;
@@ -391,7 +391,7 @@ export class CourseService {
     /**
      * put
      *
-     * @param course courses
+     * @param course course
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -400,7 +400,7 @@ export class CourseService {
     public putUsingPUT1(course: Course, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
     public putUsingPUT1(course: Course, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (course === null || course === undefined) {
-            throw new Error('Required parameter courses was null or undefined when calling putUsingPUT1.');
+            throw new Error('Required parameter course was null or undefined when calling putUsingPUT1.');
         }
 
         let headers = this.defaultHeaders;
@@ -437,7 +437,7 @@ export class CourseService {
     /**
      * update
      *
-     * @param course courses
+     * @param course course
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -446,7 +446,7 @@ export class CourseService {
     public updateUsingGET1(course: Course, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
     public updateUsingGET1(course: Course, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (course === null || course === undefined) {
-            throw new Error('Required parameter courses was null or undefined when calling updateUsingGET1.');
+            throw new Error('Required parameter course was null or undefined when calling updateUsingGET1.');
         }
 
         let headers = this.defaultHeaders;

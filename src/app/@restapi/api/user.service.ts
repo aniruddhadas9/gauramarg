@@ -30,7 +30,7 @@ import { Configuration }                                     from '../configurat
 })
 export class UserService {
 
-    protected basePath = 'http://gauramargrest.appspot.com';
+    protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
@@ -113,12 +113,12 @@ export class UserService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteUsingDELETE4(email: string, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public deleteUsingDELETE4(email: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public deleteUsingDELETE4(email: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public deleteUsingDELETE4(email: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public deleteUsingDELETE5(email: string, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public deleteUsingDELETE5(email: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public deleteUsingDELETE5(email: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public deleteUsingDELETE5(email: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (email === null || email === undefined) {
-            throw new Error('Required parameter email was null or undefined when calling deleteUsingDELETE4.');
+            throw new Error('Required parameter email was null or undefined when calling deleteUsingDELETE5.');
         }
 
         let headers = this.defaultHeaders;
@@ -359,12 +359,12 @@ export class UserService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public postUsingPOST4(user: User, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public postUsingPOST4(user: User, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public postUsingPOST4(user: User, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public postUsingPOST4(user: User, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public postUsingPOST5(user: User, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public postUsingPOST5(user: User, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public postUsingPOST5(user: User, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public postUsingPOST5(user: User, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (user === null || user === undefined) {
-            throw new Error('Required parameter user was null or undefined when calling postUsingPOST4.');
+            throw new Error('Required parameter user was null or undefined when calling postUsingPOST5.');
         }
 
         let headers = this.defaultHeaders;
@@ -405,12 +405,12 @@ export class UserService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public putUsingPUT4(user: User, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public putUsingPUT4(user: User, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public putUsingPUT4(user: User, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public putUsingPUT4(user: User, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public putUsingPUT5(user: User, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public putUsingPUT5(user: User, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public putUsingPUT5(user: User, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public putUsingPUT5(user: User, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (user === null || user === undefined) {
-            throw new Error('Required parameter user was null or undefined when calling putUsingPUT4.');
+            throw new Error('Required parameter user was null or undefined when calling putUsingPUT5.');
         }
 
         let headers = this.defaultHeaders;

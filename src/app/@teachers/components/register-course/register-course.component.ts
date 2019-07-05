@@ -50,24 +50,6 @@ export class RegisterCourseComponent implements OnInit {
       }
     },
     {
-      key: 'startDate',
-      type: 'input',
-      templateOptions: {
-        label: 'Start date',
-        placeholder: 'Enter start date',
-        required: false,
-      }
-    },
-    {
-      key: 'endDate',
-      type: 'input',
-      templateOptions: {
-        label: 'End Date',
-        placeholder: 'Enter end date',
-        required: false,
-      }
-    },
-    {
       key: 'status',
       type: 'input',
       templateOptions: {
@@ -85,6 +67,24 @@ export class RegisterCourseComponent implements OnInit {
         required: true,
       }
     },
+    /*{
+      key: 'startDate',
+      type: 'input',
+      templateOptions: {
+        label: 'Start date',
+        placeholder: 'Enter start date',
+        required: false,
+      }
+    },
+    {
+      key: 'endDate',
+      type: 'input',
+      templateOptions: {
+        label: 'End Date',
+        placeholder: 'Enter end date',
+        required: false,
+      }
+    },*/
 
   ];
 
@@ -92,6 +92,15 @@ export class RegisterCourseComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  submit(model) {
+    console.log(model);
+    if (this.form.valid) {
+      this.courseService.postUsingPOST1(model).subscribe( (response) => {
+        console.log(response);
+      });
+    }
   }
 
 

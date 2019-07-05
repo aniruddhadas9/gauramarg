@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {UserService} from '@candiman/website';
-import {CourseRegistrationService} from '../../../@restapi';
+import {CourseRegistrationService, Timestamp} from '../../../@restapi';
 
 @Component({
   selector: 'gm-add-student-to-course',
@@ -15,65 +15,20 @@ export class AddStudentToCourseComponent implements OnInit {
   model = {};
   fields: FormlyFieldConfig[] = [
     {
-      key: 'description',
+      key: 'courseId',
       type: 'input',
       templateOptions: {
-        label: 'Description',
-        placeholder: 'Enter description',
+        label: 'courseId',
+        placeholder: 'Enter courseId',
         required: true,
       }
     },
     {
-      key: 'location',
+      key: 'studentId',
       type: 'input',
       templateOptions: {
-        label: 'Location',
-        placeholder: 'Enter location',
-        required: true,
-      }
-    },
-    {
-      key: 'name',
-      type: 'input',
-      templateOptions: {
-        label: 'Name',
-        placeholder: 'Enter name',
-        required: true,
-      }
-    },
-    {
-      key: 'price',
-      type: 'input',
-      templateOptions: {
-        label: 'Each student courses proce',
-        placeholder: 'Enter per student courses price',
-        required: true,
-      }
-    },
-    {
-      key: 'startDate',
-      type: 'input',
-      templateOptions: {
-        label: 'Start date',
-        placeholder: 'Enter start date',
-        required: false,
-      }
-    },
-    {
-      key: 'endDate',
-      type: 'input',
-      templateOptions: {
-        label: 'End Date',
-        placeholder: 'Enter end date',
-        required: false,
-      }
-    },
-    {
-      key: 'status',
-      type: 'input',
-      templateOptions: {
-        label: 'Status',
-        placeholder: 'Enter status',
+        label: 'studentId',
+        placeholder: 'Enter studentId',
         required: true,
       }
     },
@@ -81,26 +36,64 @@ export class AddStudentToCourseComponent implements OnInit {
       key: 'teacherId',
       type: 'input',
       templateOptions: {
-        label: 'Teacher ID (Email) address',
-        placeholder: 'Enter teacher email',
+        label: 'teacherId',
+        placeholder: 'Enter teacherId',
         required: true,
       }
     },
+    {
+      key: 'notes',
+      type: 'input',
+      templateOptions: {
+        label: 'notes',
+        placeholder: 'Enter notes',
+        required: true,
+      }
+    },
+    {
+      key: 'status',
+      type: 'input',
+      templateOptions: {
+        label: 'status',
+        placeholder: 'Enter status',
+        required: true,
+      }
+    },
+    /*{
+      key: 'created',
+      type: 'input',
+      templateOptions: {
+        label: 'created',
+        placeholder: 'Enter created',
+        required: false,
+      }
+    },
+    {
+      key: 'modified',
+      type: 'input',
+      templateOptions: {
+        label: 'modified',
+        placeholder: 'Enter modified',
+        required: false,
+      }
+    }*/
   ];
 
   constructor(
     private userService: UserService,
     private courseRegistrationService: CourseRegistrationService
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
   }
+
   submit(model) {
     console.log(model);
     if (this.form.valid) {
-      /*this.courseRegistrationService.postUsingPOST1(model).subscribe( (response) => {
+      this.courseRegistrationService.postUsingPOST2(model).subscribe((response) => {
         console.log(response);
-      });*/
+      });
     }
   }
 

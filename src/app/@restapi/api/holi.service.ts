@@ -30,7 +30,7 @@ import { Configuration }                                     from '../configurat
 })
 export class HoliService {
 
-    protected basePath = 'http://gauramargrest.appspot.com';
+    protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
 
@@ -159,12 +159,12 @@ export class HoliService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteUsingDELETE2(id: string, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public deleteUsingDELETE2(id: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public deleteUsingDELETE2(id: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public deleteUsingDELETE2(id: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public deleteUsingDELETE3(id: string, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public deleteUsingDELETE3(id: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public deleteUsingDELETE3(id: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public deleteUsingDELETE3(id: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling deleteUsingDELETE2.');
+            throw new Error('Required parameter id was null or undefined when calling deleteUsingDELETE3.');
         }
 
         let headers = this.defaultHeaders;
@@ -561,12 +561,12 @@ export class HoliService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public postUsingPOST2(holi: Holi, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public postUsingPOST2(holi: Holi, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public postUsingPOST2(holi: Holi, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public postUsingPOST2(holi: Holi, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public postUsingPOST3(holi: Holi, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public postUsingPOST3(holi: Holi, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public postUsingPOST3(holi: Holi, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public postUsingPOST3(holi: Holi, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (holi === null || holi === undefined) {
-            throw new Error('Required parameter holi was null or undefined when calling postUsingPOST2.');
+            throw new Error('Required parameter holi was null or undefined when calling postUsingPOST3.');
         }
 
         let headers = this.defaultHeaders;
@@ -607,12 +607,12 @@ export class HoliService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public putUsingPUT2(holi: Holi, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public putUsingPUT2(holi: Holi, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public putUsingPUT2(holi: Holi, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public putUsingPUT2(holi: Holi, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public putUsingPUT3(holi: Holi, observe?: 'body', reportProgress?: boolean): Observable<Message>;
+    public putUsingPUT3(holi: Holi, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
+    public putUsingPUT3(holi: Holi, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
+    public putUsingPUT3(holi: Holi, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
         if (holi === null || holi === undefined) {
-            throw new Error('Required parameter holi was null or undefined when calling putUsingPUT2.');
+            throw new Error('Required parameter holi was null or undefined when calling putUsingPUT3.');
         }
 
         let headers = this.defaultHeaders;
