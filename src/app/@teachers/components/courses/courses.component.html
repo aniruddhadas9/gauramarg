@@ -3,19 +3,19 @@
         <div class="card-header">Your registered courses</div>
         <div class="card-body">
           <div class="row heading">
-            <div class="col"> teacherId</div>
+            <!--<div class="col"> teacherId</div>-->
             <div class="col">name(price)</div>
             <div class="col"> description</div>
             <div class="col"> location</div>
-            <div class="col"> start-end Date</div>
+            <!--<div class="col"> start-end Date</div>-->
             <div class="col"> status</div>
           </div>
           <div class="row" *ngFor="let course of courses">
-            <div class="col"> {{course.teacherId}}</div>
+            <!--<div class="col"> {{course.teacherId}}</div>-->
             <div class="col">{{course.name}}<span class="badge badge-primary badge-pill">({{course.price}})</span></div>
             <div class="col"> {{course.description}}</div>
             <div class="col"> {{course.location}}</div>
-            <div class="col"> {{course.startDate}}-{{course.endDate}}</div>
+            <!--<div class="col"> {{course.startDate}}-{{course.endDate}}</div>-->
             <div class="col"> {{course.status}}</div>
           </div>
         </div>

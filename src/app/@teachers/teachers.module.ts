@@ -11,6 +11,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FormlyModule} from '@ngx-formly/core';
 import {FormlyBootstrapModule} from '@ngx-formly/bootstrap';
 import {StudentListComponent} from './components/student-list/student-list.component';
+import { AddNewStudentComponent } from './components/add-new-student/add-new-student.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import {StudentListComponent} from './components/student-list/student-list.compo
     AddStudentToCourseComponent,
     TeachderLeftMenuComponent,
     TeachderDashboardComponent,
-    StudentListComponent
+    StudentListComponent,
+    AddNewStudentComponent
   ],
   imports: [
     CommonModule,

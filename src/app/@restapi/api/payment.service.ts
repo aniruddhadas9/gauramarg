@@ -75,6 +75,11 @@ export class PaymentService {
             throw new Error('Required parameter id was null or undefined when calling deleteUsingDELETE4.');
         }
 
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (id !== undefined && id !== null) {
+            queryParameters = queryParameters.set('id', <any>id);
+        }
+
         let headers = this.defaultHeaders;
 
         // to determine the Accept header
@@ -90,8 +95,9 @@ export class PaymentService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.delete<Message>(`${this.configuration.basePath}/payment/${encodeURIComponent(String(id))}`,
+        return this.httpClient.delete<Message>(`${this.configuration.basePath}/payment`,
             {
+                params: queryParameters,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -115,6 +121,11 @@ export class PaymentService {
             throw new Error('Required parameter courseId was null or undefined when calling getByCourseIdUsingGET2.');
         }
 
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (courseId !== undefined && courseId !== null) {
+            queryParameters = queryParameters.set('courseId', <any>courseId);
+        }
+
         let headers = this.defaultHeaders;
 
         // to determine the Accept header
@@ -130,8 +141,9 @@ export class PaymentService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/courseId/${encodeURIComponent(String(courseId))}`,
+        return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/courseId`,
             {
+                params: queryParameters,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -155,6 +167,11 @@ export class PaymentService {
             throw new Error('Required parameter studentId was null or undefined when calling getByStudentIdUsingGET2.');
         }
 
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (studentId !== undefined && studentId !== null) {
+            queryParameters = queryParameters.set('studentId', <any>studentId);
+        }
+
         let headers = this.defaultHeaders;
 
         // to determine the Accept header
@@ -170,8 +187,9 @@ export class PaymentService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/studentId/${encodeURIComponent(String(studentId))}`,
+        return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/studentId`,
             {
+                params: queryParameters,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -195,6 +213,11 @@ export class PaymentService {
             throw new Error('Required parameter teacherId was null or undefined when calling getByTeacherIdUsingGET3.');
         }
 
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (teacherId !== undefined && teacherId !== null) {
+            queryParameters = queryParameters.set('teacherId', <any>teacherId);
+        }
+
         let headers = this.defaultHeaders;
 
         // to determine the Accept header
@@ -210,8 +233,9 @@ export class PaymentService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/teacherId/${encodeURIComponent(String(teacherId))}`,
+        return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/teacherId`,
             {
+                params: queryParameters,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,

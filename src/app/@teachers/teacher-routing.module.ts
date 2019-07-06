@@ -6,6 +6,7 @@ import {TeachderDashboardComponent} from './components/teachder-dashboard/teachd
 import {RegisterCourseComponent} from './components/register-course/register-course.component';
 import {AddStudentToCourseComponent} from './components/add-student-to-course/add-student-to-course.component';
 import {StudentListComponent} from './components/student-list/student-list.component';
+import {AddNewStudentComponent} from './components/add-new-student/add-new-student.component';
 
 const routes: Routes = [
   {
@@ -23,6 +24,10 @@ const routes: Routes = [
       {
         path: 'add-student',
         component: AddStudentToCourseComponent,
+      },
+      {
+        path: 'add-new-student',
+        component: AddNewStudentComponent,
       },
       {
         path: 'course-list',

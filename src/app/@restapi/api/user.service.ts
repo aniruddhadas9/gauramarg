@@ -121,6 +121,11 @@ export class UserService {
             throw new Error('Required parameter email was null or undefined when calling deleteUsingDELETE5.');
         }
 
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (email !== undefined && email !== null) {
+            queryParameters = queryParameters.set('email', <any>email);
+        }
+
         let headers = this.defaultHeaders;
 
         // to determine the Accept header
@@ -136,8 +141,9 @@ export class UserService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.delete<Message>(`${this.configuration.basePath}/user/${encodeURIComponent(String(email))}`,
+        return this.httpClient.delete<Message>(`${this.configuration.basePath}/user`,
             {
+                params: queryParameters,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -161,6 +167,11 @@ export class UserService {
             throw new Error('Required parameter email was null or undefined when calling getByEmailUsingGET.');
         }
 
+        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        if (email !== undefined && email !== null) {
+            queryParameters = queryParameters.set('email', <any>email);
+        }
+
         let headers = this.defaultHeaders;
 
         // to determine the Accept header
@@ -176,8 +187,9 @@ export class UserService {
         const consumes: string[] = [
         ];
 
-        return this.httpClient.get<Array<User>>(`${this.configuration.basePath}/user/email/${encodeURIComponent(String(email))}`,
+        return this.httpClient.get<Array<User>>(`${this.configuration.basePath}/user/email`,
             {
+                params: queryParameters,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
