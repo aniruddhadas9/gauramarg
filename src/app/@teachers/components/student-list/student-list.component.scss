@@ -1,0 +1,15 @@
+.container-fluid {
+  .card {
+    margin: 7px 0;
+    .card-body {
+      .row {
+        border-bottom: #c1c1c1 1px solid;
+      }
+      .heading {
+        .col {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

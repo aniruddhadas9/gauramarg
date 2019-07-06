@@ -15,6 +15,7 @@ import { Timestamp } from './timestamp';
 export interface CourseRegistration { 
     courseId?: string;
     created?: Timestamp;
+    id?: string;
     modified?: Timestamp;
     notes?: string;
     status?: string;

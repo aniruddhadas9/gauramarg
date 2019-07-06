@@ -11,7 +11,6 @@ import {HttpClientModule} from '@angular/common/http';
 import {GauraRoutingModule} from './gaura-routing.module';
 import {CsvUploadComponent} from './components/csv-upload/csv-upload.component';
 import {ProfileComponent} from './components/profile/profile.component';
-import {NewUserComponent} from './components/new-user/new-user.component';
 import {HoliEventsListComponent} from './components/holi-events-list/holi-events-list.component';
 import {FilterPipe} from './services/filter-pipe/filter-pipe.service';
 import {FileUploadService} from './services/file-upload/file-upload.service';
@@ -22,6 +21,7 @@ import {ParkingComponent} from './components/parking/parking.component';
 import {HoliService} from './services/holi/holi.service';
 import {HoliStaticsComponent} from './components/holi-statics/holi-statics.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {SharedModule} from '../@shared/shared.module';
 
 @NgModule({
   imports: [
@@ -31,7 +31,8 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
     ReactiveFormsModule,
     HttpClientModule,
     GauraRoutingModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    SharedModule
   ],
   declarations: [
     HomeComponent,
@@ -41,7 +42,6 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
     HoliComponent,
     CsvUploadComponent,
     ProfileComponent,
-    NewUserComponent,
     HoliEventsListComponent,
     FilterPipe,
     UserManageComponent,

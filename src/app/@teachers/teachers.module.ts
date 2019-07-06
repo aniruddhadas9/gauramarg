@@ -12,6 +12,23 @@ import {FormlyModule} from '@ngx-formly/core';
 import {FormlyBootstrapModule} from '@ngx-formly/bootstrap';
 import {StudentListComponent} from './components/student-list/student-list.component';
 import { AddNewStudentComponent } from './components/add-new-student/add-new-student.component';
+import {SharedModule} from '../@shared/shared.module';
+
+export function minlengthValidationMessage(err, field) {
+  return `Should have atleast ${field.templateOptions.minLength} characters`;
+}
+
+export function maxlengthValidationMessage(err, field) {
+  return `This value should be less than ${field.templateOptions.maxLength} characters`;
+}
+
+export function minValidationMessage(err, field) {
+  return `This value should be more than ${field.templateOptions.min}`;
+}
+
+export function maxValidationMessage(err, field) {
+  return `This value should be less than ${field.templateOptions.max}`;
+}
 
 @NgModule({
   declarations: [
@@ -29,8 +46,17 @@ import { AddNewStudentComponent } from './components/add-new-student/add-new-stu
     TeacherRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    FormlyModule.forRoot(),
+    FormlyModule.forRoot({
+      validationMessages: [
+        { name: 'required', message: 'This field is required' },
+        { name: 'minlength', message: minlengthValidationMessage },
+        { name: 'maxlength', message: maxlengthValidationMessage },
+        { name: 'min', message: minValidationMessage },
+        { name: 'max', message: maxValidationMessage },
+      ],
+    }),
     FormlyBootstrapModule,
+    SharedModule
   ]
 })
 export class TeachersModule {

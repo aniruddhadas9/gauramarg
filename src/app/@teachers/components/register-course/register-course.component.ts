@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormlyFieldConfig} from '@ngx-formly/core';
+import {FormlyFieldConfig, FormlyFormOptions} from '@ngx-formly/core';
 import {FormGroup} from '@angular/forms';
 import {CourseService, Timestamp} from '../../../@restapi';
 import {UserService} from '@candiman/website';
@@ -12,7 +12,8 @@ import {UserService} from '@candiman/website';
 export class RegisterCourseComponent implements OnInit {
 
   form = new FormGroup({});
-  model = {};
+  model: any = {};
+  options: FormlyFormOptions = {};
   fields: FormlyFieldConfig[];
 
   constructor(

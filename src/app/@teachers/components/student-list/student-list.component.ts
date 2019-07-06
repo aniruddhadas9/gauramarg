@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {CourseRegistration, CourseRegistrationService, CourseService} from '../../../@restapi';
+import {CourseRegistrationService, CourseService, User} from '../../../@restapi';
 import {UserService} from '@candiman/website';
 
 @Component({
@@ -9,7 +9,8 @@ import {UserService} from '@candiman/website';
 })
 export class StudentListComponent implements OnInit {
 
-  students: any;
+  students: User[];
+
   constructor(
     private courseRegistrationService: CourseRegistrationService,
     private courseService: CourseService,
@@ -21,10 +22,11 @@ export class StudentListComponent implements OnInit {
 
     console.log('this.userService.authorizedUser%o', this.userService.authorizedUser);
 
-    this.courseRegistrationService.getStudentsByTeacherIdUsingGET(this.userService.authorizedUser[0].email).subscribe((students) => {
-      console.log(students);
-      this.students = students;
-    });
+    this.courseRegistrationService.getStudentsByTeacherIdUsingGET(this.userService.authorizedUser[0].email)
+      .subscribe((students: User[]) => {
+        console.log(students);
+        this.students = students;
+      });
 
   }
 }

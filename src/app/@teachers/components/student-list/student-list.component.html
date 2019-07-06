@@ -1,4 +1,23 @@
-<p>
-  student-list works!
-  {{students | json}}
-</p>
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">Your registered courses</div>
+    <div class="card-body">
+      <div class="row heading">
+        <!--<div class="col"> teacherId</div>-->
+        <div class="col">Name</div>
+        <div class="col">Phone</div>
+        <div class="col">Email</div>
+        <!--<div class="col"> start-end Date</div>-->
+        <div class="col">Type</div>
+      </div>
+      <div class="row" *ngFor="let student of students">
+        <!--<div class="col"> {{course.teacherId}}</div>-->
+        <div class="col">{{student.firstName}} {{student.lastName}}</div>
+        <div class="col"> {{student.phone}}</div>
+        <div class="col"> {{student.email}}</div>
+        <!--<div class="col"> {{student.startDate}}-{{student.endDate}}</div>-->
+        <div class="col"> {{student.type}}</div>
+      </div>
+    </div>
+  </div>
+</div>

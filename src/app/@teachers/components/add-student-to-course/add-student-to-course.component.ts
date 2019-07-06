@@ -2,7 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {UserService} from '@candiman/website';
-import {CourseRegistrationService, Timestamp} from '../../../@restapi';
+import {CourseRegistrationService} from '../../../@restapi';
+import {CoursesService} from '../../../@shared/services/courses/courses.service';
 
 @Component({
   selector: 'gm-add-student-to-course',
@@ -17,15 +18,21 @@ export class AddStudentToCourseComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private courseRegistrationService: CourseRegistrationService
+    private courseRegistrationService: CourseRegistrationService,
+    private coursesService: CoursesService
   ) {
+    const courseOptions = this.coursesService.courses.map((couese) => {
+      return {label: couese.name, value: couese.id};
+    });
+
     this.fields = [
       {
         key: 'courseId',
-        type: 'input',
+        type: 'select',
         templateOptions: {
-          label: 'courseId',
-          placeholder: 'Enter courseId',
+          label: 'Select Course',
+          placeholder: '-- course --',
+          options: courseOptions,
           required: true,
         }
       },

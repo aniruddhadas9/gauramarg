@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
@@ -10,6 +10,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class NewUserComponent implements OnInit {
 
+  @Input() type: string;
   loading: boolean;
   newUserForm: FormGroup;
   saveMessage: string;
@@ -20,6 +21,9 @@ export class NewUserComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.type === undefined) {
+      this.type = '';
+    }
   }
 
   createForm() {

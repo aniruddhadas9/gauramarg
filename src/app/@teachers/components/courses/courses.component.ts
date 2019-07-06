@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {Course, CourseService, Timestamp} from '../../../@restapi';
+import {Course, Timestamp} from '../../../@restapi';
 import {UserService} from '@candiman/website';
+import {CoursesService} from '../../../@shared/services/courses/courses.service';
 
 @Component({
   selector: 'gm-course',
@@ -11,7 +12,7 @@ export class CoursesComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private courseService: CourseService
+    private coursesService: CoursesService
   ) {
   }
 
@@ -19,7 +20,7 @@ export class CoursesComponent implements OnInit {
   courses: Array<Course>;
 
   ngOnInit() {
-    this.courseService.getByTeacherIdUsingGET1(this.userService.authorizedUser[0].email).subscribe((courses) => {
+    this.coursesService.getAllCoursesByTeacherId(this.userService.authorizedUser[0].email).subscribe((courses) => {
       console.log(courses);
       this.courses = courses;
     });
