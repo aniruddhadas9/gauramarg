@@ -13,6 +13,8 @@ import {FormlyBootstrapModule} from '@ngx-formly/bootstrap';
 import {StudentListComponent} from './components/student-list/student-list.component';
 import { AddNewStudentComponent } from './components/add-new-student/add-new-student.component';
 import {SharedModule} from '../@shared/shared.module';
+import { AddPaymentByTeacherComponent } from './components/add-payment-by-teacher/add-payment-by-teacher.component';
+import { AddAttendanceByTeacherComponent } from './components/add-attendance-by-teacher/add-attendance-by-teacher.component';
 
 export function minlengthValidationMessage(err, field) {
   return `Should have atleast ${field.templateOptions.minLength} characters`;
@@ -39,7 +41,9 @@ export function maxValidationMessage(err, field) {
     TeachderLeftMenuComponent,
     TeachderDashboardComponent,
     StudentListComponent,
-    AddNewStudentComponent
+    AddNewStudentComponent,
+    AddPaymentByTeacherComponent,
+    AddAttendanceByTeacherComponent
   ],
   imports: [
     CommonModule,

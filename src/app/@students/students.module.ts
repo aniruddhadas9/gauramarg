@@ -6,12 +6,16 @@ import { MarkAttendanceComponent } from './components/mark-attendance/mark-atten
 import { RegisteredCoursesComponent } from './components/registered-courses/registered-courses.component';
 import { StudentDashboardComponent } from './components/student-dashboard/student-dashboard.component';
 import {StudentRoutingModule} from './student-routing.module';
+import { AddPaymentByStudentComponent } from './components/add-payment-by-student/add-payment-by-student.component';
+import { AddAttendanceByStudentComponent } from './components/add-attendance-by-student/add-attendance-by-student.component';
 
 @NgModule({
   declarations: [
     StudentComponent, AttendanceComponent,
     MarkAttendanceComponent, RegisteredCoursesComponent,
-     StudentDashboardComponent],
+     StudentDashboardComponent,
+     AddPaymentByStudentComponent,
+     AddAttendanceByStudentComponent],
   imports: [
     CommonModule,
     StudentRoutingModule
