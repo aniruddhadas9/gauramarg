@@ -12,6 +12,9 @@ import {HttpClientModule} from '@angular/common/http';
 import {AuthModule} from './auth/auth.module';
 import {ApiModule, Configuration} from './@restapi';
 
+export function ApiConfig() {
+  return new Configuration({basePath: environment.restUrl});
+}
 
 @NgModule({
   declarations: [
@@ -25,7 +28,7 @@ import {ApiModule, Configuration} from './@restapi';
       loginUrl: environment.restUrl + '/user/login',
       alertDelayInSeconds: 7
     }),
-    ApiModule.forRoot(() => new Configuration({basePath: environment.restUrl})),
+    ApiModule.forRoot(ApiConfig),
     GauraModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBMIoVYsqVdrlm_IwdKSkLEhpMH7JtEIT8',

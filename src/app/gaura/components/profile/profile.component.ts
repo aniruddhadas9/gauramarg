@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from '@candiman/website';
+import {User} from '../../../@restapi';
 
 @Component({
   selector: 'gm-profile',
@@ -14,7 +15,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
   }
 
-  logout() {
+  logout(user: User) {
     this.userService.authorizedUser = null;
     this.userService.userSubject.next(null);
   }
