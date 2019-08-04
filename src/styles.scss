@@ -15,3 +15,16 @@ $a-tags-hover: 'a:active, a:hover';
 #{$a-tags-hover} {
   color: #c4ffc7;
 }
+
+
+@mixin box-shadow($x-axis: 0, $y-axis: 1px, $blur: 2px, $color: $default) {
+  box-shadow: $x-axis $y-axis $blur $color;
+}
+
+.card {
+  margin: 50px;
+  @include box-shadow(5px, 5px, 5px, #333);
+  .card-header {
+    background: #216b07;
+  }
+}

@@ -1,22 +1,40 @@
-<div class="container-fluid">
-  <ul class="list-group">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <a class="nav-link" [routerLink]="'/teacher/course-list'" routerLinkActive="active">All courses</a>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <a class="nav-link" [routerLink]="'/teacher/register-course'" routerLinkActive="active">Add new course</a>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <a class="nav-link" [routerLink]="'/teacher/add-student'" routerLinkActive="active">Add student to course</a>
-      <span class="badge badge-primary badge-pill">1</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <a class="nav-link" [routerLink]="'/teacher/add-new-student'" routerLinkActive="active">Add new student</a>
-      <span class="badge badge-primary badge-pill">1</span>
-    </li>
-     <li class="list-group-item d-flex justify-content-between align-items-center">
-      <a class="nav-link" [routerLink]="'/teacher/student-list'" routerLinkActive="active">Students</a>
-      <span class="badge badge-primary badge-pill">1</span>
-    </li>
-  </ul>
-</div>
+<p class="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Courses</p>
+
+<ul class="nav flex-column bg-white mb-0">
+  <li class="nav-item">
+    <a [routerLink]="'/teacher/course-list'" routerLinkActive="active" class="nav-link text-dark font-italic bg-light">
+      <i class="fa fa-th-large mr-3 text-primary fa-fw"></i>
+      All courses
+    </a>
+  </li>
+  <li class="nav-item">
+    <a [routerLink]="'/teacher/register-course'" routerLinkActive="active" class="nav-link text-dark font-italic">
+      <i class="fa fa-address-card mr-3 text-primary fa-fw"></i>
+      Add new course
+    </a>
+  </li>
+  <li class="nav-item">
+    <a [routerLink]="'/teacher/add-new-student'" routerLinkActive="active" class="nav-link text-dark font-italic">
+      <i class="fa fa-cubes mr-3 text-primary fa-fw"></i>
+      New student
+    </a>
+  </li>
+  <li class="nav-item">
+    <a [routerLink]="'/teacher/add-student'" routerLinkActive="active" class="nav-link text-dark font-italic">
+      <i class="fa fa-picture-o mr-3 text-primary fa-fw"></i>
+      Student to a course
+    </a>
+  </li>
+</ul>
+
+<p class="text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">Students</p>
+
+<ul class="nav flex-column bg-white mb-0">
+  <li class="nav-item">
+    <a [routerLink]="'/teacher/student-list'" routerLinkActive="active" class="nav-link text-dark font-italic">
+      <i class="fa fa-picture-o mr-3 text-primary fa-fw"></i>
+      All student
+    </a>
+  </li>
+</ul>
+

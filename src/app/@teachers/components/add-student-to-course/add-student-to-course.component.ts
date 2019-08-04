@@ -30,8 +30,8 @@ export class AddStudentToCourseComponent implements OnInit {
         key: 'courseId',
         type: 'select',
         templateOptions: {
-          label: 'Select Course',
-          placeholder: '-- course --',
+          label: 'Select a course',
+          placeholder: '-- courses --',
           options: courseOptions,
           required: true,
         }
@@ -41,7 +41,7 @@ export class AddStudentToCourseComponent implements OnInit {
         type: 'input',
         templateOptions: {
           label: 'studentId',
-          placeholder: 'Enter studentId',
+          placeholder: 'Enter student ID (email)',
           required: true,
         }
       },
@@ -52,7 +52,7 @@ export class AddStudentToCourseComponent implements OnInit {
         hide: true,
         templateOptions: {
           label: 'teacherId',
-          placeholder: 'Enter teacherId',
+          placeholder: 'Enter teacher ID (email)',
           required: true,
         }
       },
@@ -61,7 +61,7 @@ export class AddStudentToCourseComponent implements OnInit {
         type: 'input',
         templateOptions: {
           label: 'notes',
-          placeholder: 'Enter notes',
+          placeholder: 'Notes',
           required: true,
         }
       },
@@ -70,7 +70,7 @@ export class AddStudentToCourseComponent implements OnInit {
         type: 'input',
         templateOptions: {
           label: 'status',
-          placeholder: 'Enter status',
+          placeholder: 'Status',
           required: true,
         }
       },
