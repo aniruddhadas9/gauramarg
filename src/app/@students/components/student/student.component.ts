@@ -1,15 +1,21 @@
 import { Component, OnInit } from '@angular/core';
+import {UserService} from '@candiman/website';
+import {User} from '../../../@restapi';
 
 @Component({
-  selector: 'app-student',
+  selector: 'gm-student',
   templateUrl: './student.component.html',
   styleUrls: ['./student.component.scss']
 })
 export class StudentComponent implements OnInit {
-
-  constructor() { }
+  menu: boolean;
+  user: User;
+  constructor(
+    private userService: UserService,
+  ) { }
 
   ngOnInit() {
+    this.user = this.userService.authorizedUser[0];
   }
 
 }

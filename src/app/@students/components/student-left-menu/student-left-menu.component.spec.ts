@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MarkAttendanceComponent } from './mark-attendance.component';
+import { StudentLeftMenuComponent } from './student-left-menu.component';
 
-describe('MarkAttendanceComponent', () => {
-  let component: MarkAttendanceComponent;
-  let fixture: ComponentFixture<MarkAttendanceComponent>;
+describe('StudentLeftMenuComponent', () => {
+  let component: StudentLeftMenuComponent;
+  let fixture: ComponentFixture<StudentLeftMenuComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MarkAttendanceComponent ]
+      declarations: [ StudentLeftMenuComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MarkAttendanceComponent);
+    fixture = TestBed.createComponent(StudentLeftMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

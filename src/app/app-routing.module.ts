@@ -18,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: 'auth',
-    loadChildren: './auth/auth.module#AuthModule',
+    loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),
   },
   {
     path: 'student',
@@ -29,10 +29,6 @@ const routes: Routes = [
     path: 'teacher',
     canActivate: [AuthGuardService],
     loadChildren: () => import('./@teachers/teachers.module').then(m => m.TeachersModule),
-  },
-  {
-    path: 'auth',
-    loadChildren: './auth/auth.module#AuthModule',
   }
 ];
 

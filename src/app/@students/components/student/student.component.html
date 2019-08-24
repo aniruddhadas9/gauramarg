@@ -1,3 +1,26 @@
-<p>
-  student works!
-</p>
+<div class="teacher">
+  <div class="vertical-nav bg-white" id="sidebar" [ngClass]="{'active': menu}">
+    <div class="py-4 px-3 mb-4 bg-light">
+      <div class="media d-flex align-items-center"><img
+        src="https://res.cloudinary.com/mhmd/image/upload/v1556074849/avatar-1_tcnd60.png" alt="..." width="65"
+        class="mr-3 rounded-circle img-thumbnail shadow-sm">
+        <div class="media-body">
+          <h4 class="m-0">{{user.firstName}} {{user.lastName}}</h4>
+          <p class="font-weight-light text-muted mb-0">{{user.email}}</p>
+        </div>
+      </div>
+    </div>
+    <gm-student-left-menu></gm-student-left-menu>
+  </div>
+  <div class="page-content" id="content" [ngClass]="{'active': menu}">
+    <!-- Toggle button -->
+    <button id="sidebarCollapse"
+            (click)="menu=!menu"
+            type="button" class="btn btn-light bg-white rounded-pill shadow-sm px-4 mb-4">
+      <i class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold">Toggle</small>
+    </button>
+    <div class="separator"></div>
+    <router-outlet></router-outlet>
+  </div>
+</div>
+

@@ -15,6 +15,7 @@ import { AddNewStudentComponent } from './components/add-new-student/add-new-stu
 import {SharedModule} from '../@shared/shared.module';
 import { AddPaymentByTeacherComponent } from './components/add-payment-by-teacher/add-payment-by-teacher.component';
 import { AddAttendanceByTeacherComponent } from './components/add-attendance-by-teacher/add-attendance-by-teacher.component';
+import { ViewAttendanceByTeacherComponent } from './components/view-attendance-by-teacher/view-attendance-by-teacher.component';
 
 export function minlengthValidationMessage(err, field) {
   return `Should have atleast ${field.templateOptions.minLength} characters`;
@@ -43,7 +44,8 @@ export function maxValidationMessage(err, field) {
     StudentListComponent,
     AddNewStudentComponent,
     AddPaymentByTeacherComponent,
-    AddAttendanceByTeacherComponent
+    AddAttendanceByTeacherComponent,
+    ViewAttendanceByTeacherComponent
   ],
   imports: [
     CommonModule,

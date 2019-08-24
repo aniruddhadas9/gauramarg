@@ -7,6 +7,8 @@ import {RegisterCourseComponent} from './components/register-course/register-cou
 import {AddStudentToCourseComponent} from './components/add-student-to-course/add-student-to-course.component';
 import {StudentListComponent} from './components/student-list/student-list.component';
 import {AddNewStudentComponent} from './components/add-new-student/add-new-student.component';
+import {AddAttendanceByTeacherComponent} from './components/add-attendance-by-teacher/add-attendance-by-teacher.component';
+import {ViewAttendanceByTeacherComponent} from './components/view-attendance-by-teacher/view-attendance-by-teacher.component';
 
 const routes: Routes = [
   {
@@ -36,6 +38,14 @@ const routes: Routes = [
       {
         path: 'student-list',
         component: StudentListComponent,
+      },
+      {
+        path: 'add-attendance',
+        component: AddAttendanceByTeacherComponent,
+      },
+      {
+        path: 'view-attendance',
+        component: ViewAttendanceByTeacherComponent,
       },
     ],
   },

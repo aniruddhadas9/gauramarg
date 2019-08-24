@@ -14,12 +14,6 @@
     </a>
   </li>
   <li class="nav-item">
-    <a [routerLink]="'/teacher/add-new-student'" routerLinkActive="active" class="nav-link text-dark font-italic">
-      <i class="fa fa-cubes mr-3 text-primary fa-fw"></i>
-      New student
-    </a>
-  </li>
-  <li class="nav-item">
     <a [routerLink]="'/teacher/add-student'" routerLinkActive="active" class="nav-link text-dark font-italic">
       <i class="fa fa-picture-o mr-3 text-primary fa-fw"></i>
       Student to a course
@@ -34,6 +28,29 @@
     <a [routerLink]="'/teacher/student-list'" routerLinkActive="active" class="nav-link text-dark font-italic">
       <i class="fa fa-picture-o mr-3 text-primary fa-fw"></i>
       All student
+    </a>
+  </li>
+  <li class="nav-item">
+    <a [routerLink]="'/teacher/add-new-student'" routerLinkActive="active" class="nav-link text-dark font-italic">
+      <i class="fa fa-cubes mr-3 text-primary fa-fw"></i>
+      New student
+    </a>
+  </li>
+</ul>
+
+<p class="text-gray font-weight-bold text-uppercase px-3 small py-4 mb-0">Attendance</p>
+
+<ul class="nav flex-column bg-white mb-0">
+  <li class="nav-item">
+    <a [routerLink]="'/teacher/add-attendance'" routerLinkActive="active" class="nav-link text-dark font-italic">
+      <i class="fa fa-picture-o mr-3 text-primary fa-fw"></i>
+      Mark Attendance
+    </a>
+  </li>
+  <li class="nav-item">
+    <a [routerLink]="'/teacher/view-attendance'" routerLinkActive="active" class="nav-link text-dark font-italic">
+      <i class="fa fa-cubes mr-3 text-primary fa-fw"></i>
+      View Attendance
     </a>
   </li>
 </ul>
