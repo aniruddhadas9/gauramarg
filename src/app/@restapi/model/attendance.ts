@@ -9,13 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Timestamp } from './timestamp';
 
 
 export interface Attendance { 
     approved?: boolean;
-    classTime?: Timestamp;
+    classDate?: Date;
+    classTime?: string;
+    classTimeString?: string;
     courseId?: string;
+    id?: string;
     notes?: string;
     studentId?: string;
     teacherId?: string;

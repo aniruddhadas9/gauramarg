@@ -13,9 +13,8 @@
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent }                           from '@angular/common/http';
-import { CustomHttpUrlEncodingCodec }                        from '../encoder';
-
+         HttpResponse, HttpEvent, HttpParameterCodec }       from '@angular/common/http';
+import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { Resource } from '../model/resource';
@@ -32,6 +31,7 @@ export class FileService {
     protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
+    public encoder: HttpParameterCodec;
 
     constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
 
@@ -42,6 +42,7 @@ export class FileService {
         } else {
             this.configuration.basePath = basePath || this.basePath;
         }
+        this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
     }
 
     /**
@@ -61,7 +62,6 @@ export class FileService {
 
     /**
      * handleFileUpload
-     * 
      * @param file file
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -101,7 +101,7 @@ export class FileService {
         if (useForm) {
             formParams = new FormData();
         } else {
-            formParams = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+            formParams = new HttpParams({encoder: this.encoder});
         }
 
         if (file !== undefined) {
@@ -121,7 +121,6 @@ export class FileService {
 
     /**
      * listUploadedFiles
-     * 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -141,9 +140,6 @@ export class FileService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<string>(`${this.configuration.basePath}/file/`,
             {
@@ -157,7 +153,6 @@ export class FileService {
 
     /**
      * serveFile
-     * 
      * @param filename filename
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -181,9 +176,6 @@ export class FileService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Resource>(`${this.configuration.basePath}/file/${encodeURIComponent(String(filename))}`,
             {
@@ -197,7 +189,6 @@ export class FileService {
 
     /**
      * UploadFile
-     * 
      * @param requestHeadersETag 
      * @param requestHeadersAcceptCharset0Registered 
      * @param requestHeadersAcceptLanguageAsLocales0ISO3Country 
@@ -317,7 +308,7 @@ export class FileService {
     public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<string>>;
     public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
 
-        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        let queryParameters = new HttpParams({encoder: this.encoder});
         if (requestHeadersETag !== undefined && requestHeadersETag !== null) {
             queryParameters = queryParameters.set('requestHeaders.ETag', <any>requestHeadersETag);
         }
@@ -689,9 +680,6 @@ export class FileService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.post<string>(`${this.configuration.basePath}/file/upload`,
             null,

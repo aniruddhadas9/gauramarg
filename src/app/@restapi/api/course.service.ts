@@ -13,9 +13,8 @@
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent }                           from '@angular/common/http';
-import { CustomHttpUrlEncodingCodec }                        from '../encoder';
-
+         HttpResponse, HttpEvent, HttpParameterCodec }       from '@angular/common/http';
+import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { Course } from '../model/course';
@@ -33,6 +32,7 @@ export class CourseService {
     protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
+    public encoder: HttpParameterCodec;
 
     constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
 
@@ -43,26 +43,13 @@ export class CourseService {
         } else {
             this.configuration.basePath = basePath || this.basePath;
         }
+        this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
     }
 
-    /**
-     * @param consumes string[] mime-types
-     * @return true: consumes contains 'multipart/form-data', false: otherwise
-     */
-    private canConsumeForm(consumes: string[]): boolean {
-        const form = 'multipart/form-data';
-        for (const consume of consumes) {
-            if (form === consume) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 
     /**
      * coursesByKeys
-     * 
      * @param course course
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -86,6 +73,7 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
+
         // to determine the Content-Type header
         const consumes: string[] = [
             'application/json'
@@ -108,7 +96,6 @@ export class CourseService {
 
     /**
      * delete
-     * 
      * @param id id
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -121,7 +108,7 @@ export class CourseService {
             throw new Error('Required parameter id was null or undefined when calling deleteUsingDELETE1.');
         }
 
-        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        let queryParameters = new HttpParams({encoder: this.encoder});
         if (id !== undefined && id !== null) {
             queryParameters = queryParameters.set('id', <any>id);
         }
@@ -137,9 +124,6 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.delete<Message>(`${this.configuration.basePath}/course`,
             {
@@ -154,7 +138,6 @@ export class CourseService {
 
     /**
      * getByLocation
-     * 
      * @param location location
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -167,7 +150,7 @@ export class CourseService {
             throw new Error('Required parameter location was null or undefined when calling getByLocationUsingGET.');
         }
 
-        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        let queryParameters = new HttpParams({encoder: this.encoder});
         if (location !== undefined && location !== null) {
             queryParameters = queryParameters.set('location', <any>location);
         }
@@ -183,9 +166,6 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<Course>>(`${this.configuration.basePath}/course/location`,
             {
@@ -200,7 +180,6 @@ export class CourseService {
 
     /**
      * getByName
-     * 
      * @param name name
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -213,7 +192,7 @@ export class CourseService {
             throw new Error('Required parameter name was null or undefined when calling getByNameUsingGET.');
         }
 
-        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        let queryParameters = new HttpParams({encoder: this.encoder});
         if (name !== undefined && name !== null) {
             queryParameters = queryParameters.set('name', <any>name);
         }
@@ -229,9 +208,6 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<Course>>(`${this.configuration.basePath}/course/name`,
             {
@@ -246,7 +222,6 @@ export class CourseService {
 
     /**
      * getByStartDate
-     * 
      * @param startDate startDate
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -259,7 +234,7 @@ export class CourseService {
             throw new Error('Required parameter startDate was null or undefined when calling getByStartDateUsingGET.');
         }
 
-        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        let queryParameters = new HttpParams({encoder: this.encoder});
         if (startDate !== undefined && startDate !== null) {
             queryParameters = queryParameters.set('startDate', <any>startDate);
         }
@@ -275,9 +250,6 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<Course>>(`${this.configuration.basePath}/course/startDate`,
             {
@@ -292,7 +264,6 @@ export class CourseService {
 
     /**
      * getByTeacherId
-     * 
      * @param teacherId teacherId
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -305,7 +276,7 @@ export class CourseService {
             throw new Error('Required parameter teacherId was null or undefined when calling getByTeacherIdUsingGET1.');
         }
 
-        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        let queryParameters = new HttpParams({encoder: this.encoder});
         if (teacherId !== undefined && teacherId !== null) {
             queryParameters = queryParameters.set('teacherId', <any>teacherId);
         }
@@ -321,9 +292,6 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<Course>>(`${this.configuration.basePath}/course/teacherId`,
             {
@@ -338,7 +306,6 @@ export class CourseService {
 
     /**
      * get
-     * 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -358,9 +325,6 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<Course>>(`${this.configuration.basePath}/course`,
             {
@@ -374,7 +338,6 @@ export class CourseService {
 
     /**
      * post
-     * 
      * @param course course
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -398,6 +361,7 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
+
         // to determine the Content-Type header
         const consumes: string[] = [
             'application/json'
@@ -420,7 +384,6 @@ export class CourseService {
 
     /**
      * put
-     * 
      * @param course course
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -444,6 +407,7 @@ export class CourseService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
+
         // to determine the Content-Type header
         const consumes: string[] = [
             'application/json'
@@ -466,7 +430,6 @@ export class CourseService {
 
     /**
      * update
-     * 
      * @param course course
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -489,6 +452,7 @@ export class CourseService {
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
+
 
         // to determine the Content-Type header
         const consumes: string[] = [

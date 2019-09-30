@@ -18,6 +18,7 @@ export interface Payment {
     id?: string;
     notes?: string;
     paymentTime?: Timestamp;
+    paymentTimeString?: string;
     studentId?: string;
     teacherId?: string;
 }

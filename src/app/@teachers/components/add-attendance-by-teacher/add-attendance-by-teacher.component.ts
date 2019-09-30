@@ -32,6 +32,7 @@ export class AddAttendanceByTeacherComponent implements OnInit {
   ) {
     this.attendanceForm = this.formBuilder.group({
       courseId: new FormControl('', [Validators.required]),
+      classDate: new FormControl(''),
       classTime: new FormControl(''),
       attendanceList: new FormArray([], this.minSelectedCheckboxes(1)),
     });
@@ -74,7 +75,7 @@ export class AddAttendanceByTeacherComponent implements OnInit {
       if (users) {
         this.attendanceList = users && users.map((value) => {
           // return {key: value.email, value: value.firstName + ' ' + value.lastName + '(' + value.email + ')'};
-          return {id: value.email, name: value.firstName + ' ' + value.lastName + '(' + value.email + ')'};
+          return {id: value.email || '', name: value.firstName + ' ' + value.lastName + '(' + value.email + ')'};
         });
         this.addCheckboxes(this.attendanceList);
       }
@@ -93,7 +94,7 @@ export class AddAttendanceByTeacherComponent implements OnInit {
   minSelectedCheckboxes(min = 1) {
     const validator: ValidatorFn = (formArray: FormArray) => {
       const totalSelected = formArray.controls
-      // get a list of checkbox values (boolean)
+        // get a list of checkbox values (boolean)
         .map(control => control.value)
         // total up the number of checked checkboxes
         .reduce((prev, next) => next ? prev + next : prev, 0);
@@ -101,9 +102,9 @@ export class AddAttendanceByTeacherComponent implements OnInit {
       // if the total is not greater than the minimum, return the error message
       return totalSelected >= min ? null : {required: true};
     };
-
     return validator;
   }
+
   submit(model) {
     console.log(model);
     if (this.form.valid) {
@@ -126,12 +127,14 @@ export class AddAttendanceByTeacherComponent implements OnInit {
       const attendance: Attendance = {
         approved: true,
         courseId: '' + this.attendanceForm.getRawValue().courseId,
+        classDate: this.attendanceForm.getRawValue().classDate,
         classTime: this.attendanceForm.getRawValue().classTime,
         notes: 'Added by teacher',
         studentId: student,
         teacherId: this.userService.authorizedUser[0].email,
       };
 
+      // Save the data
       this.attendanceService.postUsingPOST(attendance).subscribe((response) => {
         console.log('posted data to reset the form now', response);
       });
