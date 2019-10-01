@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from '@candiman/website';
 import {CoursesService} from '../../../@shared/services/courses/courses.service';
-import {AttendanceService, Course, CourseRegistration, CourseRegistrationService, User} from '../../../@restapi';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Attendance, AttendanceService, Course, CourseRegistration, CourseRegistrationService} from '../../../@restapi';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 
 @Component({
@@ -17,7 +17,7 @@ export class ViewAttendanceByTeacherComponent implements OnInit {
   fields: FormlyFieldConfig[];
   courseRegistration: CourseRegistration;
   courseOptions: Array<{ label: string, value: string }>;
-  attendanceList = [];
+  attendanceList = [] as Array<Attendance>;
   attendanceForm: FormGroup;
 
   constructor(
@@ -27,9 +27,19 @@ export class ViewAttendanceByTeacherComponent implements OnInit {
     private attendanceService: AttendanceService,
     private formBuilder: FormBuilder
   ) {
+    this.attendanceForm = this.formBuilder.group({
+      courseId: new FormControl('', [Validators.required]),
+      classDate: new FormControl(''),
+      classTime: new FormControl(''),
+      attendanceList: new FormArray([]),
+    });
   }
 
   ngOnInit() {
+    // Get all attendances of the teacher
+    this.getAttendanceByTeacherId();
+
+    // Get all available courses to filter attenances
     this.courseOptions = this.coursesService.courses.map((couese: Course) => {
       return {label: couese.name, value: couese.id};
     });
@@ -38,27 +48,31 @@ export class ViewAttendanceByTeacherComponent implements OnInit {
 
   changeCourse(courseId: string) {
     console.log(courseId);
-    this.courseRegistrationService.getStudentsByCourseIdUsingGET(courseId).subscribe((users: Array<User>) => {
-      console.log('students of the course %o is %o', courseId, users);
-      if (users) {
-        this.attendanceList = users && users.map((value) => {
-          // return {key: value.email, value: value.firstName + ' ' + value.lastName + '(' + value.email + ')'};
-          return {id: value.email || '', name: value.firstName + ' ' + value.lastName + '(' + value.email + ')'};
-        });
-      }
+    this.getAttendanceByCourseId(courseId).subscribe((attendances: Array<Attendance>) => {
+      console.log('attendances: %o', attendances);
+      this.attendanceList = attendances;
     });
   }
 
   getAttendanceByCourseId(courseID: string) {
-    this.courseRegistrationService.getStudentsByCourseIdUsingGET(courseID)
-      .subscribe((values) => {
-        if (values) {
-          const students = values && values.map((value) => {
-            // return {key: value.email, value: value.firstName + ' ' + value.lastName + '(' + value.email + ')'};
-            return {id: value.email, name: value.firstName + ' ' + value.lastName + '(' + value.email + ')'};
-          });
-        }
+    return this.attendanceService.getByCourseIdUsingGET(courseID);
+  }
+
+  getAttendanceByTeacherId() {
+    this.attendanceService.getByTeacherIdUsingGET(this.userService.authorizedUser[0].email)
+      .subscribe((attendances: Array<Attendance>) => {
+        console.log('attendances: %o', attendances);
+        this.attendanceList = attendances;
       });
+  }
+
+  search(model) {
+    console.log(model);
+    console.log('searcherd:%o', model);
+    this.attendanceService.getByFilterUsingPOST(model).subscribe((data)=>{
+      console.log('searcherd:%o', data);
+
+    })
   }
 
 }

@@ -35,13 +35,14 @@ export class AttendanceService {
     public encoder: HttpParameterCodec;
 
     constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
-
         if (configuration) {
             this.configuration = configuration;
-            this.configuration.basePath = configuration.basePath || basePath || this.basePath;
-
-        } else {
-            this.configuration.basePath = basePath || this.basePath;
+        }
+        if (typeof this.configuration.basePath !== 'string') {
+            if (typeof basePath !== 'string') {
+                basePath = this.basePath;
+            }
+            this.configuration.basePath = basePath;
         }
         this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
     }
@@ -91,6 +92,55 @@ export class AttendanceService {
     }
 
     /**
+     * getByCourseIdAndStudentId
+     * @param courseId courseId
+     * @param studentId studentId
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'body', reportProgress?: boolean): Observable<Array<Attendance>>;
+    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Attendance>>>;
+    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Attendance>>>;
+    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+        if (courseId === null || courseId === undefined) {
+            throw new Error('Required parameter courseId was null or undefined when calling getByCourseIdAndStudentIdUsingGET.');
+        }
+        if (studentId === null || studentId === undefined) {
+            throw new Error('Required parameter studentId was null or undefined when calling getByCourseIdAndStudentIdUsingGET.');
+        }
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (courseId !== undefined && courseId !== null) {
+            queryParameters = queryParameters.set('courseId', <any>courseId);
+        }
+        if (studentId !== undefined && studentId !== null) {
+            queryParameters = queryParameters.set('studentId', <any>studentId);
+        }
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        const httpHeaderAccepts: string[] = [
+            '*/*'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        return this.httpClient.get<Array<Attendance>>(`${this.configuration.basePath}/attendance/courseIdAndStudentId`,
+            {
+                params: queryParameters,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * getByCourseId
      * @param courseId courseId
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -124,6 +174,52 @@ export class AttendanceService {
         return this.httpClient.get<Array<Attendance>>(`${this.configuration.basePath}/attendance/courseId`,
             {
                 params: queryParameters,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * getByFilter
+     * @param attendance attendance
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getByFilterUsingPOST(attendance: Attendance, observe?: 'body', reportProgress?: boolean): Observable<Array<Attendance>>;
+    public getByFilterUsingPOST(attendance: Attendance, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Attendance>>>;
+    public getByFilterUsingPOST(attendance: Attendance, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Attendance>>>;
+    public getByFilterUsingPOST(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+        if (attendance === null || attendance === undefined) {
+            throw new Error('Required parameter attendance was null or undefined when calling getByFilterUsingPOST.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        // to determine the Accept header
+        const httpHeaderAccepts: string[] = [
+            '*/*'
+        ];
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        return this.httpClient.post<Array<Attendance>>(`${this.configuration.basePath}/attendance/filter`,
+            attendance,
+            {
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,

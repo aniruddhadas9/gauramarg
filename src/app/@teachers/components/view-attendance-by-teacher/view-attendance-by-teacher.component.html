@@ -1,15 +1,15 @@
 <div class="container-fluid">
   <div class="card">
     <div class="card-header">
-      <h2>Add Student</h2>
-      <small>Add Student to a course you teach</small>
+      <h4>Filter</h4>
+      <small>Filter attendance</small>
     </div>
     <div class="card-body">
       <!--<form [formGroup]="form" (ngSubmit)="submit(model)">
         <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>-->
-      <form [formGroup]="attendanceForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="attendanceForm" (ngSubmit)="search(model)">
         <div class="form-group">
           <label for="coursesId">Email address</label>
           <select id="coursesId" formControlName="courseId" (ngModelChange)="changeCourse($event)">
@@ -27,19 +27,34 @@
           <label for="classTime">Class time</label>
           <input type="time" formControlName="classTime" class="form-control" id="classTime"/>
         </div>
-        <div class="form-group">
-          <label for="classDate">Students in the class</label>
-          <div class="form-check" formArrayName="attendanceList"
-               *ngFor="let attendance of attendanceForm.controls.attendanceList.controls; let i = index">
-            <input class="form-check-input" type="checkbox" [formControlName]="i">
-            <label class="form-check-label">
-              {{attendanceList[i].name}}
-            </label>
-          </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Search</button>
       </form>
+    </div>
+  </div>
+
+
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header">Attendances</div>
+      <div class="card-body">
+        <div class="row heading">
+          <!--<div class="col"> teacherId</div>-->
+          <div class="col">Student ID</div>
+          <div class="col">Date time</div>
+          <div class="col">Time</div>
+          <div class="col">Approved</div>
+          <div class="col">Notes</div>
+        </div>
+        <div class="row" *ngFor="let attendance of attendanceList">
+          <!--<div class="col"> {{course.teacherId}}</div>-->
+          <div class="col">{{attendance && attendance.studentId}}</div>
+          <div class="col"> {{attendance && attendance.classTimeString}}</div>
+          <div class="col"> {{attendance && attendance.classTime}}</div>
+          <div class="col"> {{attendance && attendance.approved}}</div>
+          <div class="col"> {{attendance && attendance.notes}}</div>
+        </div>
+      </div>
     </div>
   </div>
 
