@@ -13,9 +13,8 @@
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent }                           from '@angular/common/http';
-import { CustomHttpUrlEncodingCodec }                        from '../encoder';
-
+         HttpResponse, HttpEvent, HttpParameterCodec }       from '@angular/common/http';
+import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { Message } from '../model/message';
@@ -33,6 +32,7 @@ export class UserService {
     protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
+    public encoder: HttpParameterCodec;
 
     constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
 
@@ -43,26 +43,13 @@ export class UserService {
         } else {
             this.configuration.basePath = basePath || this.basePath;
         }
+        this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
     }
 
-    /**
-     * @param consumes string[] mime-types
-     * @return true: consumes contains 'multipart/form-data', false: otherwise
-     */
-    private canConsumeForm(consumes: string[]): boolean {
-        const form = 'multipart/form-data';
-        for (const consume of consumes) {
-            if (form === consume) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 
     /**
      * deleteByPost
-     * 
      * @param email email
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -86,6 +73,7 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
+
         // to determine the Content-Type header
         const consumes: string[] = [
             'application/json'
@@ -108,7 +96,6 @@ export class UserService {
 
     /**
      * delete
-     * 
      * @param email email
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -121,7 +108,7 @@ export class UserService {
             throw new Error('Required parameter email was null or undefined when calling deleteUsingDELETE5.');
         }
 
-        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        let queryParameters = new HttpParams({encoder: this.encoder});
         if (email !== undefined && email !== null) {
             queryParameters = queryParameters.set('email', <any>email);
         }
@@ -137,9 +124,6 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.delete<Message>(`${this.configuration.basePath}/user`,
             {
@@ -154,7 +138,6 @@ export class UserService {
 
     /**
      * getByEmail
-     * 
      * @param email email
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -167,7 +150,7 @@ export class UserService {
             throw new Error('Required parameter email was null or undefined when calling getByEmailUsingGET.');
         }
 
-        let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
+        let queryParameters = new HttpParams({encoder: this.encoder});
         if (email !== undefined && email !== null) {
             queryParameters = queryParameters.set('email', <any>email);
         }
@@ -183,9 +166,6 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<User>>(`${this.configuration.basePath}/user/email`,
             {
@@ -200,7 +180,6 @@ export class UserService {
 
     /**
      * getByName
-     * 
      * @param firstName firstName
      * @param lastName lastName
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -228,9 +207,6 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<User>>(`${this.configuration.basePath}/user/firstName/${encodeURIComponent(String(firstName))}/lastName/${encodeURIComponent(String(lastName))}`,
             {
@@ -244,7 +220,6 @@ export class UserService {
 
     /**
      * getByPhone
-     * 
      * @param phone phone
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -268,9 +243,6 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<User>>(`${this.configuration.basePath}/user/phone/${encodeURIComponent(String(phone))}`,
             {
@@ -284,7 +256,6 @@ export class UserService {
 
     /**
      * get
-     * 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -304,9 +275,6 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-        ];
 
         return this.httpClient.get<Array<User>>(`${this.configuration.basePath}/user`,
             {
@@ -320,7 +288,6 @@ export class UserService {
 
     /**
      * login
-     * 
      * @param user user
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -344,6 +311,7 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
+
         // to determine the Content-Type header
         const consumes: string[] = [
             'application/json'
@@ -366,7 +334,6 @@ export class UserService {
 
     /**
      * post
-     * 
      * @param user user
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -390,6 +357,7 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
+
         // to determine the Content-Type header
         const consumes: string[] = [
             'application/json'
@@ -412,7 +380,6 @@ export class UserService {
 
     /**
      * put
-     * 
      * @param user user
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -436,6 +403,7 @@ export class UserService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
+
         // to determine the Content-Type header
         const consumes: string[] = [
             'application/json'
@@ -458,7 +426,6 @@ export class UserService {
 
     /**
      * update
-     * 
      * @param user user
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -481,6 +448,7 @@ export class UserService {
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
+
 
         // to determine the Content-Type header
         const consumes: string[] = [

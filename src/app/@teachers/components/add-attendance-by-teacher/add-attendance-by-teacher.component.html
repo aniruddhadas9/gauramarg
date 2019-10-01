@@ -9,7 +9,7 @@
         <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>-->
-      <form [formGroup]="attendanceForm" (ngSubmit)="onSubmit()" >
+      <form [formGroup]="attendanceForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label for="coursesId">Email address</label>
           <select id="coursesId" formControlName="courseId" (ngModelChange)="changeCourse($event)">
@@ -17,18 +17,25 @@
             <option *ngFor="let opt of courseOptions; let i = index" [value]="opt.value">{{opt.label}}</option>
           </select>
           <small id="emailHelp" class="form-text text-muted">Select the course to add attendance of students</small>
-<!--          <div class="errorMessage" *ngIf="!isValid">{{courseId}} is required</div>-->
+          <!--<div class="errorMessage" *ngIf="!isValid">{{courseId}} is required</div>-->
+        </div>
+        <div class="form-group">
+          <label for="classDate">Class date</label>
+          <input type="date" formControlName="classDate" class="form-control" id="classDate"/>
         </div>
         <div class="form-group">
           <label for="classTime">Class time</label>
-          <input type="date" formControlName="classTime" class="form-control" id="classTime"/>
+          <input type="time" formControlName="classTime" class="form-control" id="classTime"/>
         </div>
-        <div class="form-check" formArrayName="attendanceList"
-             *ngFor="let attendance of attendanceForm.controls.attendanceList.controls; let i = index">
-          <input class="form-check-input" type="checkbox" [formControlName]="i">
-          <label class="form-check-label">
-            {{attendanceList[i].name}}
-          </label>
+        <div class="form-group">
+          <label for="classDate">Students in the class</label>
+          <div class="form-check" formArrayName="attendanceList"
+               *ngFor="let attendance of attendanceForm.controls.attendanceList.controls; let i = index">
+            <input class="form-check-input" type="checkbox" [formControlName]="i">
+            <label class="form-check-label">
+              {{attendanceList[i].name}}
+            </label>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
