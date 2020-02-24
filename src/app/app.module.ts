@@ -11,6 +11,7 @@ import {environment} from '../environments/environment';
 import {HttpClientModule} from '@angular/common/http';
 import {AuthModule} from './auth/auth.module';
 import {ApiModule, Configuration} from './@restapi';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
 export function ApiConfig() {
   return new Configuration({basePath: environment.restUrl});
@@ -23,6 +24,7 @@ export function ApiConfig() {
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FontAwesomeModule,
     // SocialLoginModule,
     WebsiteModule.forRoot({
       loginUrl: environment.restUrl + '/user/login',

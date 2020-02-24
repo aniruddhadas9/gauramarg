@@ -5,18 +5,15 @@ import {ActivatedRoute, NavigationCancel, NavigationEnd, NavigationError, Naviga
 import {filter, tap} from 'rxjs/operators';
 import {
   AlertService,
-  ChangeLocationModelComponent,
+  ChangeLocationModelComponent, DangerAlert,
   Footer,
   GoogleAnalyticsService,
   Header,
-  MapService,
+  HeaderService,
+  MapService, SuccessAlert,
   UserService
 } from '@candiman/website';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {takeWhile} from 'rxjs/internal/operators/takeWhile';
-
-// import {NbAuthResult, NbAuthService} from '@nebular/auth';
-
 
 @Component({
   selector: 'gm-root',
@@ -25,7 +22,7 @@ import {takeWhile} from 'rxjs/internal/operators/takeWhile';
 })
 export class AppComponent implements OnInit {
   coordinates: Coordinates;
-  title = 'cfs';
+  title = 'Gaura marg';
   isLoading: boolean;
 
   header: Header;
@@ -39,12 +36,12 @@ export class AppComponent implements OnInit {
     private httpClient: HttpClient,
     private mapService: MapService,
     private ngbModal: NgbModal,
-    private alerter: AlertService,
     private router: Router,
     private ga: GoogleAnalyticsService,
     public userService: UserService,
     private activatedRoute: ActivatedRoute,
     private alertService: AlertService,
+    private headerService: HeaderService,
     // private googleApiService: GoogleApiService,
     // private googleAuthService: GoogleAuthService,
     // private authService: AuthService,
@@ -55,50 +52,49 @@ export class AppComponent implements OnInit {
     this.userService.userSubject.subscribe((user: any | Array<object>) => {
       console.log(user);
       if (user === null) {
-        this.header.links.rightLinks[0].hidden = true;
-        this.header.links.rightLinks[1].hidden = true;
-        this.header.links.rightLinks[2].hidden = true;
-        this.header.links.rightLinks[3].hidden = true;
-        this.header.links.rightLinks[4].hidden = true;
-        this.header.links.rightLinks[5].hidden = true;
-        this.header.links.rightLinks[6].hidden = true;
-        this.header.links.rightLinks[7].hidden = false;
-        this.alertService.alert({
-          title: 'Logout success!',
-          subTitle: 'You are successfully loggedout.',
-          text: user,
-          type: 'success',
-          closeDelay: 30
-        });
+        this.headerService.rightLinks.next([
+          {label: 'Login', url: '/login'},
+        ]);
+        this.alertService.alert(new SuccessAlert('Logout success!', 'You are successfully loggedout.', user, 30));
       } else if (user.length > 0) {
         if (user[0].type === 'admin') {
-          this.header.links.rightLinks[0].hidden = false;
-          this.header.links.rightLinks[1].hidden = false;
-          this.header.links.rightLinks[2].hidden = false;
-          this.header.links.rightLinks[3].hidden = false;
-          this.header.links.rightLinks[4].hidden = false;
-          this.header.links.rightLinks[5].hidden = false;
-          this.header.links.rightLinks[6].hidden = false;
-          this.header.links.rightLinks[7].hidden = true;
+          this.headerService.rightLinks.next([
+            {label: 'Teachers', url: '/teacher'},
+            {label: 'Students', url: '/student'},
+            {label: 'Profile', url: '/profile'},
+          ]);
         } else if (user[0].type === 'operator') {
-          this.header.links.rightLinks[0].hidden = false;
-          this.header.links.rightLinks[1].hidden = false;
-          this.header.links.rightLinks[2].hidden = true;
-          this.header.links.rightLinks[3].hidden = true;
-          this.header.links.rightLinks[4].hidden = true;
-          this.header.links.rightLinks[5].hidden = true;
-          this.header.links.rightLinks[6].hidden = false;
-          this.header.links.rightLinks[7].hidden = true;
+          this.headerService.rightLinks.next([
+            {label: 'Admin', url: '/admin'},
+            {label: 'Guest entry', url: '/holi'},
+            {label: 'Parking', url: '/parking'},
+            {label: 'Privacy', url: '/privacy'},
+            {label: 'Upload file', url: '/csv-upload'},
+            {label: 'Users', url: '/user-manage'},
+            {label: 'Event status', url: '/holi-statics'},
+            {label: 'search', url: '/holi-manage'},
+            {label: 'NH Family', url: '/nhfamily'},
+          ]);
+        } else if (user[0].type === 'teacher') {
+          this.headerService.rightLinks.next([
+            {label: 'Teachers', url: '/teacher'},
+            {label: 'Students', url: '/student'},
+            {label: 'Add new user', url: '/user-manage'},
+            {label: 'Profile', url: '/profile'},
+          ]);
+        } else if (user[0].type === 'student') {
+          this.headerService.rightLinks.next([
+            {label: 'Students', url: '/student'},
+            {label: 'Teachers', url: '/teacher'},
+            {label: 'Add new user', url: '/user-manage'},
+            {label: 'Profile', url: '/profile'},
+          ]);
         }
 
       } else {
-        this.alertService.alert({
-          title: 'Login failure!',
-          subTitle: 'Unable to login! Please try again or contact support team.',
-          text: user,
-          type: 'danger',
-          closeDelay: 30
-        });
+        this.alertService
+          .alert(new DangerAlert('Login failure!', 'Unable to login! Please try again or contact support team.',
+            user, 30));
       }
     });
 
@@ -120,21 +116,7 @@ export class AppComponent implements OnInit {
       },
       links: {
         rightLinks: [
-          {label: 'Teachers', url: '/teacher', hidden: true},
-          {label: 'Students', url: '/student', hidden: true},
-          {label: 'Admin', url: '/admin', hidden: true},
-          // {label: 'Guest entry', url: '/holi', hidden: true},
-          // {label: 'Parking', url: '/parking', hidden: true},
-          // {label: 'Privacy', url: '/privacy', hidden: false},
-          // {label: 'Upload file', url: '/csv-upload', hidden: true},
-          // {label: 'Users', url: '/user-manage', hidden: true},
-          // {label: 'Event status', url: '/holi-statics', hidden: true},
-          // {label: 'search', url: '/holi-manage', hidden: true},
-          // {label: 'NH Family', url: '/nhfamily', hidden: false},
-          {label: 'Profile', url: '/profile', hidden: true},
-          {label: 'Login', url: '/login', hidden: false},
-          // {label: 'Auth', url: '/auth', hidden: false},
-          // {label: 'Register', url: '/auth/register', hidden: false},
+          {label: 'Login', url: '/login'},
         ],
         leftLinks: null,
         style: {
@@ -170,7 +152,6 @@ export class AppComponent implements OnInit {
         'background-color': '#7a690b'
       }
     };
-
 
     this.footer = {
       displayTopSection: true,
@@ -225,6 +206,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    // Show loading of the router are busy navigating.
     this.router.events.pipe(
       filter(event => event instanceof NavigationStart ||
         event instanceof NavigationEnd ||
@@ -240,6 +223,7 @@ export class AppComponent implements OnInit {
       this.isLoading = true;
     });
 
+    this.headerService.header.next(this.header);
 
     /*this.googleApiService.onLoad().subscribe((value) => {
       console.log(value);

@@ -7,7 +7,7 @@ import {ResetPasswordComponent} from './components/reset-password/reset-password
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {NgGapiClientConfig} from '../gaura/services/google/google-api-config.service';
-import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider, LinkedInLoginProvider} from 'angularx-social-login';
+import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider} from 'angularx-social-login';
 
 const gapiClientConfig: NgGapiClientConfig = {
   client_id: '229810777942-v9f8u7mla4k621h9oav2n8hranl5ck7k.apps.googleusercontent.com',
@@ -36,10 +36,6 @@ const authServiceConfig = new AuthServiceConfig([
   {
     id: FacebookLoginProvider.PROVIDER_ID,
     provider: new FacebookLoginProvider('Facebook-App-Id')
-  },
-  {
-    id: LinkedInLoginProvider.PROVIDER_ID,
-    provider: new LinkedInLoginProvider('LinkedIn-client-Id', false, 'en_US')
   }
 ]);
 

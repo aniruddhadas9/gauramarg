@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import {NewUserComponent} from './components/new-user/new-user.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
+import { SelectCourseComponent } from './components/select-course/select-course.component';
 
 @NgModule({
   declarations: [
-    NewUserComponent
+    NewUserComponent,
+    SelectCourseComponent
   ],
   imports: [
     CommonModule,

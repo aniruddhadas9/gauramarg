@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Attendance, AttendanceService, Course, CourseRegistration, CourseRegistrationService, User} from '../../../@restapi';
-import {UserService} from '@candiman/website';
+import {AlertService, DangerAlert, SuccessAlert, UserService} from '@candiman/website';
 import {FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
 import {FormlyFieldConfig} from '@ngx-formly/core';
 import {CoursesService} from '../../../@shared/services/courses/courses.service';
@@ -25,6 +25,7 @@ export class AddAttendanceByTeacherComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private alertService: AlertService,
     private coursesService: CoursesService,
     private courseRegistrationService: CourseRegistrationService,
     private attendanceService: AttendanceService,
@@ -117,13 +118,13 @@ export class AddAttendanceByTeacherComponent implements OnInit {
   onSubmit() {
     console.log(this.attendanceForm.getRawValue());
     // Get all the selected values
-    const selectedOrderIds = this.attendanceForm.getRawValue().attendanceList
+    const selectedStudents = this.attendanceForm.getRawValue().attendanceList
       .map((value, index) => {
         console.log('value, index', value, index);
         return value ? this.attendanceList[index].id : null;
       }).filter(value => value !== null);
-    console.log('selectedOrderIds:%o', selectedOrderIds);
-    selectedOrderIds.map((student) => {
+    console.log('selectedStudents:%o', selectedStudents);
+    selectedStudents.map((student) => {
       const attendance: Attendance = {
         approved: true,
         courseId: '' + this.attendanceForm.getRawValue().courseId,
@@ -135,9 +136,16 @@ export class AddAttendanceByTeacherComponent implements OnInit {
       };
 
       // Save the data
-      this.attendanceService.postUsingPOST(attendance).subscribe((response) => {
-        console.log('posted data to reset the form now', response);
-      });
+      this.attendanceService.postUsingPOST(attendance).subscribe(
+        (response) => {
+          this.alertService
+            .alert(new SuccessAlert('Success!', attendance.studentId, attendance.classDate + '(' + attendance.classTime + ')', 5));
+          console.log('posted data to reset the form now', response);
+        },
+        (error) => {
+          this.alertService.alert(new DangerAlert('Failure!', 'Unable to mark attendance.', 'please contact admin', 5));
+        }
+      );
     });
 
   }

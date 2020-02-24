@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Course, Timestamp} from '../../../@restapi';
+import {Course} from '../../../@restapi';
 import {UserService} from '@candiman/website';
 import {CoursesService} from '../../../@shared/services/courses/courses.service';
 
