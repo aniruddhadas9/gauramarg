@@ -1,0 +1,9 @@
+<div class="form-group">
+  <label for="coursesId">Course:</label>
+  <select id="coursesId" formControlName="courseId" (ngModelChange)="changeCourse($event)">
+    <option [value]="''">--select--</option>
+    <option *ngFor="let opt of courseOptions; let i = index" [value]="opt.value">{{opt.label}}</option>
+  </select>
+  <small id="emailHelp" class="form-text text-muted">Select the course to add attendance of students</small>
+  <!--<div class="errorMessage" *ngIf="!isValid">{{courseId}} is required</div>-->
+</div>

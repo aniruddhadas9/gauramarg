@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
+import {User} from '../../../@restapi';
 
 @Component({
   selector: 'gm-new-user',
@@ -10,7 +11,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class NewUserComponent implements OnInit {
 
-  @Input() type: string;
+  @Input() type: User.TypeEnum;
   loading: boolean;
   newUserForm: FormGroup;
   saveMessage: string;
@@ -22,7 +23,7 @@ export class NewUserComponent implements OnInit {
 
   ngOnInit() {
     if (this.type === undefined) {
-      this.type = '';
+      this.type = User.TypeEnum.Student;
     }
   }
 

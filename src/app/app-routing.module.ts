@@ -27,7 +27,7 @@ const routes: Routes = [
   },
   {
     path: 'teacher',
-    // canActivate: [AuthGuardService],
+    canActivate: [AuthGuardService],
     loadChildren: () => import('./@teachers/teachers.module').then(m => m.TeachersModule),
   }
 ];

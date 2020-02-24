@@ -23,8 +23,8 @@ $a-tags-hover: 'a:active, a:hover';
 
 .card {
   margin: 5px;
-  @include box-shadow(5px, 5px, 5px, #333);
+  @include box-shadow(5px, 5px, 5px, #7a690b);
   .card-header {
-    background: #216b07;
+    background: #7a690b;
   }
 }
