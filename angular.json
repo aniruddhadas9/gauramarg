@@ -10,13 +10,14 @@
       "prefix": "gm",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         }
       },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/gauramarg-ui",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -58,6 +59,10 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
             }
@@ -141,5 +146,8 @@
       }
     }
   },
-  "defaultProject": "gauramarg-ui"
+  "defaultProject": "gauramarg-ui",
+  "cli": {
+    "analytics": "84c63a58-c098-4c6d-aeef-0d7fa9e49bf0"
+  }
 }
