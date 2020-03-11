@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'gm-teachder-left-menu',
@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TeachderLeftMenuComponent implements OnInit {
 
+  @Input() user;
+  menu: boolean;
   constructor() { }
 
   ngOnInit() {

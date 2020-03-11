@@ -12,6 +12,7 @@ export class TeacherComponent implements OnInit {
   @ViewChild('sidebar', {read: ElementRef, static: true}) sidebar: ElementRef;
   @ViewChild('content', {read: ElementRef, static: true}) content: ElementRef;
   menu: boolean;
+  opened = true;
   user: User;
   constructor(
     private userService: UserService,

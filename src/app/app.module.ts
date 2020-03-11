@@ -6,9 +6,9 @@ import {AppComponent} from './app.component';
 import {GauraModule} from './gaura/gaura.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AgmCoreModule} from '@agm/core';
-import {WebsiteModule} from '@candiman/website';
+import {HttpInterceptorService, WebsiteModule} from '@candiman/website';
 import {environment} from '../environments/environment';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AuthModule} from './auth/auth.module';
 import {ApiModule, Configuration} from './@restapi';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
@@ -42,7 +42,13 @@ export function ApiConfig() {
     HttpClientModule,
     // AuthModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptorService,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

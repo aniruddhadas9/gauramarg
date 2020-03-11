@@ -10,6 +10,7 @@ import {User} from '../../../@restapi';
 export class StudentComponent implements OnInit {
   menu: boolean;
   user: User;
+  opened = true;
   constructor(
     private userService: UserService,
   ) { }

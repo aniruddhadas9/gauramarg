@@ -4,6 +4,9 @@ import {NewUserComponent} from './components/new-user/new-user.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import { SelectCourseComponent } from './components/select-course/select-course.component';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -14,10 +17,18 @@ import { SelectCourseComponent } from './components/select-course/select-course.
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatSidenavModule,
+    MatButtonModule,
+    MatCheckboxModule
   ],
   exports: [
-    NewUserComponent
+    CommonModule,
+    FormsModule,
+    NewUserComponent,
+    MatSidenavModule,
+    MatButtonModule,
+    MatCheckboxModule
   ]
 })
 export class SharedModule { }

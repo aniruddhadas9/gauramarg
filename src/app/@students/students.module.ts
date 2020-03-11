@@ -8,6 +8,8 @@ import {StudentRoutingModule} from './student-routing.module';
 import {AddPaymentByStudentComponent} from './components/add-payment-by-student/add-payment-by-student.component';
 import {AddAttendanceByStudentComponent} from './components/add-attendance-by-student/add-attendance-by-student.component';
 import {StudentLeftMenuComponent} from './components/student-left-menu/student-left-menu.component';
+import {SharedModule} from '../@shared/shared.module';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,8 +22,8 @@ import {StudentLeftMenuComponent} from './components/student-left-menu/student-l
     StudentLeftMenuComponent
   ],
   imports: [
-    CommonModule,
-    StudentRoutingModule
+    StudentRoutingModule,
+    SharedModule,
   ]
 })
 export class StudentsModule {
