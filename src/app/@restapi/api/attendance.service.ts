@@ -17,11 +17,12 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { Attendance } from '../model/attendance';
-import { Message } from '../model/message';
+import { Attendance } from '../model/models';
+import { Message } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
+
 
 
 @Injectable({
@@ -49,40 +50,82 @@ export class AttendanceService {
 
 
 
+    private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
+        if (typeof value === "object") {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value);
+        } else {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+        }
+        return httpParams;
+    }
+
+    private addToHttpParamsRecursive(httpParams: HttpParams, value: any, key?: string): HttpParams {
+        if (typeof value === "object") {
+            if (Array.isArray(value)) {
+                (value as any[]).forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+            } else if (value instanceof Date) {
+                if (key != null) {
+                    httpParams = httpParams.append(key,
+                        (value as Date).toISOString().substr(0, 10));
+                } else {
+                   throw Error("key may not be null if value is Date");
+                }
+            } else {
+                Object.keys(value).forEach( k => httpParams = this.addToHttpParamsRecursive(
+                    httpParams, value[k], key != null ? `${key}.${k}` : k));
+            }
+        } else if (key != null) {
+            httpParams = httpParams.append(key, value);
+        } else {
+            throw Error("key may not be null if value is not object or array");
+        }
+        return httpParams;
+    }
+
     /**
      * delete
      * @param id id
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteUsingDELETE(id: string, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public deleteUsingDELETE(id: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public deleteUsingDELETE(id: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public deleteUsingDELETE(id: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public deleteUsingDELETE(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Message>;
+    public deleteUsingDELETE(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Message>>;
+    public deleteUsingDELETE(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Message>>;
+    public deleteUsingDELETE(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling deleteUsingDELETE.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (id !== undefined && id !== null) {
-            queryParameters = queryParameters.set('id', <any>id);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>id, 'id');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.delete<Message>(`${this.configuration.basePath}/attendance`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -98,10 +141,10 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'body', reportProgress?: boolean): Observable<Array<Attendance>>;
-    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Attendance>>>;
-    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Attendance>>>;
-    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Attendance>>;
+    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Attendance>>>;
+    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Attendance>>>;
+    public getByCourseIdAndStudentIdUsingGET(courseId: string, studentId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (courseId === null || courseId === undefined) {
             throw new Error('Required parameter courseId was null or undefined when calling getByCourseIdAndStudentIdUsingGET.');
         }
@@ -111,27 +154,38 @@ export class AttendanceService {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (courseId !== undefined && courseId !== null) {
-            queryParameters = queryParameters.set('courseId', <any>courseId);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>courseId, 'courseId');
         }
         if (studentId !== undefined && studentId !== null) {
-            queryParameters = queryParameters.set('studentId', <any>studentId);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>studentId, 'studentId');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Attendance>>(`${this.configuration.basePath}/attendance/courseIdAndStudentId`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -146,34 +200,44 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getByCourseIdUsingGET(courseId: string, observe?: 'body', reportProgress?: boolean): Observable<Array<Attendance>>;
-    public getByCourseIdUsingGET(courseId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Attendance>>>;
-    public getByCourseIdUsingGET(courseId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Attendance>>>;
-    public getByCourseIdUsingGET(courseId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getByCourseIdUsingGET(courseId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Attendance>>;
+    public getByCourseIdUsingGET(courseId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Attendance>>>;
+    public getByCourseIdUsingGET(courseId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Attendance>>>;
+    public getByCourseIdUsingGET(courseId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (courseId === null || courseId === undefined) {
             throw new Error('Required parameter courseId was null or undefined when calling getByCourseIdUsingGET.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (courseId !== undefined && courseId !== null) {
-            queryParameters = queryParameters.set('courseId', <any>courseId);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>courseId, 'courseId');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Attendance>>(`${this.configuration.basePath}/attendance/courseId`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -188,21 +252,24 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getByFilterUsingPOST(attendance: Attendance, observe?: 'body', reportProgress?: boolean): Observable<Array<Attendance>>;
-    public getByFilterUsingPOST(attendance: Attendance, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Attendance>>>;
-    public getByFilterUsingPOST(attendance: Attendance, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Attendance>>>;
-    public getByFilterUsingPOST(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getByFilterUsingPOST(attendance: Attendance, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Attendance>>;
+    public getByFilterUsingPOST(attendance: Attendance, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Attendance>>>;
+    public getByFilterUsingPOST(attendance: Attendance, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Attendance>>>;
+    public getByFilterUsingPOST(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (attendance === null || attendance === undefined) {
             throw new Error('Required parameter attendance was null or undefined when calling getByFilterUsingPOST.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -217,9 +284,15 @@ export class AttendanceService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<Array<Attendance>>(`${this.configuration.basePath}/attendance/filter`,
             attendance,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -234,34 +307,44 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getByStudentIdUsingGET(studentId: string, observe?: 'body', reportProgress?: boolean): Observable<Array<Attendance>>;
-    public getByStudentIdUsingGET(studentId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Attendance>>>;
-    public getByStudentIdUsingGET(studentId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Attendance>>>;
-    public getByStudentIdUsingGET(studentId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getByStudentIdUsingGET(studentId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Attendance>>;
+    public getByStudentIdUsingGET(studentId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Attendance>>>;
+    public getByStudentIdUsingGET(studentId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Attendance>>>;
+    public getByStudentIdUsingGET(studentId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (studentId === null || studentId === undefined) {
             throw new Error('Required parameter studentId was null or undefined when calling getByStudentIdUsingGET.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (studentId !== undefined && studentId !== null) {
-            queryParameters = queryParameters.set('studentId', <any>studentId);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>studentId, 'studentId');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Attendance>>(`${this.configuration.basePath}/attendance/studentId`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -276,34 +359,44 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getByTeacherIdUsingGET(teacherId: string, observe?: 'body', reportProgress?: boolean): Observable<Array<Attendance>>;
-    public getByTeacherIdUsingGET(teacherId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Attendance>>>;
-    public getByTeacherIdUsingGET(teacherId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Attendance>>>;
-    public getByTeacherIdUsingGET(teacherId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getByTeacherIdUsingGET(teacherId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Attendance>>;
+    public getByTeacherIdUsingGET(teacherId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Attendance>>>;
+    public getByTeacherIdUsingGET(teacherId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Attendance>>>;
+    public getByTeacherIdUsingGET(teacherId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (teacherId === null || teacherId === undefined) {
             throw new Error('Required parameter teacherId was null or undefined when calling getByTeacherIdUsingGET.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (teacherId !== undefined && teacherId !== null) {
-            queryParameters = queryParameters.set('teacherId', <any>teacherId);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>teacherId, 'teacherId');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Attendance>>(`${this.configuration.basePath}/attendance/teacherId`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -317,25 +410,34 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getUsingGET(observe?: 'body', reportProgress?: boolean): Observable<Array<Attendance>>;
-    public getUsingGET(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Attendance>>>;
-    public getUsingGET(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Attendance>>>;
-    public getUsingGET(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getUsingGET(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Attendance>>;
+    public getUsingGET(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Attendance>>>;
+    public getUsingGET(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Attendance>>>;
+    public getUsingGET(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Attendance>>(`${this.configuration.basePath}/attendance`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -350,21 +452,24 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public postUsingPOST(attendance: Attendance, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public postUsingPOST(attendance: Attendance, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public postUsingPOST(attendance: Attendance, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public postUsingPOST(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public postUsingPOST(attendance: Attendance, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Message>;
+    public postUsingPOST(attendance: Attendance, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Message>>;
+    public postUsingPOST(attendance: Attendance, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Message>>;
+    public postUsingPOST(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (attendance === null || attendance === undefined) {
             throw new Error('Required parameter attendance was null or undefined when calling postUsingPOST.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -379,9 +484,15 @@ export class AttendanceService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<Message>(`${this.configuration.basePath}/attendance`,
             attendance,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -396,21 +507,24 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public putUsingPUT(attendance: Attendance, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public putUsingPUT(attendance: Attendance, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public putUsingPUT(attendance: Attendance, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public putUsingPUT(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public putUsingPUT(attendance: Attendance, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Message>;
+    public putUsingPUT(attendance: Attendance, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Message>>;
+    public putUsingPUT(attendance: Attendance, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Message>>;
+    public putUsingPUT(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (attendance === null || attendance === undefined) {
             throw new Error('Required parameter attendance was null or undefined when calling putUsingPUT.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -425,9 +539,15 @@ export class AttendanceService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.put<Message>(`${this.configuration.basePath}/attendance`,
             attendance,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -442,21 +562,24 @@ export class AttendanceService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateUsingGET(attendance: Attendance, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public updateUsingGET(attendance: Attendance, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public updateUsingGET(attendance: Attendance, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public updateUsingGET(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public updateUsingGET(attendance: Attendance, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Message>;
+    public updateUsingGET(attendance: Attendance, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Message>>;
+    public updateUsingGET(attendance: Attendance, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Message>>;
+    public updateUsingGET(attendance: Attendance, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (attendance === null || attendance === undefined) {
             throw new Error('Required parameter attendance was null or undefined when calling updateUsingGET.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -470,8 +593,14 @@ export class AttendanceService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Message>(`${this.configuration.basePath}/attendance/update`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,

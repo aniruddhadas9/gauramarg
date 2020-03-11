@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { AddressService } from './api/address.service';
 import { AttendanceService } from './api/attendance.service';
+import { AuthenticationService } from './api/authentication.service';
 import { CourseService } from './api/course.service';
 import { CourseRegistrationService } from './api/courseRegistration.service';
 import { DashboardService } from './api/dashboard.service';
@@ -17,19 +18,10 @@ import { UserService } from './api/user.service';
   imports:      [],
   declarations: [],
   exports:      [],
-  providers: [
-    AddressService,
-    AttendanceService,
-    CourseService,
-    CourseRegistrationService,
-    DashboardService,
-    FileService,
-    HoliService,
-    PaymentService,
-    UserService ]
+  providers: []
 })
 export class ApiModule {
-    public static forRoot(configurationFactory: () => Configuration): ModuleWithProviders<ApiModule> {
+    public static forRoot(configurationFactory: () => Configuration): ModuleWithProviders {
         return {
             ngModule: ApiModule,
             providers: [ { provide: Configuration, useFactory: configurationFactory } ]

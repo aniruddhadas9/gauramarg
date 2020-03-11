@@ -17,11 +17,12 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { Message } from '../model/message';
-import { Payment } from '../model/payment';
+import { Message } from '../model/models';
+import { Payment } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
+
 
 
 @Injectable({
@@ -49,40 +50,82 @@ export class PaymentService {
 
 
 
+    private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
+        if (typeof value === "object") {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value);
+        } else {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+        }
+        return httpParams;
+    }
+
+    private addToHttpParamsRecursive(httpParams: HttpParams, value: any, key?: string): HttpParams {
+        if (typeof value === "object") {
+            if (Array.isArray(value)) {
+                (value as any[]).forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+            } else if (value instanceof Date) {
+                if (key != null) {
+                    httpParams = httpParams.append(key,
+                        (value as Date).toISOString().substr(0, 10));
+                } else {
+                   throw Error("key may not be null if value is Date");
+                }
+            } else {
+                Object.keys(value).forEach( k => httpParams = this.addToHttpParamsRecursive(
+                    httpParams, value[k], key != null ? `${key}.${k}` : k));
+            }
+        } else if (key != null) {
+            httpParams = httpParams.append(key, value);
+        } else {
+            throw Error("key may not be null if value is not object or array");
+        }
+        return httpParams;
+    }
+
     /**
      * delete
      * @param id id
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteUsingDELETE4(id: string, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public deleteUsingDELETE4(id: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public deleteUsingDELETE4(id: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public deleteUsingDELETE4(id: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public deleteUsingDELETE4(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Message>;
+    public deleteUsingDELETE4(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Message>>;
+    public deleteUsingDELETE4(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Message>>;
+    public deleteUsingDELETE4(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling deleteUsingDELETE4.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (id !== undefined && id !== null) {
-            queryParameters = queryParameters.set('id', <any>id);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>id, 'id');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.delete<Message>(`${this.configuration.basePath}/payment`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -97,34 +140,44 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getByCourseIdUsingGET2(courseId: string, observe?: 'body', reportProgress?: boolean): Observable<Array<Payment>>;
-    public getByCourseIdUsingGET2(courseId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Payment>>>;
-    public getByCourseIdUsingGET2(courseId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Payment>>>;
-    public getByCourseIdUsingGET2(courseId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getByCourseIdUsingGET2(courseId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Payment>>;
+    public getByCourseIdUsingGET2(courseId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Payment>>>;
+    public getByCourseIdUsingGET2(courseId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Payment>>>;
+    public getByCourseIdUsingGET2(courseId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (courseId === null || courseId === undefined) {
             throw new Error('Required parameter courseId was null or undefined when calling getByCourseIdUsingGET2.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (courseId !== undefined && courseId !== null) {
-            queryParameters = queryParameters.set('courseId', <any>courseId);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>courseId, 'courseId');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/courseId`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -139,34 +192,44 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getByStudentIdUsingGET2(studentId: string, observe?: 'body', reportProgress?: boolean): Observable<Array<Payment>>;
-    public getByStudentIdUsingGET2(studentId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Payment>>>;
-    public getByStudentIdUsingGET2(studentId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Payment>>>;
-    public getByStudentIdUsingGET2(studentId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getByStudentIdUsingGET2(studentId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Payment>>;
+    public getByStudentIdUsingGET2(studentId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Payment>>>;
+    public getByStudentIdUsingGET2(studentId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Payment>>>;
+    public getByStudentIdUsingGET2(studentId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (studentId === null || studentId === undefined) {
             throw new Error('Required parameter studentId was null or undefined when calling getByStudentIdUsingGET2.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (studentId !== undefined && studentId !== null) {
-            queryParameters = queryParameters.set('studentId', <any>studentId);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>studentId, 'studentId');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/studentId`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -181,34 +244,44 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getByTeacherIdUsingGET3(teacherId: string, observe?: 'body', reportProgress?: boolean): Observable<Array<Payment>>;
-    public getByTeacherIdUsingGET3(teacherId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Payment>>>;
-    public getByTeacherIdUsingGET3(teacherId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Payment>>>;
-    public getByTeacherIdUsingGET3(teacherId: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getByTeacherIdUsingGET3(teacherId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Payment>>;
+    public getByTeacherIdUsingGET3(teacherId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Payment>>>;
+    public getByTeacherIdUsingGET3(teacherId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Payment>>>;
+    public getByTeacherIdUsingGET3(teacherId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (teacherId === null || teacherId === undefined) {
             throw new Error('Required parameter teacherId was null or undefined when calling getByTeacherIdUsingGET3.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (teacherId !== undefined && teacherId !== null) {
-            queryParameters = queryParameters.set('teacherId', <any>teacherId);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>teacherId, 'teacherId');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment/teacherId`,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -222,25 +295,34 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getUsingGET5(observe?: 'body', reportProgress?: boolean): Observable<Array<Payment>>;
-    public getUsingGET5(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Array<Payment>>>;
-    public getUsingGET5(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Array<Payment>>>;
-    public getUsingGET5(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public getUsingGET5(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Array<Payment>>;
+    public getUsingGET5(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Array<Payment>>>;
+    public getUsingGET5(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Array<Payment>>>;
+    public getUsingGET5(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Array<Payment>>(`${this.configuration.basePath}/payment`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -255,21 +337,24 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public postUsingPOST4(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public postUsingPOST4(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public postUsingPOST4(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public postUsingPOST4(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public postUsingPOST4(payment: Payment, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Message>;
+    public postUsingPOST4(payment: Payment, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Message>>;
+    public postUsingPOST4(payment: Payment, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Message>>;
+    public postUsingPOST4(payment: Payment, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (payment === null || payment === undefined) {
             throw new Error('Required parameter payment was null or undefined when calling postUsingPOST4.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -284,9 +369,15 @@ export class PaymentService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<Message>(`${this.configuration.basePath}/payment`,
             payment,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -301,21 +392,24 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public putUsingPUT4(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public putUsingPUT4(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public putUsingPUT4(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public putUsingPUT4(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public putUsingPUT4(payment: Payment, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Message>;
+    public putUsingPUT4(payment: Payment, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Message>>;
+    public putUsingPUT4(payment: Payment, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Message>>;
+    public putUsingPUT4(payment: Payment, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (payment === null || payment === undefined) {
             throw new Error('Required parameter payment was null or undefined when calling putUsingPUT4.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -330,9 +424,15 @@ export class PaymentService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.put<Message>(`${this.configuration.basePath}/payment`,
             payment,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -347,21 +447,24 @@ export class PaymentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateUsingGET3(payment: Payment, observe?: 'body', reportProgress?: boolean): Observable<Message>;
-    public updateUsingGET3(payment: Payment, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Message>>;
-    public updateUsingGET3(payment: Payment, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Message>>;
-    public updateUsingGET3(payment: Payment, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public updateUsingGET3(payment: Payment, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Message>;
+    public updateUsingGET3(payment: Payment, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Message>>;
+    public updateUsingGET3(payment: Payment, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Message>>;
+    public updateUsingGET3(payment: Payment, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (payment === null || payment === undefined) {
             throw new Error('Required parameter payment was null or undefined when calling updateUsingGET3.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -375,8 +478,14 @@ export class PaymentService {
             headers = headers.set('Content-Type', httpContentTypeSelected);
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Message>(`${this.configuration.basePath}/payment/update`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,

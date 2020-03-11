@@ -17,10 +17,11 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { Resource } from '../model/resource';
+import { Resource } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
+
 
 
 @Injectable({
@@ -61,27 +62,62 @@ export class FileService {
     }
 
 
+    private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
+        if (typeof value === "object") {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value);
+        } else {
+            httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+        }
+        return httpParams;
+    }
+
+    private addToHttpParamsRecursive(httpParams: HttpParams, value: any, key?: string): HttpParams {
+        if (typeof value === "object") {
+            if (Array.isArray(value)) {
+                (value as any[]).forEach( elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+            } else if (value instanceof Date) {
+                if (key != null) {
+                    httpParams = httpParams.append(key,
+                        (value as Date).toISOString().substr(0, 10));
+                } else {
+                   throw Error("key may not be null if value is Date");
+                }
+            } else {
+                Object.keys(value).forEach( k => httpParams = this.addToHttpParamsRecursive(
+                    httpParams, value[k], key != null ? `${key}.${k}` : k));
+            }
+        } else if (key != null) {
+            httpParams = httpParams.append(key, value);
+        } else {
+            throw Error("key may not be null if value is not object or array");
+        }
+        return httpParams;
+    }
+
     /**
      * handleFileUpload
      * @param file file
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public handleFileUploadUsingPOST(file: Blob, observe?: 'body', reportProgress?: boolean): Observable<string>;
-    public handleFileUploadUsingPOST(file: Blob, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<string>>;
-    public handleFileUploadUsingPOST(file: Blob, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<string>>;
-    public handleFileUploadUsingPOST(file: Blob, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public handleFileUploadUsingPOST(file: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<string>;
+    public handleFileUploadUsingPOST(file: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<string>>;
+    public handleFileUploadUsingPOST(file: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<string>>;
+    public handleFileUploadUsingPOST(file: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (file === null || file === undefined) {
             throw new Error('Required parameter file was null or undefined when calling handleFileUploadUsingPOST.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
@@ -109,9 +145,15 @@ export class FileService {
             formParams = formParams.append('file', <any>file) as any || formParams;
         }
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<string>(`${this.configuration.basePath}/file/`,
             convertFormParamsToString ? formParams.toString() : formParams,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -125,25 +167,34 @@ export class FileService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public listUploadedFilesUsingGET(observe?: 'body', reportProgress?: boolean): Observable<string>;
-    public listUploadedFilesUsingGET(observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<string>>;
-    public listUploadedFilesUsingGET(observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<string>>;
-    public listUploadedFilesUsingGET(observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public listUploadedFilesUsingGET(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<string>;
+    public listUploadedFilesUsingGET(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<string>>;
+    public listUploadedFilesUsingGET(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<string>>;
+    public listUploadedFilesUsingGET(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<string>(`${this.configuration.basePath}/file/`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -158,28 +209,37 @@ export class FileService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public serveFileUsingGET(filename: string, observe?: 'body', reportProgress?: boolean): Observable<Resource>;
-    public serveFileUsingGET(filename: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Resource>>;
-    public serveFileUsingGET(filename: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Resource>>;
-    public serveFileUsingGET(filename: string, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public serveFileUsingGET(filename: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<Resource>;
+    public serveFileUsingGET(filename: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<Resource>>;
+    public serveFileUsingGET(filename: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<Resource>>;
+    public serveFileUsingGET(filename: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (filename === null || filename === undefined) {
             throw new Error('Required parameter filename was null or undefined when calling serveFileUsingGET.');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.get<Resource>(`${this.configuration.basePath}/file/${encodeURIComponent(String(filename))}`,
             {
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
@@ -304,388 +364,508 @@ export class FileService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe?: 'body', reportProgress?: boolean): Observable<string>;
-    public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<string>>;
-    public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<string>>;
-    public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
+    public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<string>;
+    public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<string>>;
+    public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<string>>;
+    public uploadFileUsingPOST(requestHeadersETag?: string, requestHeadersAcceptCharset0Registered?: boolean, requestHeadersAcceptLanguageAsLocales0ISO3Country?: string, requestHeadersAcceptLanguageAsLocales0ISO3Language?: string, requestHeadersAcceptLanguageAsLocales0Country?: string, requestHeadersAcceptLanguageAsLocales0DisplayCountry?: string, requestHeadersAcceptLanguageAsLocales0DisplayLanguage?: string, requestHeadersAcceptLanguageAsLocales0DisplayName?: string, requestHeadersAcceptLanguageAsLocales0DisplayScript?: string, requestHeadersAcceptLanguageAsLocales0DisplayVariant?: string, requestHeadersAcceptLanguageAsLocales0Language?: string, requestHeadersAcceptLanguageAsLocales0Script?: string, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes?: Array<string>, requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys?: Array<string>, requestHeadersAcceptLanguageAsLocales0Variant?: string, requestHeadersAcceptLanguage0Range?: string, requestHeadersAcceptLanguage0Weight?: number, requestHeadersAccept0CharsetRegistered?: boolean, requestHeadersAccept0Concrete?: boolean, requestHeadersAccept0QualityValue?: number, requestHeadersAccept0Subtype?: string, requestHeadersAccept0Type?: string, requestHeadersAccept0WildcardSubtype?: boolean, requestHeadersAccept0WildcardType?: boolean, requestHeadersAccessControlAllowCredentials?: boolean, requestHeadersAccessControlAllowHeaders?: Array<string>, requestHeadersAccessControlAllowMethods?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersAccessControlAllowOrigin?: string, requestHeadersAccessControlExposeHeaders?: Array<string>, requestHeadersAccessControlMaxAge?: number, requestHeadersAccessControlRequestHeaders?: Array<string>, requestHeadersAccessControlRequestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', requestHeadersAllow?: Array<'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE'>, requestHeadersCacheControl?: string, requestHeadersConnection?: Array<string>, requestHeadersContentDispositionCharsetRegistered?: boolean, requestHeadersContentDispositionCreationDate?: Date, requestHeadersContentDispositionFilename?: string, requestHeadersContentDispositionModificationDate?: Date, requestHeadersContentDispositionName?: string, requestHeadersContentDispositionReadDate?: Date, requestHeadersContentDispositionSize?: number, requestHeadersContentDispositionType?: string, requestHeadersContentLanguageISO3Country?: string, requestHeadersContentLanguageISO3Language?: string, requestHeadersContentLanguageCountry?: string, requestHeadersContentLanguageDisplayCountry?: string, requestHeadersContentLanguageDisplayLanguage?: string, requestHeadersContentLanguageDisplayName?: string, requestHeadersContentLanguageDisplayScript?: string, requestHeadersContentLanguageDisplayVariant?: string, requestHeadersContentLanguageLanguage?: string, requestHeadersContentLanguageScript?: string, requestHeadersContentLanguageUnicodeLocaleAttributes?: Array<string>, requestHeadersContentLanguageUnicodeLocaleKeys?: Array<string>, requestHeadersContentLanguageVariant?: string, requestHeadersContentLength?: number, requestHeadersContentTypeCharsetRegistered?: boolean, requestHeadersContentTypeConcrete?: boolean, requestHeadersContentTypeQualityValue?: number, requestHeadersContentTypeSubtype?: string, requestHeadersContentTypeType?: string, requestHeadersContentTypeWildcardSubtype?: boolean, requestHeadersContentTypeWildcardType?: boolean, requestHeadersDate?: number, requestHeadersExpires?: number, requestHeadersHostAddressMCGlobal?: boolean, requestHeadersHostAddressMCLinkLocal?: boolean, requestHeadersHostAddressMCNodeLocal?: boolean, requestHeadersHostAddressMCOrgLocal?: boolean, requestHeadersHostAddressMCSiteLocal?: boolean, requestHeadersHostAddressAddress?: string, requestHeadersHostAddressAnyLocalAddress?: boolean, requestHeadersHostAddressCanonicalHostName?: string, requestHeadersHostAddressHostAddress?: string, requestHeadersHostAddressHostName?: string, requestHeadersHostAddressLinkLocalAddress?: boolean, requestHeadersHostAddressLoopbackAddress?: boolean, requestHeadersHostAddressMulticastAddress?: boolean, requestHeadersHostAddressSiteLocalAddress?: boolean, requestHeadersHostHostName?: string, requestHeadersHostHostString?: string, requestHeadersHostPort?: number, requestHeadersHostUnresolved?: boolean, requestHeadersIfMatch?: Array<string>, requestHeadersIfModifiedSince?: number, requestHeadersIfNoneMatch?: Array<string>, requestHeadersIfUnmodifiedSince?: number, requestHeadersLastModified?: number, requestHeadersLocationAbsolute?: boolean, requestHeadersLocationAuthority?: string, requestHeadersLocationFragment?: string, requestHeadersLocationHost?: string, requestHeadersLocationOpaque?: boolean, requestHeadersLocationPath?: string, requestHeadersLocationPort?: number, requestHeadersLocationQuery?: string, requestHeadersLocationRawAuthority?: string, requestHeadersLocationRawFragment?: string, requestHeadersLocationRawPath?: string, requestHeadersLocationRawQuery?: string, requestHeadersLocationRawSchemeSpecificPart?: string, requestHeadersLocationRawUserInfo?: string, requestHeadersLocationScheme?: string, requestHeadersLocationSchemeSpecificPart?: string, requestHeadersLocationUserInfo?: string, requestHeadersOrigin?: string, requestHeadersPragma?: string, requestHeadersUpgrade?: string, requestHeadersVary?: Array<string>, requestMethod?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (requestHeadersETag !== undefined && requestHeadersETag !== null) {
-            queryParameters = queryParameters.set('requestHeaders.ETag', <any>requestHeadersETag);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersETag, 'requestHeaders.ETag');
         }
         if (requestHeadersAcceptCharset0Registered !== undefined && requestHeadersAcceptCharset0Registered !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptCharset[0].registered', <any>requestHeadersAcceptCharset0Registered);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptCharset0Registered, 'requestHeaders.acceptCharset[0].registered');
         }
         if (requestHeadersAcceptLanguageAsLocales0ISO3Country !== undefined && requestHeadersAcceptLanguageAsLocales0ISO3Country !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].ISO3Country', <any>requestHeadersAcceptLanguageAsLocales0ISO3Country);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0ISO3Country, 'requestHeaders.acceptLanguageAsLocales[0].ISO3Country');
         }
         if (requestHeadersAcceptLanguageAsLocales0ISO3Language !== undefined && requestHeadersAcceptLanguageAsLocales0ISO3Language !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].ISO3Language', <any>requestHeadersAcceptLanguageAsLocales0ISO3Language);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0ISO3Language, 'requestHeaders.acceptLanguageAsLocales[0].ISO3Language');
         }
         if (requestHeadersAcceptLanguageAsLocales0Country !== undefined && requestHeadersAcceptLanguageAsLocales0Country !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].country', <any>requestHeadersAcceptLanguageAsLocales0Country);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0Country, 'requestHeaders.acceptLanguageAsLocales[0].country');
         }
         if (requestHeadersAcceptLanguageAsLocales0DisplayCountry !== undefined && requestHeadersAcceptLanguageAsLocales0DisplayCountry !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].displayCountry', <any>requestHeadersAcceptLanguageAsLocales0DisplayCountry);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0DisplayCountry, 'requestHeaders.acceptLanguageAsLocales[0].displayCountry');
         }
         if (requestHeadersAcceptLanguageAsLocales0DisplayLanguage !== undefined && requestHeadersAcceptLanguageAsLocales0DisplayLanguage !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].displayLanguage', <any>requestHeadersAcceptLanguageAsLocales0DisplayLanguage);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0DisplayLanguage, 'requestHeaders.acceptLanguageAsLocales[0].displayLanguage');
         }
         if (requestHeadersAcceptLanguageAsLocales0DisplayName !== undefined && requestHeadersAcceptLanguageAsLocales0DisplayName !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].displayName', <any>requestHeadersAcceptLanguageAsLocales0DisplayName);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0DisplayName, 'requestHeaders.acceptLanguageAsLocales[0].displayName');
         }
         if (requestHeadersAcceptLanguageAsLocales0DisplayScript !== undefined && requestHeadersAcceptLanguageAsLocales0DisplayScript !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].displayScript', <any>requestHeadersAcceptLanguageAsLocales0DisplayScript);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0DisplayScript, 'requestHeaders.acceptLanguageAsLocales[0].displayScript');
         }
         if (requestHeadersAcceptLanguageAsLocales0DisplayVariant !== undefined && requestHeadersAcceptLanguageAsLocales0DisplayVariant !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].displayVariant', <any>requestHeadersAcceptLanguageAsLocales0DisplayVariant);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0DisplayVariant, 'requestHeaders.acceptLanguageAsLocales[0].displayVariant');
         }
         if (requestHeadersAcceptLanguageAsLocales0Language !== undefined && requestHeadersAcceptLanguageAsLocales0Language !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].language', <any>requestHeadersAcceptLanguageAsLocales0Language);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0Language, 'requestHeaders.acceptLanguageAsLocales[0].language');
         }
         if (requestHeadersAcceptLanguageAsLocales0Script !== undefined && requestHeadersAcceptLanguageAsLocales0Script !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].script', <any>requestHeadersAcceptLanguageAsLocales0Script);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0Script, 'requestHeaders.acceptLanguageAsLocales[0].script');
         }
         if (requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes) {
             requestHeadersAcceptLanguageAsLocales0UnicodeLocaleAttributes.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.acceptLanguageAsLocales[0].unicodeLocaleAttributes', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.acceptLanguageAsLocales[0].unicodeLocaleAttributes');
             })
         }
         if (requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys) {
             requestHeadersAcceptLanguageAsLocales0UnicodeLocaleKeys.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.acceptLanguageAsLocales[0].unicodeLocaleKeys', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.acceptLanguageAsLocales[0].unicodeLocaleKeys');
             })
         }
         if (requestHeadersAcceptLanguageAsLocales0Variant !== undefined && requestHeadersAcceptLanguageAsLocales0Variant !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguageAsLocales[0].variant', <any>requestHeadersAcceptLanguageAsLocales0Variant);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguageAsLocales0Variant, 'requestHeaders.acceptLanguageAsLocales[0].variant');
         }
         if (requestHeadersAcceptLanguage0Range !== undefined && requestHeadersAcceptLanguage0Range !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguage[0].range', <any>requestHeadersAcceptLanguage0Range);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguage0Range, 'requestHeaders.acceptLanguage[0].range');
         }
         if (requestHeadersAcceptLanguage0Weight !== undefined && requestHeadersAcceptLanguage0Weight !== null) {
-            queryParameters = queryParameters.set('requestHeaders.acceptLanguage[0].weight', <any>requestHeadersAcceptLanguage0Weight);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAcceptLanguage0Weight, 'requestHeaders.acceptLanguage[0].weight');
         }
         if (requestHeadersAccept0CharsetRegistered !== undefined && requestHeadersAccept0CharsetRegistered !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accept[0].charset.registered', <any>requestHeadersAccept0CharsetRegistered);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccept0CharsetRegistered, 'requestHeaders.accept[0].charset.registered');
         }
         if (requestHeadersAccept0Concrete !== undefined && requestHeadersAccept0Concrete !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accept[0].concrete', <any>requestHeadersAccept0Concrete);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccept0Concrete, 'requestHeaders.accept[0].concrete');
         }
         if (requestHeadersAccept0QualityValue !== undefined && requestHeadersAccept0QualityValue !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accept[0].qualityValue', <any>requestHeadersAccept0QualityValue);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccept0QualityValue, 'requestHeaders.accept[0].qualityValue');
         }
         if (requestHeadersAccept0Subtype !== undefined && requestHeadersAccept0Subtype !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accept[0].subtype', <any>requestHeadersAccept0Subtype);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccept0Subtype, 'requestHeaders.accept[0].subtype');
         }
         if (requestHeadersAccept0Type !== undefined && requestHeadersAccept0Type !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accept[0].type', <any>requestHeadersAccept0Type);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccept0Type, 'requestHeaders.accept[0].type');
         }
         if (requestHeadersAccept0WildcardSubtype !== undefined && requestHeadersAccept0WildcardSubtype !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accept[0].wildcardSubtype', <any>requestHeadersAccept0WildcardSubtype);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccept0WildcardSubtype, 'requestHeaders.accept[0].wildcardSubtype');
         }
         if (requestHeadersAccept0WildcardType !== undefined && requestHeadersAccept0WildcardType !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accept[0].wildcardType', <any>requestHeadersAccept0WildcardType);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccept0WildcardType, 'requestHeaders.accept[0].wildcardType');
         }
         if (requestHeadersAccessControlAllowCredentials !== undefined && requestHeadersAccessControlAllowCredentials !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accessControlAllowCredentials', <any>requestHeadersAccessControlAllowCredentials);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccessControlAllowCredentials, 'requestHeaders.accessControlAllowCredentials');
         }
         if (requestHeadersAccessControlAllowHeaders) {
             requestHeadersAccessControlAllowHeaders.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.accessControlAllowHeaders', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.accessControlAllowHeaders');
             })
         }
         if (requestHeadersAccessControlAllowMethods) {
             requestHeadersAccessControlAllowMethods.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.accessControlAllowMethods', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.accessControlAllowMethods');
             })
         }
         if (requestHeadersAccessControlAllowOrigin !== undefined && requestHeadersAccessControlAllowOrigin !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accessControlAllowOrigin', <any>requestHeadersAccessControlAllowOrigin);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccessControlAllowOrigin, 'requestHeaders.accessControlAllowOrigin');
         }
         if (requestHeadersAccessControlExposeHeaders) {
             requestHeadersAccessControlExposeHeaders.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.accessControlExposeHeaders', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.accessControlExposeHeaders');
             })
         }
         if (requestHeadersAccessControlMaxAge !== undefined && requestHeadersAccessControlMaxAge !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accessControlMaxAge', <any>requestHeadersAccessControlMaxAge);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccessControlMaxAge, 'requestHeaders.accessControlMaxAge');
         }
         if (requestHeadersAccessControlRequestHeaders) {
             requestHeadersAccessControlRequestHeaders.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.accessControlRequestHeaders', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.accessControlRequestHeaders');
             })
         }
         if (requestHeadersAccessControlRequestMethod !== undefined && requestHeadersAccessControlRequestMethod !== null) {
-            queryParameters = queryParameters.set('requestHeaders.accessControlRequestMethod', <any>requestHeadersAccessControlRequestMethod);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersAccessControlRequestMethod, 'requestHeaders.accessControlRequestMethod');
         }
         if (requestHeadersAllow) {
             requestHeadersAllow.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.allow', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.allow');
             })
         }
         if (requestHeadersCacheControl !== undefined && requestHeadersCacheControl !== null) {
-            queryParameters = queryParameters.set('requestHeaders.cacheControl', <any>requestHeadersCacheControl);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersCacheControl, 'requestHeaders.cacheControl');
         }
         if (requestHeadersConnection) {
             requestHeadersConnection.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.connection', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.connection');
             })
         }
         if (requestHeadersContentDispositionCharsetRegistered !== undefined && requestHeadersContentDispositionCharsetRegistered !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentDisposition.charset.registered', <any>requestHeadersContentDispositionCharsetRegistered);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentDispositionCharsetRegistered, 'requestHeaders.contentDisposition.charset.registered');
         }
         if (requestHeadersContentDispositionCreationDate !== undefined && requestHeadersContentDispositionCreationDate !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentDisposition.creationDate', <any>requestHeadersContentDispositionCreationDate.toISOString());
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentDispositionCreationDate, 'requestHeaders.contentDisposition.creationDate');
         }
         if (requestHeadersContentDispositionFilename !== undefined && requestHeadersContentDispositionFilename !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentDisposition.filename', <any>requestHeadersContentDispositionFilename);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentDispositionFilename, 'requestHeaders.contentDisposition.filename');
         }
         if (requestHeadersContentDispositionModificationDate !== undefined && requestHeadersContentDispositionModificationDate !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentDisposition.modificationDate', <any>requestHeadersContentDispositionModificationDate.toISOString());
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentDispositionModificationDate, 'requestHeaders.contentDisposition.modificationDate');
         }
         if (requestHeadersContentDispositionName !== undefined && requestHeadersContentDispositionName !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentDisposition.name', <any>requestHeadersContentDispositionName);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentDispositionName, 'requestHeaders.contentDisposition.name');
         }
         if (requestHeadersContentDispositionReadDate !== undefined && requestHeadersContentDispositionReadDate !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentDisposition.readDate', <any>requestHeadersContentDispositionReadDate.toISOString());
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentDispositionReadDate, 'requestHeaders.contentDisposition.readDate');
         }
         if (requestHeadersContentDispositionSize !== undefined && requestHeadersContentDispositionSize !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentDisposition.size', <any>requestHeadersContentDispositionSize);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentDispositionSize, 'requestHeaders.contentDisposition.size');
         }
         if (requestHeadersContentDispositionType !== undefined && requestHeadersContentDispositionType !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentDisposition.type', <any>requestHeadersContentDispositionType);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentDispositionType, 'requestHeaders.contentDisposition.type');
         }
         if (requestHeadersContentLanguageISO3Country !== undefined && requestHeadersContentLanguageISO3Country !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.ISO3Country', <any>requestHeadersContentLanguageISO3Country);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageISO3Country, 'requestHeaders.contentLanguage.ISO3Country');
         }
         if (requestHeadersContentLanguageISO3Language !== undefined && requestHeadersContentLanguageISO3Language !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.ISO3Language', <any>requestHeadersContentLanguageISO3Language);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageISO3Language, 'requestHeaders.contentLanguage.ISO3Language');
         }
         if (requestHeadersContentLanguageCountry !== undefined && requestHeadersContentLanguageCountry !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.country', <any>requestHeadersContentLanguageCountry);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageCountry, 'requestHeaders.contentLanguage.country');
         }
         if (requestHeadersContentLanguageDisplayCountry !== undefined && requestHeadersContentLanguageDisplayCountry !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.displayCountry', <any>requestHeadersContentLanguageDisplayCountry);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageDisplayCountry, 'requestHeaders.contentLanguage.displayCountry');
         }
         if (requestHeadersContentLanguageDisplayLanguage !== undefined && requestHeadersContentLanguageDisplayLanguage !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.displayLanguage', <any>requestHeadersContentLanguageDisplayLanguage);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageDisplayLanguage, 'requestHeaders.contentLanguage.displayLanguage');
         }
         if (requestHeadersContentLanguageDisplayName !== undefined && requestHeadersContentLanguageDisplayName !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.displayName', <any>requestHeadersContentLanguageDisplayName);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageDisplayName, 'requestHeaders.contentLanguage.displayName');
         }
         if (requestHeadersContentLanguageDisplayScript !== undefined && requestHeadersContentLanguageDisplayScript !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.displayScript', <any>requestHeadersContentLanguageDisplayScript);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageDisplayScript, 'requestHeaders.contentLanguage.displayScript');
         }
         if (requestHeadersContentLanguageDisplayVariant !== undefined && requestHeadersContentLanguageDisplayVariant !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.displayVariant', <any>requestHeadersContentLanguageDisplayVariant);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageDisplayVariant, 'requestHeaders.contentLanguage.displayVariant');
         }
         if (requestHeadersContentLanguageLanguage !== undefined && requestHeadersContentLanguageLanguage !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.language', <any>requestHeadersContentLanguageLanguage);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageLanguage, 'requestHeaders.contentLanguage.language');
         }
         if (requestHeadersContentLanguageScript !== undefined && requestHeadersContentLanguageScript !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.script', <any>requestHeadersContentLanguageScript);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageScript, 'requestHeaders.contentLanguage.script');
         }
         if (requestHeadersContentLanguageUnicodeLocaleAttributes) {
             requestHeadersContentLanguageUnicodeLocaleAttributes.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.contentLanguage.unicodeLocaleAttributes', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.contentLanguage.unicodeLocaleAttributes');
             })
         }
         if (requestHeadersContentLanguageUnicodeLocaleKeys) {
             requestHeadersContentLanguageUnicodeLocaleKeys.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.contentLanguage.unicodeLocaleKeys', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.contentLanguage.unicodeLocaleKeys');
             })
         }
         if (requestHeadersContentLanguageVariant !== undefined && requestHeadersContentLanguageVariant !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLanguage.variant', <any>requestHeadersContentLanguageVariant);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLanguageVariant, 'requestHeaders.contentLanguage.variant');
         }
         if (requestHeadersContentLength !== undefined && requestHeadersContentLength !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentLength', <any>requestHeadersContentLength);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentLength, 'requestHeaders.contentLength');
         }
         if (requestHeadersContentTypeCharsetRegistered !== undefined && requestHeadersContentTypeCharsetRegistered !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentType.charset.registered', <any>requestHeadersContentTypeCharsetRegistered);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentTypeCharsetRegistered, 'requestHeaders.contentType.charset.registered');
         }
         if (requestHeadersContentTypeConcrete !== undefined && requestHeadersContentTypeConcrete !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentType.concrete', <any>requestHeadersContentTypeConcrete);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentTypeConcrete, 'requestHeaders.contentType.concrete');
         }
         if (requestHeadersContentTypeQualityValue !== undefined && requestHeadersContentTypeQualityValue !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentType.qualityValue', <any>requestHeadersContentTypeQualityValue);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentTypeQualityValue, 'requestHeaders.contentType.qualityValue');
         }
         if (requestHeadersContentTypeSubtype !== undefined && requestHeadersContentTypeSubtype !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentType.subtype', <any>requestHeadersContentTypeSubtype);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentTypeSubtype, 'requestHeaders.contentType.subtype');
         }
         if (requestHeadersContentTypeType !== undefined && requestHeadersContentTypeType !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentType.type', <any>requestHeadersContentTypeType);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentTypeType, 'requestHeaders.contentType.type');
         }
         if (requestHeadersContentTypeWildcardSubtype !== undefined && requestHeadersContentTypeWildcardSubtype !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentType.wildcardSubtype', <any>requestHeadersContentTypeWildcardSubtype);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentTypeWildcardSubtype, 'requestHeaders.contentType.wildcardSubtype');
         }
         if (requestHeadersContentTypeWildcardType !== undefined && requestHeadersContentTypeWildcardType !== null) {
-            queryParameters = queryParameters.set('requestHeaders.contentType.wildcardType', <any>requestHeadersContentTypeWildcardType);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersContentTypeWildcardType, 'requestHeaders.contentType.wildcardType');
         }
         if (requestHeadersDate !== undefined && requestHeadersDate !== null) {
-            queryParameters = queryParameters.set('requestHeaders.date', <any>requestHeadersDate);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersDate, 'requestHeaders.date');
         }
         if (requestHeadersExpires !== undefined && requestHeadersExpires !== null) {
-            queryParameters = queryParameters.set('requestHeaders.expires', <any>requestHeadersExpires);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersExpires, 'requestHeaders.expires');
         }
         if (requestHeadersHostAddressMCGlobal !== undefined && requestHeadersHostAddressMCGlobal !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.MCGlobal', <any>requestHeadersHostAddressMCGlobal);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressMCGlobal, 'requestHeaders.host.address.MCGlobal');
         }
         if (requestHeadersHostAddressMCLinkLocal !== undefined && requestHeadersHostAddressMCLinkLocal !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.MCLinkLocal', <any>requestHeadersHostAddressMCLinkLocal);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressMCLinkLocal, 'requestHeaders.host.address.MCLinkLocal');
         }
         if (requestHeadersHostAddressMCNodeLocal !== undefined && requestHeadersHostAddressMCNodeLocal !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.MCNodeLocal', <any>requestHeadersHostAddressMCNodeLocal);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressMCNodeLocal, 'requestHeaders.host.address.MCNodeLocal');
         }
         if (requestHeadersHostAddressMCOrgLocal !== undefined && requestHeadersHostAddressMCOrgLocal !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.MCOrgLocal', <any>requestHeadersHostAddressMCOrgLocal);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressMCOrgLocal, 'requestHeaders.host.address.MCOrgLocal');
         }
         if (requestHeadersHostAddressMCSiteLocal !== undefined && requestHeadersHostAddressMCSiteLocal !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.MCSiteLocal', <any>requestHeadersHostAddressMCSiteLocal);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressMCSiteLocal, 'requestHeaders.host.address.MCSiteLocal');
         }
         if (requestHeadersHostAddressAddress !== undefined && requestHeadersHostAddressAddress !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.address', <any>requestHeadersHostAddressAddress);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressAddress, 'requestHeaders.host.address.address');
         }
         if (requestHeadersHostAddressAnyLocalAddress !== undefined && requestHeadersHostAddressAnyLocalAddress !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.anyLocalAddress', <any>requestHeadersHostAddressAnyLocalAddress);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressAnyLocalAddress, 'requestHeaders.host.address.anyLocalAddress');
         }
         if (requestHeadersHostAddressCanonicalHostName !== undefined && requestHeadersHostAddressCanonicalHostName !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.canonicalHostName', <any>requestHeadersHostAddressCanonicalHostName);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressCanonicalHostName, 'requestHeaders.host.address.canonicalHostName');
         }
         if (requestHeadersHostAddressHostAddress !== undefined && requestHeadersHostAddressHostAddress !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.hostAddress', <any>requestHeadersHostAddressHostAddress);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressHostAddress, 'requestHeaders.host.address.hostAddress');
         }
         if (requestHeadersHostAddressHostName !== undefined && requestHeadersHostAddressHostName !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.hostName', <any>requestHeadersHostAddressHostName);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressHostName, 'requestHeaders.host.address.hostName');
         }
         if (requestHeadersHostAddressLinkLocalAddress !== undefined && requestHeadersHostAddressLinkLocalAddress !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.linkLocalAddress', <any>requestHeadersHostAddressLinkLocalAddress);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressLinkLocalAddress, 'requestHeaders.host.address.linkLocalAddress');
         }
         if (requestHeadersHostAddressLoopbackAddress !== undefined && requestHeadersHostAddressLoopbackAddress !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.loopbackAddress', <any>requestHeadersHostAddressLoopbackAddress);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressLoopbackAddress, 'requestHeaders.host.address.loopbackAddress');
         }
         if (requestHeadersHostAddressMulticastAddress !== undefined && requestHeadersHostAddressMulticastAddress !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.multicastAddress', <any>requestHeadersHostAddressMulticastAddress);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressMulticastAddress, 'requestHeaders.host.address.multicastAddress');
         }
         if (requestHeadersHostAddressSiteLocalAddress !== undefined && requestHeadersHostAddressSiteLocalAddress !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.address.siteLocalAddress', <any>requestHeadersHostAddressSiteLocalAddress);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostAddressSiteLocalAddress, 'requestHeaders.host.address.siteLocalAddress');
         }
         if (requestHeadersHostHostName !== undefined && requestHeadersHostHostName !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.hostName', <any>requestHeadersHostHostName);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostHostName, 'requestHeaders.host.hostName');
         }
         if (requestHeadersHostHostString !== undefined && requestHeadersHostHostString !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.hostString', <any>requestHeadersHostHostString);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostHostString, 'requestHeaders.host.hostString');
         }
         if (requestHeadersHostPort !== undefined && requestHeadersHostPort !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.port', <any>requestHeadersHostPort);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostPort, 'requestHeaders.host.port');
         }
         if (requestHeadersHostUnresolved !== undefined && requestHeadersHostUnresolved !== null) {
-            queryParameters = queryParameters.set('requestHeaders.host.unresolved', <any>requestHeadersHostUnresolved);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersHostUnresolved, 'requestHeaders.host.unresolved');
         }
         if (requestHeadersIfMatch) {
             requestHeadersIfMatch.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.ifMatch', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.ifMatch');
             })
         }
         if (requestHeadersIfModifiedSince !== undefined && requestHeadersIfModifiedSince !== null) {
-            queryParameters = queryParameters.set('requestHeaders.ifModifiedSince', <any>requestHeadersIfModifiedSince);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersIfModifiedSince, 'requestHeaders.ifModifiedSince');
         }
         if (requestHeadersIfNoneMatch) {
             requestHeadersIfNoneMatch.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.ifNoneMatch', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.ifNoneMatch');
             })
         }
         if (requestHeadersIfUnmodifiedSince !== undefined && requestHeadersIfUnmodifiedSince !== null) {
-            queryParameters = queryParameters.set('requestHeaders.ifUnmodifiedSince', <any>requestHeadersIfUnmodifiedSince);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersIfUnmodifiedSince, 'requestHeaders.ifUnmodifiedSince');
         }
         if (requestHeadersLastModified !== undefined && requestHeadersLastModified !== null) {
-            queryParameters = queryParameters.set('requestHeaders.lastModified', <any>requestHeadersLastModified);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLastModified, 'requestHeaders.lastModified');
         }
         if (requestHeadersLocationAbsolute !== undefined && requestHeadersLocationAbsolute !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.absolute', <any>requestHeadersLocationAbsolute);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationAbsolute, 'requestHeaders.location.absolute');
         }
         if (requestHeadersLocationAuthority !== undefined && requestHeadersLocationAuthority !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.authority', <any>requestHeadersLocationAuthority);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationAuthority, 'requestHeaders.location.authority');
         }
         if (requestHeadersLocationFragment !== undefined && requestHeadersLocationFragment !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.fragment', <any>requestHeadersLocationFragment);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationFragment, 'requestHeaders.location.fragment');
         }
         if (requestHeadersLocationHost !== undefined && requestHeadersLocationHost !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.host', <any>requestHeadersLocationHost);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationHost, 'requestHeaders.location.host');
         }
         if (requestHeadersLocationOpaque !== undefined && requestHeadersLocationOpaque !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.opaque', <any>requestHeadersLocationOpaque);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationOpaque, 'requestHeaders.location.opaque');
         }
         if (requestHeadersLocationPath !== undefined && requestHeadersLocationPath !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.path', <any>requestHeadersLocationPath);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationPath, 'requestHeaders.location.path');
         }
         if (requestHeadersLocationPort !== undefined && requestHeadersLocationPort !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.port', <any>requestHeadersLocationPort);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationPort, 'requestHeaders.location.port');
         }
         if (requestHeadersLocationQuery !== undefined && requestHeadersLocationQuery !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.query', <any>requestHeadersLocationQuery);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationQuery, 'requestHeaders.location.query');
         }
         if (requestHeadersLocationRawAuthority !== undefined && requestHeadersLocationRawAuthority !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.rawAuthority', <any>requestHeadersLocationRawAuthority);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationRawAuthority, 'requestHeaders.location.rawAuthority');
         }
         if (requestHeadersLocationRawFragment !== undefined && requestHeadersLocationRawFragment !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.rawFragment', <any>requestHeadersLocationRawFragment);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationRawFragment, 'requestHeaders.location.rawFragment');
         }
         if (requestHeadersLocationRawPath !== undefined && requestHeadersLocationRawPath !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.rawPath', <any>requestHeadersLocationRawPath);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationRawPath, 'requestHeaders.location.rawPath');
         }
         if (requestHeadersLocationRawQuery !== undefined && requestHeadersLocationRawQuery !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.rawQuery', <any>requestHeadersLocationRawQuery);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationRawQuery, 'requestHeaders.location.rawQuery');
         }
         if (requestHeadersLocationRawSchemeSpecificPart !== undefined && requestHeadersLocationRawSchemeSpecificPart !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.rawSchemeSpecificPart', <any>requestHeadersLocationRawSchemeSpecificPart);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationRawSchemeSpecificPart, 'requestHeaders.location.rawSchemeSpecificPart');
         }
         if (requestHeadersLocationRawUserInfo !== undefined && requestHeadersLocationRawUserInfo !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.rawUserInfo', <any>requestHeadersLocationRawUserInfo);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationRawUserInfo, 'requestHeaders.location.rawUserInfo');
         }
         if (requestHeadersLocationScheme !== undefined && requestHeadersLocationScheme !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.scheme', <any>requestHeadersLocationScheme);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationScheme, 'requestHeaders.location.scheme');
         }
         if (requestHeadersLocationSchemeSpecificPart !== undefined && requestHeadersLocationSchemeSpecificPart !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.schemeSpecificPart', <any>requestHeadersLocationSchemeSpecificPart);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationSchemeSpecificPart, 'requestHeaders.location.schemeSpecificPart');
         }
         if (requestHeadersLocationUserInfo !== undefined && requestHeadersLocationUserInfo !== null) {
-            queryParameters = queryParameters.set('requestHeaders.location.userInfo', <any>requestHeadersLocationUserInfo);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersLocationUserInfo, 'requestHeaders.location.userInfo');
         }
         if (requestHeadersOrigin !== undefined && requestHeadersOrigin !== null) {
-            queryParameters = queryParameters.set('requestHeaders.origin', <any>requestHeadersOrigin);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersOrigin, 'requestHeaders.origin');
         }
         if (requestHeadersPragma !== undefined && requestHeadersPragma !== null) {
-            queryParameters = queryParameters.set('requestHeaders.pragma', <any>requestHeadersPragma);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersPragma, 'requestHeaders.pragma');
         }
         if (requestHeadersUpgrade !== undefined && requestHeadersUpgrade !== null) {
-            queryParameters = queryParameters.set('requestHeaders.upgrade', <any>requestHeadersUpgrade);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestHeadersUpgrade, 'requestHeaders.upgrade');
         }
         if (requestHeadersVary) {
             requestHeadersVary.forEach((element) => {
-                queryParameters = queryParameters.append('requestHeaders.vary', <any>element);
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'requestHeaders.vary');
             })
         }
         if (requestMethod !== undefined && requestMethod !== null) {
-            queryParameters = queryParameters.set('requestMethod', <any>requestMethod);
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>requestMethod, 'requestMethod');
         }
 
         let headers = this.defaultHeaders;
 
-        // to determine the Accept header
-        const httpHeaderAccepts: string[] = [
-            '*/*'
-        ];
-        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
         if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
         return this.httpClient.post<string>(`${this.configuration.basePath}/file/upload`,
             null,
             {
                 params: queryParameters,
+                responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
