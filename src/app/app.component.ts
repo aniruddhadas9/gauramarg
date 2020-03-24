@@ -5,12 +5,15 @@ import {ActivatedRoute, NavigationCancel, NavigationEnd, NavigationError, Naviga
 import {filter, tap} from 'rxjs/operators';
 import {
   AlertService,
-  ChangeLocationModelComponent, DangerAlert,
+  ChangeLocationModelComponent,
+  DangerAlert,
   Footer,
   GoogleAnalyticsService,
   Header,
   HeaderService,
-  MapService, SuccessAlert,
+  Link,
+  MapService,
+  SuccessAlert,
   UserService
 } from '@candiman/website';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -27,7 +30,7 @@ export class AppComponent implements OnInit {
 
   header: Header;
   footer: Footer;
-
+  rightMenuItem: Array<Link> = [];
   alive: any;
 
   modalRef;
@@ -56,41 +59,9 @@ export class AppComponent implements OnInit {
           {label: 'Login', url: '/login'},
         ]);
         this.alertService.alert(new SuccessAlert('Logout success!', 'You are successfully loggedout.', user, 30));
-      } else if (user.length > 0) {
-        if (user[0].type === 'admin') {
-          this.headerService.rightLinks.next([
-            {label: 'Teachers', url: '/teacher'},
-            {label: 'Students', url: '/student'},
-            {label: 'Profile', url: '/profile'},
-          ]);
-        } else if (user[0].type === 'operator') {
-          this.headerService.rightLinks.next([
-            {label: 'Admin', url: '/admin'},
-            {label: 'Guest entry', url: '/holi'},
-            {label: 'Parking', url: '/parking'},
-            {label: 'Privacy', url: '/privacy'},
-            {label: 'Upload file', url: '/csv-upload'},
-            {label: 'Users', url: '/user-manage'},
-            {label: 'Event status', url: '/holi-statics'},
-            {label: 'search', url: '/holi-manage'},
-            {label: 'NH Family', url: '/nhfamily'},
-          ]);
-        } else if (user[0].type === 'teacher') {
-          this.headerService.rightLinks.next([
-            {label: 'Teachers', url: '/teacher'},
-            {label: 'Students', url: '/student'},
-            {label: 'Add new user', url: '/user-manage'},
-            {label: 'Profile', url: '/profile'},
-          ]);
-        } else if (user[0].type === 'student') {
-          this.headerService.rightLinks.next([
-            {label: 'Students', url: '/student'},
-            {label: 'Teachers', url: '/teacher'},
-            {label: 'Add new user', url: '/user-manage'},
-            {label: 'Profile', url: '/profile'},
-          ]);
-        }
-
+      } else if (user.token.length > 0) {
+        // Add right menu as per the allowed permission
+        this.headerService.rightLinks.next(this.buildMenuItem(user.type));
       } else {
         this.alertService
           .alert(new DangerAlert('Login failure!', 'Unable to login! Please try again or contact support team.',
@@ -252,6 +223,42 @@ export class AppComponent implements OnInit {
     this.modalRef.componentInstance.output.subscribe((location) => {
       this.header.middleButton.label = location.formatted_address;
     });
+  }
+
+  public buildMenuItem(permission: string): Array<Link> {
+    const rightMenuItem = [];
+
+    // All authenticated used are allowed to see there profile
+    rightMenuItem.push({label: 'Profile', url: '/profile'});
+
+    // Event operator or holi event manager
+    if (permission.includes('operator') || permission.includes('holi')) {
+      rightMenuItem.push({label: 'Guest entry', url: '/holi'});
+      rightMenuItem.push({label: 'Parking', url: '/parking'});
+      rightMenuItem.push({label: 'Privacy', url: '/privacy'});
+      rightMenuItem.push({label: 'Upload file', url: '/csv-upload'});
+      rightMenuItem.push({label: 'Users', url: '/user-manage'});
+      rightMenuItem.push({label: 'Event status', url: '/holi-statics'});
+      rightMenuItem.push({label: 'search', url: '/holi-manage'});
+      rightMenuItem.push({label: 'NH Family', url: '/nhfamily'});
+    }
+
+    // Teachers
+    if (permission.includes('teacher')) {
+      rightMenuItem.push({label: 'Teachers', url: '/teacher'});
+    }
+
+    // Students
+    if (permission.includes('student')) {
+      rightMenuItem.push({label: 'Students', url: '/student'});
+    }
+
+    // Admin
+    if (permission.includes('admin')) {
+      rightMenuItem.push({label: 'Admin', url: '/admin'});
+      rightMenuItem.push({label: 'Add new user', url: '/user-manage'});
+    }
+    return rightMenuItem;
   }
 
   loginUsingGoogleAuth() {

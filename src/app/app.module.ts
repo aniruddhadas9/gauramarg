@@ -27,7 +27,7 @@ export function ApiConfig() {
     FontAwesomeModule,
     // SocialLoginModule,
     WebsiteModule.forRoot({
-      loginUrl: environment.restUrl + '/user/login',
+      loginUrl: environment.restUrl + '/authentication/login',
       alertDelayInSeconds: 7
     }),
     ApiModule.forRoot(ApiConfig),
