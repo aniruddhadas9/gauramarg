@@ -61,7 +61,7 @@ export class AppComponent implements OnInit {
         this.alertService.alert(new SuccessAlert('Logout success!', 'You are successfully loggedout.', user, 30));
       } else if (user.token.length > 0) {
         // Add right menu as per the allowed permission
-        this.headerService.rightLinks.next(this.buildMenuItem(user.type));
+        this.headerService.rightLinks.next(this.buildMenuItem(user.authorized));
       } else {
         this.alertService
           .alert(new DangerAlert('Login failure!', 'Unable to login! Please try again or contact support team.',
@@ -232,7 +232,7 @@ export class AppComponent implements OnInit {
     rightMenuItem.push({label: 'Profile', url: '/profile'});
 
     // Event operator or holi event manager
-    if (permission.includes('operator') || permission.includes('holi')) {
+    if (this.checkAvailability(permission, 'operator') || this.checkAvailability(permission, 'holi')) {
       rightMenuItem.push({label: 'Guest entry', url: '/holi'});
       rightMenuItem.push({label: 'Parking', url: '/parking'});
       rightMenuItem.push({label: 'Privacy', url: '/privacy'});
@@ -244,21 +244,27 @@ export class AppComponent implements OnInit {
     }
 
     // Teachers
-    if (permission.includes('teacher')) {
+    if (this.checkAvailability(permission, 'teacher')) {
       rightMenuItem.push({label: 'Teachers', url: '/teacher'});
     }
 
     // Students
-    if (permission.includes('student')) {
+    if (this.checkAvailability(permission, 'student')) {
       rightMenuItem.push({label: 'Students', url: '/student'});
     }
 
     // Admin
-    if (permission.includes('admin')) {
+    if (this.checkAvailability(permission, 'admin')) {
       rightMenuItem.push({label: 'Admin', url: '/admin'});
       rightMenuItem.push({label: 'Add new user', url: '/user-manage'});
     }
     return rightMenuItem;
+  }
+
+   checkAvailability(arr, val) {
+    return arr.some(function(arrVal) {
+      return val === arrVal;
+    });
   }
 
   loginUsingGoogleAuth() {
