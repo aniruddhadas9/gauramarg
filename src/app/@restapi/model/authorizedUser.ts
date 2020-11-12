@@ -12,10 +12,12 @@
 
 
 export interface AuthorizedUser { 
+    authorized?: Array<string>;
     email?: string;
     firstName?: string;
     lastName?: string;
     phone?: string;
     token?: string;
+    type?: string;
 }
 

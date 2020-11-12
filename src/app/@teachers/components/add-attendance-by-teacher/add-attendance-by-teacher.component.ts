@@ -132,7 +132,7 @@ export class AddAttendanceByTeacherComponent implements OnInit {
         classTime: this.attendanceForm.getRawValue().classTime,
         notes: 'Added by teacher',
         studentId: student,
-        teacherId: this.userService.authorizedUser[0].email,
+        teacherId: this.userService.authorizedUser.email,
       };
 
       // Save the data

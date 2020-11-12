@@ -20,7 +20,7 @@ export class CoursesComponent implements OnInit {
   courses: Array<Course>;
 
   ngOnInit() {
-    this.coursesService.getAllCoursesByTeacherId(this.userService.authorizedUser[0].email).subscribe((courses) => {
+    this.coursesService.getAllCoursesByTeacherId(this.userService.authorizedUser.email).subscribe((courses) => {
       console.log(courses);
       this.courses = courses;
     });

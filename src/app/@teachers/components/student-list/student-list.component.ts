@@ -22,7 +22,7 @@ export class StudentListComponent implements OnInit {
 
     console.log('this.userService.authorizedUser%o', this.userService.authorizedUser);
 
-    this.courseRegistrationService.getStudentsByTeacherIdUsingGET(this.userService.authorizedUser[0].email)
+    this.courseRegistrationService.getStudentsByTeacherIdUsingGET(this.userService.authorizedUser.email)
       .subscribe((students: User[]) => {
         console.log(students);
         this.students = students;

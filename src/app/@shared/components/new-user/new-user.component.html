@@ -41,10 +41,10 @@
                  class="form-control" id="confirm-password" placeholder="Password" formControlName="confirm-password">
         </div>
       </div>
-      <div class="form-group row" [hidden]="type !== 'admin'">
-        <label for="phone" class="col-sm-2 col-form-label">Type</label>
+      <div class="form-group row" [hidden]="!authorized.includes('admin')">
+        <label for="phone" class="col-sm-2 col-form-label">User permission</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" value="{{type}}" id="type" placeholder="Type of user" formControlName="type">
+          <input type="text" class="form-control" value="{{authorized}}" id="type" placeholder="Type of user" formControlName="type">
           <small>Type of user. "admin" have special right to the site.</small>
         </div>
       </div>

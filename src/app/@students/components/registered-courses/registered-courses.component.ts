@@ -16,7 +16,7 @@ export class RegisteredCoursesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.courseRegistrationService.getCoursesByStudentIdUsingGET(this.userService.authorizedUser[0].email).subscribe((courses) => {
+    this.courseRegistrationService.getCoursesByStudentIdUsingGET(this.userService.authorizedUser.email).subscribe((courses) => {
       console.log('courses: %o', courses);
       this.courses = courses;
     });

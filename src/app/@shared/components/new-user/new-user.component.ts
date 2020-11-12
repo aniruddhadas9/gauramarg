@@ -11,7 +11,7 @@ import {User} from '../../../@restapi';
 })
 export class NewUserComponent implements OnInit {
 
-  @Input() type: User.TypeEnum;
+  @Input() authorized: Array<string>;
   loading: boolean;
   newUserForm: FormGroup;
   saveMessage: string;
@@ -22,8 +22,8 @@ export class NewUserComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.type === undefined) {
-      this.type = User.TypeEnum.Student;
+    if (this.authorized === undefined) {
+      this.authorized = ['student'];
     }
   }
 
@@ -33,7 +33,7 @@ export class NewUserComponent implements OnInit {
       password: [''],
       firstName: [''],
       lastName: [''],
-      type: [''],
+      authorized: [''],
       phone: ['']
     });
   }

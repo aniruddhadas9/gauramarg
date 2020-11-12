@@ -59,7 +59,7 @@ export class ViewAttendanceByTeacherComponent implements OnInit {
   }
 
   getAttendanceByTeacherId() {
-    this.attendanceService.getByTeacherIdUsingGET(this.userService.authorizedUser[0].email)
+    this.attendanceService.getByTeacherIdUsingGET(this.userService.authorizedUser.email)
       .subscribe((attendances: Array<Attendance>) => {
         console.log('attendances: %o', attendances);
         this.attendanceList = attendances;
@@ -69,10 +69,10 @@ export class ViewAttendanceByTeacherComponent implements OnInit {
   search(model) {
     console.log(model);
     console.log('searcherd:%o', model);
-    this.attendanceService.getByFilterUsingPOST(model).subscribe((data)=>{
+    this.attendanceService.getByFilterUsingPOST(model).subscribe((data) => {
       console.log('searcherd:%o', data);
 
-    })
+    });
   }
 
 }

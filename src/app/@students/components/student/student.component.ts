@@ -16,7 +16,7 @@ export class StudentComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.user = this.userService.authorizedUser[0];
+    this.user = this.userService.authorizedUser;
   }
 
 }

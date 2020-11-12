@@ -13,7 +13,7 @@
 
 export interface Attendance { 
     approved?: boolean;
-    classDate?: Date;
+    classDate?: string;
     classTime?: string;
     classTimeString?: string;
     courseId?: string;

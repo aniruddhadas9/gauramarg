@@ -70,7 +70,7 @@ export class RegisterCourseComponent implements OnInit {
       {
         key: 'teacherId',
         type: 'input',
-        defaultValue: this.userService.authorizedUser[0].email,
+        defaultValue: this.userService.authorizedUser.email,
         hide: true,
         templateOptions: {
           type: 'email',

@@ -7,7 +7,6 @@ export * from './holi';
 export * from './message';
 export * from './file';
 export * from './payment';
-export * from './resetPassword';
 export * from './resource';
 export * from './timestamp';
 export * from './uRI';
