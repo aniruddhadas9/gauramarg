@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {HoliComponent} from './holi.component';
 
@@ -6,7 +6,7 @@ describe('HoliComponent', () => {
   let component: HoliComponent;
   let fixture: ComponentFixture<HoliComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HoliComponent ]
     })
