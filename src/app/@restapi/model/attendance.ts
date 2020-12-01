@@ -16,10 +16,10 @@ export interface Attendance {
     classDate?: string;
     classTime?: string;
     classTimeString?: string;
-    courseId?: string;
+    courseId: string;
     id?: string;
     notes?: string;
-    studentId?: string;
-    teacherId?: string;
+    studentId: string;
+    teacherId: string;
 }
 

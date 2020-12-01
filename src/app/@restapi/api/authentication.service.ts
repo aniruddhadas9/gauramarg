@@ -31,7 +31,7 @@ import { Configuration }                                     from '../configurat
 })
 export class AuthenticationService {
 
-    protected basePath = 'http://localhost:8080';
+    protected basePath = 'http://gauramargrest.appspot.com';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
     public encoder: HttpParameterCodec;
@@ -103,6 +103,14 @@ export class AuthenticationService {
 
         let headers = this.defaultHeaders;
 
+        // authentication (JWT) required
+        if (this.configuration.apiKeys) {
+            const key: string | undefined = this.configuration.apiKeys["JWT"] || this.configuration.apiKeys["Authorization"];
+            if (key) {
+                headers = headers.set('Authorization', key);
+            }
+        }
+
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
@@ -157,6 +165,14 @@ export class AuthenticationService {
         }
 
         let headers = this.defaultHeaders;
+
+        // authentication (JWT) required
+        if (this.configuration.apiKeys) {
+            const key: string | undefined = this.configuration.apiKeys["JWT"] || this.configuration.apiKeys["Authorization"];
+            if (key) {
+                headers = headers.set('Authorization', key);
+            }
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {

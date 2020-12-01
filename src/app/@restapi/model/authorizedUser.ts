@@ -14,10 +14,14 @@
 export interface AuthorizedUser { 
     authorized?: Array<string>;
     email?: string;
+    expiresIn?: string;
     firstName?: string;
+    idToken?: string;
     lastName?: string;
     phone?: string;
+    scope?: string;
+    state?: string;
     token?: string;
-    type?: string;
+    tokenType?: string;
 }
 

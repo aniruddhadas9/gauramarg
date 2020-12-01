@@ -17,10 +17,10 @@ export interface Course {
     endDate?: Timestamp;
     id?: string;
     location?: string;
-    name?: string;
+    name: string;
     price?: number;
     startDate?: Timestamp;
-    status?: string;
+    status: string;
     teacherId?: string;
 }
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {UserService} from '@candiman/website';
+import {AuthorizedUser, UserService} from '@candiman/website';
 import {User} from '../../../@restapi';
 
 @Component({
@@ -9,7 +9,7 @@ import {User} from '../../../@restapi';
 })
 export class StudentComponent implements OnInit {
   menu: boolean;
-  user: User;
+  user: AuthorizedUser;
   opened = true;
   constructor(
     private userService: UserService,

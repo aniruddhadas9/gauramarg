@@ -1,6 +1,6 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {User} from '../../../@restapi';
-import {UserService} from '@candiman/website';
+import {AuthorizedUser, UserService} from '@candiman/website';
 
 @Component({
   selector: 'gm-teacher',
@@ -13,7 +13,7 @@ export class TeacherComponent implements OnInit {
   @ViewChild('content', {read: ElementRef, static: true}) content: ElementRef;
   menu: boolean;
   opened = true;
-  user: User;
+  user: AuthorizedUser;
   constructor(
     private userService: UserService,
   ) { }

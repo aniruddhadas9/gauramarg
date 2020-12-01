@@ -14,12 +14,12 @@ import { Timestamp } from './timestamp';
 
 export interface Payment { 
     amount?: number;
-    courseId?: string;
+    courseId: string;
     id?: string;
     notes?: string;
     paymentTime?: Timestamp;
     paymentTimeString?: string;
-    studentId?: string;
-    teacherId?: string;
+    studentId: string;
+    teacherId: string;
 }
 
