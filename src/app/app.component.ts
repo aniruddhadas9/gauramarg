@@ -14,6 +14,7 @@ import {
   Link,
   MapService,
   SuccessAlert,
+  User,
   UserService
 } from '@candiman/website';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -52,7 +53,7 @@ export class AppComponent implements OnInit {
   ) {
 
     // Subscribe to the login
-    this.userService.userSubject.subscribe((user: any | Array<object>) => {
+    this.userService.authorizedUserSubject.subscribe((user: any | Array<object>) => {
       console.log(user);
       if (user === null) {
         this.headerService.rightLinks.next([
@@ -71,13 +72,23 @@ export class AppComponent implements OnInit {
 
     this.header = {
       brand: {
-        label: 'Gaura Marga',
+        label: 'Gauranga',
         url: '/',
-        logo: {
-          imageInAsset: 'gaur-nitai.png',
+        brandImage: {
+          logo: {
+            imageInAsset: 'gaur-nitai.png',
+            style: {
+              width: '75px',
+              height: '110px'
+            }
+          },
           style: {
-            width: '30px',
-            height: '30px'
+            'padding-top': '0'
+          }
+        },
+        brandText: {
+          style: {
+            'padding-top': '34px'
           }
         },
         style: {
@@ -178,6 +189,30 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
+    // Login users when user submit the email and password
+    this.userService.loginSubmittedUserSubject.subscribe((user: User) => {
+      // do the login as well
+      this.userService.login({email: user.email, password: user.password})
+        .subscribe((response) => {
+          // navigate by url is used due to the fact that the returnUrl may have optional params which need to be parsed.
+          // same is true for query params
+          if (response !== null) {
+            this.router.navigate([''], {replaceUrl: true});
+          } else {
+            /*this.alertService.alert({
+              title: 'Login failure!',
+              subTitle: 'Unable to login! Please try again or contact support team.',
+              text: response,
+              type: 'danger',
+              closeDelay: 10
+            });*/
+          }
+        }, (error) => {
+          // mostly this is never execute as error are handled in login service in catchError blocked and converted to obwervable
+          console.log('LoginComponent|login|error:%o', error);
+        });
+    });
+
     // Show loading of the router are busy navigating.
     this.router.events.pipe(
       filter(event => event instanceof NavigationStart ||
@@ -225,7 +260,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  public buildMenuItem(permission: string): Array<Link> {
+  public buildMenuItem(permission: Array<string>): Array<Link> {
     const rightMenuItem = [];
 
     // All authenticated used are allowed to see there profile
@@ -261,8 +296,8 @@ export class AppComponent implements OnInit {
     return rightMenuItem;
   }
 
-   checkAvailability(arr, val) {
-    return arr.some(function(arrVal) {
+  checkAvailability(arr, val) {
+    return arr.some(function (arrVal) {
       return val === arrVal;
     });
   }
