@@ -1,3 +1,23 @@
-<p>
+<div>
   <gm-corousel></gm-corousel>
-</p>
+  <youtube-player videoId="{{youTubeVideoId}}"></youtube-player>
+
+  <div>
+    <ul class="list-inline">
+      <li class="list-inline-item" *ngFor="let videos of youTubeVideos">
+
+
+        <div class="card video-card">
+          <img class="card-img-top" [src]="videos.snippet.thumbnails.default.url" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">{{videos.snippet.title}}</h5>
+            <p class="card-text">{{videos.snippet.publishTime}}</p>
+            <a href="#" class="btn btn-primary" (click)="playVideo(videos.id.videoId)">Play</a>
+          </div>
+        </div>
+
+
+      </li>
+    </ul>
+  </div>
+</div>

@@ -22,6 +22,7 @@ import {HoliService} from './services/holi/holi.service';
 import {HoliStaticsComponent} from './components/holi-statics/holi-statics.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {SharedModule} from '../@shared/shared.module';
+import {YouTubePlayerModule} from '@angular/youtube-player';
 
 @NgModule({
   imports: [
@@ -30,6 +31,7 @@ import {SharedModule} from '../@shared/shared.module';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    YouTubePlayerModule,
     GauraRoutingModule,
     FontAwesomeModule,
     SharedModule
