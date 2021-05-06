@@ -7,7 +7,7 @@ import {ResetPasswordComponent} from './components/reset-password/reset-password
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {NgGapiClientConfig} from '../gaura/services/google/google-api-config.service';
-import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider} from 'angularx-social-login';
+import {SocialLoginModule, SocialAuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider} from 'angularx-social-login';
 
 const gapiClientConfig: NgGapiClientConfig = {
   client_id: '229810777942-v9f8u7mla4k621h9oav2n8hranl5ck7k.apps.googleusercontent.com',
@@ -28,7 +28,8 @@ export interface NbAuthSocialLink {
 }
 
 
-const authServiceConfig = new AuthServiceConfig([
+/*
+const authServiceConfig = new SocialAuthServiceConfig([
   {
     id: GoogleLoginProvider.PROVIDER_ID,
     provider: new GoogleLoginProvider('229810777942-v9f8u7mla4k621h9oav2n8hranl5ck7k.apps.googleusercontent.com')
@@ -38,10 +39,13 @@ const authServiceConfig = new AuthServiceConfig([
     provider: new FacebookLoginProvider('Facebook-App-Id')
   }
 ]);
+*/
 
+/*
 export function provideConfig() {
   return authServiceConfig;
 }
+*/
 
 
 const socialLinks: NbAuthSocialLink[] = [
@@ -136,8 +140,27 @@ export const defaultSettings: any = {
     CommonModule,
     FormsModule,
     RouterModule,
+    SocialLoginModule
   ],
   providers: [
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '229810777942-v9f8u7mla4k621h9oav2n8hranl5ck7k.apps.googleusercontent.com'
+            )
+          },
+          {
+            id: FacebookLoginProvider.PROVIDER_ID,
+            provider: new FacebookLoginProvider('clientId')
+          }
+        ]
+      } as SocialAuthServiceConfig,
+    }
     /*{
       provide: NG_GAPI_CONFIG,
       useValue: gapiClientConfig

@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {GoogleMap} from '@agm/core/services/google-maps-types';
 import {ActivatedRoute, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
 import {filter, tap} from 'rxjs/operators';
 import {
@@ -240,7 +239,7 @@ export class AppComponent implements OnInit {
     });*/
   }
 
-  mapReady(map: GoogleMap) {
+  mapReady(map: any) { // GoogleMap
     this.mapService.map = map;
     this.mapService.getBrowserCoordinates({}).subscribe((position: Position) => {
       this.coordinates = position && position.coords;
